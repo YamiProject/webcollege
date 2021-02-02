@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Фев 02 2021 г., 15:37
+-- Время создания: Фев 02 2021 г., 16:01
 -- Версия сервера: 10.3.22-MariaDB
 -- Версия PHP: 7.1.33
 
@@ -482,7 +482,8 @@ ALTER TABLE `documents`
 --
 ALTER TABLE `grade_sheet`
   ADD CONSTRAINT `grade_sheet_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `grade_sheet_ibfk_2` FOREIGN KEY (`tos_id`) REFERENCES `type_of_score` (`tos_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `grade_sheet_ibfk_2` FOREIGN KEY (`tos_id`) REFERENCES `type_of_score` (`tos_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `grade_sheet_ibfk_3` FOREIGN KEY (`descipline_id`) REFERENCES `desciplines` (`descipline_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `groups`
