@@ -1,22 +1,36 @@
 {
   "name": "webcollege",
   "version": "1.0.0",
-  "description": "The Web Application For College",
-  "main": "index.js",
+  "description": "The web aaplication for college Tsaritsyno",
+  "main": "app.js",
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "nodemon server/index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YamiProject/webcollege.git"
+  },
+  "keywords": [
+    "web",
+    "application",
+    "mysql",
+    "node",
+    "express",
+    "diploma"
+  ],
   "author": "Kostin Vladislav",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YamiProject/webcollege/issues"
+  },
+  "homepage": "https://github.com/YamiProject/webcollege#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "mysql2": "^2.2.5"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.7"
+    "handlebars": "^4.7.6",
+    "hbs": "^4.1.1",
+    "mysql2": "^2.2.5",
+    "promise-mysql": "^5.0.2"
   }
 }
