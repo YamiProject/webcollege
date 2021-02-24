@@ -26,29 +26,23 @@ class ServerUser{
     //Конструктор
     constructor(){
         //Серверные данные
-        this.user_data;
-        this.user_lvl;
+        this.user_id;
         this.user_role;
         //Данные клиента
         this.user_surname;
         this.user_name;
         this.user_middlename;
-        this.user_phone;
-        this.user_bd;
         this.user_photo;
         this.user_group;
     }
     //Методы
-    setUser(id,lvl,role,token,surname,name,middlename,number,birth_day,photo){
-        this.user_data=id;
-        this.user_lvl=lvl;
+    setUser(id,role,token,surname,name,middlename,photo){
+        this.user_id=id;
         this.user_role=role;
         this.user_token=token;
         this.user_surname=surname;
         this.user_name=name;
         this.user_middlename=middlename;
-        this.user_number=number;
-        this.user_bd=birth_day;
         this.user_photo=photo;
     }
     setUserGroup(group_id){
@@ -59,13 +53,16 @@ class ServerUser{
     }
     //Функции
     getUserState(){
-        return [this.user_data,this.user_lvl,this.user_role];
+        return [this.user_id,this.user_role];
     }
     getUserData(){
-        return [this.user_surname,this.user_name,this.user_middlename,this.user_phone,this.user_photo];
+        return [this.user_surname,this.user_name,this.user_middlename,this.user_photo];
+    }
+    getUserGroups(){
+        return this.user_group;
     }
     getUserTOKEN(){
-
+        return this.user_token;
     }
     addPortfolio(){
 
@@ -78,10 +75,13 @@ class ServerUser{
         });
     }
     clearData(){
-        this.user_data="";
-        this.user_lvl="";
+        this.user_id="";
         this.user_role="";
-        this.user_token="";
+        this.user_surname="";
+        this.user_name="";
+        this.user_middlename="";
+        this.user_photo="";
+        this.user_group="";
     }
 }
 //Экземпляр класса
@@ -123,10 +123,10 @@ app.post('/authorisation', urlencodedParser, (req,res)=>{
     var login = `${req.body.login}`.replace(/\'|\"|\s|\`/gi,'');
     var password = `${req.body.password}`.replace(/\'|\"|\s|\`/gi,'');
     if(login.slice(0,1)=="@")
-        connect.query(`SELECT courator_id,courator_sur_name,courator_name,courator_mid_name,courator_number,courator_birth_date,courator_photo FROM curators WHERE curator_login=${login} AND curator_password=${password}`, (err,data)=>{
+        connect.query(`SELECT courator_id,courator_sur_name,courator_name,courator_mid_name,courator_photo FROM curators WHERE curator_login='${login}' AND curator_password='${password}'`, (err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],data[1],"courator", `${data[0]}courator${data[0]}`,data[1],data[2],data[3],data[4],data[5],data[6]);
+                serverUser.setUser(data[0],"courator", `${data[0]}courator${data[0]}`,data[1],data[2],data[3],data[4]);
                 req.session.user=`@courator/${data[0]}`;
                 server.setUserGroup(serverUser.createQuery(`SELECT group_id FROM groups a inner join courators b on a.courator_id=b.courator_id WHERE a.courator_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW() ORDER BY group_id DESC LIMIT 1`));
                 connect.end();
@@ -136,10 +136,10 @@ app.post('/authorisation', urlencodedParser, (req,res)=>{
                 res.end("nExist");}
         });
     else if(login.slice(0,1)=="$")
-        connect.query(`SELECT tutor_id,tutor_sur_name,tutor_name,tutor_mid_name,tutor_number,tutor_birth_date,tutor_photo FROM tutors WHERE tutor_login=${login} AND tutor_password=${password}`, (err,data)=>{
+        connect.query(`SELECT tutor_id,tutor_sur_name,tutor_name,tutor_mid_name,tutor_photo FROM tutors WHERE tutor_login='${login}' AND tutor_password='${password}'`, (err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],data[1],"tutor", `${data[0]}tutor${data[0]}`,data[1],data[2],data[3],data[4],data[5],data[6]);
+                serverUser.setUser(data[0],"tutor", `${data[0]}tutor${data[0]}`,data[1],data[2],data[3],data[4]);
                 req.session.user=`$tutor/${data[0]}`;
                 server.setUserGroup(serverUser.createQuery(`SELECT group_id FROM groups a inner join tutor b on a.tutor_id=b.tutor_id WHERE a.tutor_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW()`));
                 connect.end();
@@ -149,12 +149,12 @@ app.post('/authorisation', urlencodedParser, (req,res)=>{
                 res.end("nExist");}
         });
     else
-        connect.query("SELECT * FROM students WHERE", (err,data)=>{
+        connect.query(`SELECT student_id,student_sur_name,student_name,student_mid_name,student_photo,group_id FROM students WHERE student_login='${login}' AND student_password='${password}'`, (err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],0,"student", `${damta[0]}student${data[0]}`,data[2],data[3],data[4],data[5],data[6],data[9]);
-                server.setUserGroup(serverUser.createQuery(`SELECT group_id FROM groups a inner join courators b on a.courator_id=b.courator_id WHERE a.courator_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW()`));
-                req.session.user=`#student${data[0]}`;
+                serverUser.setUser(data[0],"student", `${damta[0]}student${data[0]}`,data[1],data[2],data[3],data[4]);
+                server.setUserGroup(data[5]);
+                req.session.user=`#student/${data[0]}`;
                 connect.end();
                 res.end("Succsess");}
             else{
