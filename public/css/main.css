@@ -1,0 +1,71 @@
+/*Standarts*/
+html, body{
+height: 100%;
+}
+a{
+    text-decoration: none;
+    color: white;
+}
+/*Heights*/
+.h-5vh{
+    height: 5vh;
+}
+.h-10vh{
+    height: 10vh;
+}
+.h-15vh{
+    height: 15vh;
+}
+.h-20vh{
+    height: 20vh;
+}
+.h-25vh{
+    height: 25vh;
+}
+.h-30vh{
+    height: 30vh;
+}
+.h-35vh{
+    height: 35vh;
+}
+.h-40vh{
+    height: 40vh;
+}
+.h-45vh{
+    height: 45vh;
+}
+.h-50vh{
+    height: 50vh;
+}
+.h-55vh{
+    height: 55vh;
+}
+/*Common*/
+.avatar_img{
+    border-radius: 250px;
+}
+/*Sidebar*/
+#sidebar{
+    width: 330px;
+}
+#sidebar_menu{
+    background-color: rgb(47, 30, 80);
+    left: 0;
+    right: 0;
+}
+#sidebar_menu>div{
+    margin: 0;
+    padding: 0;
+}
+#sidebar_menu .avatar_img{
+    width: 200px;
+    height: 200px;
+}
+
+/*Main*/
+.main{
+    background-color: blue;
+    position: absolute;
+    left: 330px;
+    width: calc(100% - 315px);
+}

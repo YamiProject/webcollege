@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Фев 02 2021 г., 16:01
+-- Время создания: Фев 24 2021 г., 20:00
 -- Версия сервера: 10.3.22-MariaDB
 -- Версия PHP: 7.1.33
 
@@ -37,6 +37,52 @@ CREATE TABLE `absenteeismes` (
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `additional_educations`
+--
+
+CREATE TABLE `additional_educations` (
+  `ae_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `ae_name` varchar(300) NOT NULL,
+  `ae_lecturer` varchar(300) NOT NULL,
+  `ae_beg_date` date NOT NULL,
+  `ae_end_date` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `courators`
+--
+
+CREATE TABLE `courators` (
+  `courator_id` int(11) NOT NULL,
+  `courator_sur_name` varchar(200) NOT NULL,
+  `courator_name` varchar(200) NOT NULL,
+  `courator_mid_name` varchar(200) DEFAULT NULL,
+  `courator_number` varchar(13) NOT NULL,
+  `courator_birth_date` date NOT NULL,
+  `courator_login` varchar(300) NOT NULL,
+  `courator_password` varchar(300) NOT NULL,
+  `courator_accs_lvl` tinyint(1) NOT NULL,
+  `courator_photo` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `courses`
+--
+
+CREATE TABLE `courses` (
+  `course_id` int(11) NOT NULL,
+  `ae_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Структура таблицы `deductions`
 --
 
@@ -64,19 +110,6 @@ CREATE TABLE `departments` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `desciplines`
---
-
-CREATE TABLE `desciplines` (
-  `descipline_id` varchar(8) NOT NULL,
-  `teacher_id` int(11) NOT NULL,
-  `descipline_name` varchar(30) NOT NULL,
-  `descipline_hours` tinyint(3) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- Структура таблицы `documents`
 --
 
@@ -91,17 +124,51 @@ CREATE TABLE `documents` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `grade_sheet`
+-- Структура таблицы `duty_schedule`
 --
 
-CREATE TABLE `grade_sheet` (
-  `gs_id` int(11) NOT NULL,
-  `student_id` int(11) NOT NULL,
-  `descipline_id` varchar(8) DEFAULT NULL,
-  `tos_id` int(11) NOT NULL,
-  `gs_date` date NOT NULL,
-  `gs_lesson_number` tinyint(1) DEFAULT NULL,
-  `gs_score` tinytext NOT NULL
+CREATE TABLE `duty_schedule` (
+  `ds_id` int(11) NOT NULL,
+  `ds_date` date NOT NULL,
+  `student_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `events`
+--
+
+CREATE TABLE `events` (
+  `event_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `event_type_id` int(11) NOT NULL,
+  `event_date` date NOT NULL,
+  `event_archive` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `event_types`
+--
+
+CREATE TABLE `event_types` (
+  `event_type_id` int(11) NOT NULL,
+  `event_type_name` varchar(300) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `feed`
+--
+
+CREATE TABLE `feed` (
+  `feed_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `feed_data` datetime NOT NULL,
+  `feed_text` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -112,7 +179,7 @@ CREATE TABLE `grade_sheet` (
 
 CREATE TABLE `groups` (
   `group_id` int(11) NOT NULL,
-  `teacher_id` int(11) NOT NULL,
+  `curator_id` int(11) NOT NULL,
   `department_id` int(11) NOT NULL,
   `spetiality_id` int(11) NOT NULL,
   `group_beg_education_date` date NOT NULL,
@@ -122,17 +189,26 @@ CREATE TABLE `groups` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `offsite_events`
+-- Структура таблицы `individual_works`
 --
 
-CREATE TABLE `offsite_events` (
-  `oe_id` int(11) NOT NULL,
-  `group_id` int(11) NOT NULL,
-  `oe_date` date NOT NULL,
-  `oe_name` varchar(300) NOT NULL,
-  `oe_people` int(11) NOT NULL,
-  `oe_archive` text NOT NULL,
-  `oe_address` varchar(300) NOT NULL
+CREATE TABLE `individual_works` (
+  `iw_id` int(11) NOT NULL,
+  `iw_type_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `iw_reasone` text NOT NULL,
+  `iw_date` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `individual_work_types`
+--
+
+CREATE TABLE `individual_work_types` (
+  `iw_type_id` int(11) NOT NULL,
+  `iw_type_name` varchar(300) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -148,7 +224,8 @@ CREATE TABLE `parents` (
   `parent_name` varchar(200) NOT NULL,
   `parent_mid_name` varchar(200) DEFAULT NULL,
   `parent_role` varchar(30) NOT NULL,
-  `parent_number` varchar(13) NOT NULL
+  `parent_number` varchar(13) NOT NULL,
+  `parent_pc` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -178,6 +255,20 @@ CREATE TABLE `portfolio` (
   `portfolio_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `portfolio_scan` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `reports`
+--
+
+CREATE TABLE `reports` (
+  `report_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `student_id` int(11) DEFAULT NULL,
+  `report_reasone` text NOT NULL,
+  `teacher_name` varchar(400) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -215,35 +306,6 @@ CREATE TABLE `students` (
   `student_password` varchar(300) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
--- Структура таблицы `teachers`
---
-
-CREATE TABLE `teachers` (
-  `teacher_id` int(11) NOT NULL,
-  `teacher_sur_name` varchar(200) NOT NULL,
-  `teacher_name` varchar(200) NOT NULL,
-  `teacher_mid_name` varchar(200) DEFAULT NULL,
-  `teacher_number` varchar(13) NOT NULL,
-  `teacher_birth_date` date NOT NULL,
-  `teacher_login` varchar(300) NOT NULL,
-  `teacher_password` varchar(300) NOT NULL,
-  `teacher_accs_lvl` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `type_of_score`
---
-
-CREATE TABLE `type_of_score` (
-  `tos_id` int(11) NOT NULL,
-  `tos_name` varchar(200) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 --
 -- Индексы сохранённых таблиц
 --
@@ -253,6 +315,28 @@ CREATE TABLE `type_of_score` (
 --
 ALTER TABLE `absenteeismes`
   ADD PRIMARY KEY (`absenteeismes_id`),
+  ADD KEY `student_id` (`student_id`);
+
+--
+-- Индексы таблицы `additional_educations`
+--
+ALTER TABLE `additional_educations`
+  ADD PRIMARY KEY (`ae_id`),
+  ADD KEY `student_id` (`student_id`);
+
+--
+-- Индексы таблицы `courators`
+--
+ALTER TABLE `courators`
+  ADD PRIMARY KEY (`courator_id`),
+  ADD UNIQUE KEY `teacher_login` (`courator_login`);
+
+--
+-- Индексы таблицы `courses`
+--
+ALTER TABLE `courses`
+  ADD PRIMARY KEY (`course_id`),
+  ADD KEY `ae_id` (`ae_id`),
   ADD KEY `student_id` (`student_id`);
 
 --
@@ -272,13 +356,6 @@ ALTER TABLE `departments`
   ADD UNIQUE KEY `department_abbreviated` (`department_abbreviated`);
 
 --
--- Индексы таблицы `desciplines`
---
-ALTER TABLE `desciplines`
-  ADD PRIMARY KEY (`descipline_id`),
-  ADD KEY `teacher_id` (`teacher_id`);
-
---
 -- Индексы таблицы `documents`
 --
 ALTER TABLE `documents`
@@ -286,29 +363,55 @@ ALTER TABLE `documents`
   ADD KEY `student_id` (`student_id`);
 
 --
--- Индексы таблицы `grade_sheet`
+-- Индексы таблицы `duty_schedule`
 --
-ALTER TABLE `grade_sheet`
-  ADD PRIMARY KEY (`gs_id`),
-  ADD KEY `student_id` (`student_id`),
-  ADD KEY `descipline_id` (`descipline_id`),
-  ADD KEY `tos_id` (`tos_id`);
+ALTER TABLE `duty_schedule`
+  ADD PRIMARY KEY (`ds_id`),
+  ADD KEY `student_id` (`student_id`);
+
+--
+-- Индексы таблицы `events`
+--
+ALTER TABLE `events`
+  ADD PRIMARY KEY (`event_id`),
+  ADD KEY `group_id` (`group_id`),
+  ADD KEY `event_type_id` (`event_type_id`);
+
+--
+-- Индексы таблицы `event_types`
+--
+ALTER TABLE `event_types`
+  ADD PRIMARY KEY (`event_type_id`);
+
+--
+-- Индексы таблицы `feed`
+--
+ALTER TABLE `feed`
+  ADD PRIMARY KEY (`feed_id`),
+  ADD KEY `group_id` (`group_id`);
 
 --
 -- Индексы таблицы `groups`
 --
 ALTER TABLE `groups`
   ADD PRIMARY KEY (`group_id`) USING BTREE,
-  ADD KEY `teacher_id` (`teacher_id`),
+  ADD KEY `teacher_id` (`curator_id`),
   ADD KEY `department_id` (`department_id`),
   ADD KEY `id_spetiality` (`spetiality_id`);
 
 --
--- Индексы таблицы `offsite_events`
+-- Индексы таблицы `individual_works`
 --
-ALTER TABLE `offsite_events`
-  ADD PRIMARY KEY (`oe_id`),
-  ADD KEY `group_id` (`group_id`);
+ALTER TABLE `individual_works`
+  ADD PRIMARY KEY (`iw_id`),
+  ADD KEY `iw_type_id` (`iw_type_id`),
+  ADD KEY `student_id` (`student_id`);
+
+--
+-- Индексы таблицы `individual_work_types`
+--
+ALTER TABLE `individual_work_types`
+  ADD PRIMARY KEY (`iw_type_id`);
 
 --
 -- Индексы таблицы `parents`
@@ -334,6 +437,14 @@ ALTER TABLE `portfolio`
   ADD KEY `student_id` (`student_id`);
 
 --
+-- Индексы таблицы `reports`
+--
+ALTER TABLE `reports`
+  ADD PRIMARY KEY (`report_id`),
+  ADD KEY `group_id` (`group_id`),
+  ADD KEY `student_id` (`student_id`);
+
+--
 -- Индексы таблицы `spetialities`
 --
 ALTER TABLE `spetialities`
@@ -348,20 +459,6 @@ ALTER TABLE `students`
   ADD KEY `group_id` (`group_id`) USING BTREE;
 
 --
--- Индексы таблицы `teachers`
---
-ALTER TABLE `teachers`
-  ADD PRIMARY KEY (`teacher_id`),
-  ADD UNIQUE KEY `teacher_login` (`teacher_login`);
-
---
--- Индексы таблицы `type_of_score`
---
-ALTER TABLE `type_of_score`
-  ADD PRIMARY KEY (`tos_id`),
-  ADD UNIQUE KEY `tos_name` (`tos_name`);
-
---
 -- AUTO_INCREMENT для сохранённых таблиц
 --
 
@@ -370,6 +467,24 @@ ALTER TABLE `type_of_score`
 --
 ALTER TABLE `absenteeismes`
   MODIFY `absenteeismes_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT для таблицы `additional_educations`
+--
+ALTER TABLE `additional_educations`
+  MODIFY `ae_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT для таблицы `courators`
+--
+ALTER TABLE `courators`
+  MODIFY `courator_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT для таблицы `courses`
+--
+ALTER TABLE `courses`
+  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `deductions`
@@ -390,10 +505,28 @@ ALTER TABLE `documents`
   MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT для таблицы `grade_sheet`
+-- AUTO_INCREMENT для таблицы `duty_schedule`
 --
-ALTER TABLE `grade_sheet`
-  MODIFY `gs_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `duty_schedule`
+  MODIFY `ds_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT для таблицы `events`
+--
+ALTER TABLE `events`
+  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT для таблицы `event_types`
+--
+ALTER TABLE `event_types`
+  MODIFY `event_type_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT для таблицы `feed`
+--
+ALTER TABLE `feed`
+  MODIFY `feed_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `groups`
@@ -402,10 +535,16 @@ ALTER TABLE `groups`
   MODIFY `group_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT для таблицы `offsite_events`
+-- AUTO_INCREMENT для таблицы `individual_works`
 --
-ALTER TABLE `offsite_events`
-  MODIFY `oe_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `individual_works`
+  MODIFY `iw_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT для таблицы `individual_work_types`
+--
+ALTER TABLE `individual_work_types`
+  MODIFY `iw_type_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `parents`
@@ -426,6 +565,12 @@ ALTER TABLE `portfolio`
   MODIFY `portfolio_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT для таблицы `reports`
+--
+ALTER TABLE `reports`
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT для таблицы `spetialities`
 --
 ALTER TABLE `spetialities`
@@ -438,18 +583,6 @@ ALTER TABLE `students`
   MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT для таблицы `teachers`
---
-ALTER TABLE `teachers`
-  MODIFY `teacher_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT для таблицы `type_of_score`
---
-ALTER TABLE `type_of_score`
-  MODIFY `tos_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- Ограничения внешнего ключа сохраненных таблиц
 --
 
@@ -460,16 +593,22 @@ ALTER TABLE `absenteeismes`
   ADD CONSTRAINT `absenteeismes_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Ограничения внешнего ключа таблицы `additional_educations`
+--
+ALTER TABLE `additional_educations`
+  ADD CONSTRAINT `additional_educations_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `courses`
+--
+ALTER TABLE `courses`
+  ADD CONSTRAINT `courses_ibfk_1` FOREIGN KEY (`ae_id`) REFERENCES `additional_educations` (`ae_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Ограничения внешнего ключа таблицы `deductions`
 --
 ALTER TABLE `deductions`
   ADD CONSTRAINT `deductions_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Ограничения внешнего ключа таблицы `desciplines`
---
-ALTER TABLE `desciplines`
-  ADD CONSTRAINT `desciplines_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`teacher_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `documents`
@@ -478,26 +617,38 @@ ALTER TABLE `documents`
   ADD CONSTRAINT `documents_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Ограничения внешнего ключа таблицы `grade_sheet`
+-- Ограничения внешнего ключа таблицы `duty_schedule`
 --
-ALTER TABLE `grade_sheet`
-  ADD CONSTRAINT `grade_sheet_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `grade_sheet_ibfk_2` FOREIGN KEY (`tos_id`) REFERENCES `type_of_score` (`tos_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `grade_sheet_ibfk_3` FOREIGN KEY (`descipline_id`) REFERENCES `desciplines` (`descipline_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `duty_schedule`
+  ADD CONSTRAINT `duty_schedule_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `events`
+--
+ALTER TABLE `events`
+  ADD CONSTRAINT `events_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `events_ibfk_2` FOREIGN KEY (`event_type_id`) REFERENCES `event_types` (`event_type_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `feed`
+--
+ALTER TABLE `feed`
+  ADD CONSTRAINT `feed_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `groups`
 --
 ALTER TABLE `groups`
-  ADD CONSTRAINT `groups_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`teacher_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `groups_ibfk_1` FOREIGN KEY (`curator_id`) REFERENCES `courators` (`courator_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `groups_ibfk_2` FOREIGN KEY (`spetiality_id`) REFERENCES `spetialities` (`spetiality_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `groups_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Ограничения внешнего ключа таблицы `offsite_events`
+-- Ограничения внешнего ключа таблицы `individual_works`
 --
-ALTER TABLE `offsite_events`
-  ADD CONSTRAINT `offsite_events_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `individual_works`
+  ADD CONSTRAINT `individual_works_ibfk_1` FOREIGN KEY (`iw_type_id`) REFERENCES `individual_work_types` (`iw_type_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `individual_works_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `parents`
@@ -516,6 +667,13 @@ ALTER TABLE `passports`
 --
 ALTER TABLE `portfolio`
   ADD CONSTRAINT `portfolio_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `reports`
+--
+ALTER TABLE `reports`
+  ADD CONSTRAINT `reports_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `reports_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `students`
