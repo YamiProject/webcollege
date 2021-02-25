@@ -86,6 +86,7 @@ class ServerUser{
 }
 //Экземпляр класса
 var serverUser = new ServerUser();
+//Конвейер обработки
 //Проверка на существование сессии
 app.use((req,res,next)=>{
     if(typeof req.session.user=='undefined')
@@ -94,11 +95,12 @@ app.use((req,res,next)=>{
 });
 //Создание проверочной сессии
 app.use((req,res,next) =>{
-    serverUser.setUser(1,1,"courator","12345",'Киселёва','Светлана', 'Владимировна','89166666666','./img/profile_avatars/c_1.png',1);
+    serverUser.setUser(1,"courator","12345",'Киселёва','Светлана', 'Владимировна','89166666666','./img/profile_avatars/c_1.png',1);
     req.session.user="@courator/1/2";
-    app.set('views', `./pages/${serverUser.getUserState()[2]}`);
+    app.set('views', `./pages/${serverUser.getUserState()[1]}`);
     next();
 });
+//Express GET-запросы
 //Главная страница приложения
 app.get('/welcomepage', (req,res)=>{
     app.set('views', "./pages");
@@ -114,67 +116,24 @@ app.get('/', (req,res)=>{
         res.redirect('/welcomepage');
     else{
         console.log("dadad");
-        app.set('views', `./pages/${serverUser.getUserState()[2]}`);
+        app.set('views', `./pages/${serverUser.getUserState()[1]}`);
         res.redirect("/mainpage");}
 });
-//Авторизация
-app.post('/authorisation', urlencodedParser, (req,res)=>{
-    var connect = connect_db();
-    var login = `${req.body.login}`.replace(/\'|\"|\s|\`/gi,'');
-    var password = `${req.body.password}`.replace(/\'|\"|\s|\`/gi,'');
-    if(login.slice(0,1)=="@")
-        connect.query(`SELECT courator_id,courator_sur_name,courator_name,courator_mid_name,courator_photo FROM curators WHERE curator_login='${login}' AND curator_password='${password}'`, (err,data)=>{
-            if(err) throw err;
-            if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],"courator", `${data[0]}courator${data[0]}`,data[1],data[2],data[3],data[4]);
-                req.session.user=`@courator/${data[0]}`;
-                server.setUserGroup(serverUser.createQuery(`SELECT group_id FROM groups a inner join courators b on a.courator_id=b.courator_id WHERE a.courator_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW() ORDER BY group_id DESC LIMIT 1`));
-                connect.end();
-                res.end("Succsess");}
-            else{
-                connect.end();
-                res.end("nExist");}
-        });
-    else if(login.slice(0,1)=="$")
-        connect.query(`SELECT tutor_id,tutor_sur_name,tutor_name,tutor_mid_name,tutor_photo FROM tutors WHERE tutor_login='${login}' AND tutor_password='${password}'`, (err,data)=>{
-            if(err) throw err;
-            if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],"tutor", `${data[0]}tutor${data[0]}`,data[1],data[2],data[3],data[4]);
-                req.session.user=`$tutor/${data[0]}`;
-                server.setUserGroup(serverUser.createQuery(`SELECT group_id FROM groups a inner join tutor b on a.tutor_id=b.tutor_id WHERE a.tutor_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW()`));
-                connect.end();
-                res.end("Succsess");}
-            else{
-                connect.end();
-                res.end("nExist");}
-        });
-    else
-        connect.query(`SELECT student_id,student_sur_name,student_name,student_mid_name,student_photo,group_id FROM students WHERE student_login='${login}' AND student_password='${password}'`, (err,data)=>{
-            if(err) throw err;
-            if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],"student", `${damta[0]}student${data[0]}`,data[1],data[2],data[3],data[4]);
-                server.setUserGroup(data[5]);
-                req.session.user=`#student/${data[0]}`;
-                connect.end();
-                res.end("Succsess");}
-            else{
-                connect.end();
-                res.end("nExist");}
-        });
-})
 //Общие страницы
 app.get("/mainpage",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
-        res.render("index",{username: `${serverUser.getUserData()[0]} ${serverUser.getUserData()[1]} ${serverUser.getUserData()[2]}`});}
+        res.render("index",{username: `${serverUser.getUserData()[0]} ${serverUser.getUserData()[1]} ${serverUser.getUserData()[2]}`, role:serverUser.getUserState()[1]});}
 });
 //
 app.get("/profile",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
-        res.render("profile");}
+        let userData = serverUser.createQuery(`SELECT * \ 
+        FROM ${serverUser.getUserState()[1]}s WHERE ${serverUser.getUserState()[1]}_id=${serverUser.getUserState()[0]}`)
+        res.render("profile",{userData:userData});}
 })
 //
 app.get("/options",(req,res)=>{
@@ -184,82 +143,90 @@ app.get("/options",(req,res)=>{
         res.render("options");}
 });
 //Страницы куратора
+//Лента
 app.get("/feed",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
-        res.render("c_feed");}
+        let posts = serverUser.createQuery(`SELECT feed_id, feed_data,feed_text \
+        FROM feed WHERE group_id=${serverUser.getUserGroups()}`);
+        res.render("c_feed",{posts:posts});}
 });
-//
+//Страница группы
 app.get("/mygroup",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
-        res.render("c_mygroup");}
+        let studentsList = serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman \
+        FROM students WHERE group_id=${serverUser.getUserGroups()}`); 
+        res.render("c_mygroup",{studentsList:studentsList});}
 });
-//
+//Страница студента
 app.get("/student/:id",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
+        let student = serverUser.createQuery(`SELECT * FROM student`)
+        console.log(parseInt(JSON.stringify(req.params.id).replace(/\"/gi,'')));
         res.render("c_student");}
 });
+//Страница информации о студенте
 app.get("/student/:id/info",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_student_info");}
 });
-//
+//Страница достижений студента
 app.get("/student/:id/portfolio",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_student_portfolio");}
 });
-//
+//Страница ДО/ДПО студента
 app.get("/student/:id/additionaleducation",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_student_additionaleducation");}
 });
-//
+//Страница посещаемости студента
 app.get("/student/:id/attendance",(res,req)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_student_attendance");}
 });
-//
+//Страница мероприятий
 app.get("/mygroupevents",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_mygroupevents");}
 });
-//
+//Страница родительских собраний
 app.get("/mygroupevents/parentingmeetings",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_parentingmeetings");}
 });
-//
+//Страница классных часов
 app.get("/mygroupevents/classhours",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_classhours");}
 });
-//
+//Страница выездных мероприятий
 app.get("/mygroupevents/offsite",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_offsite");}
 });
-//
+//Страница индвидуальной работы
 app.get("/mygroupindividualwork",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
@@ -273,36 +240,36 @@ app.get("/mygroupindividualwork/accounting",(req,res)=>{
     else{
         res.render("c_mygroupindividualwork_accounting");}
 });
-//
+//Страница совета по прафилактике
 app.get("/mygroupindividualwork/preventionadvice",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_mygroupindividualwork_preventionadvice");}
 });
-//
+//Страница работы социального психолога
 app.get("/mygroupindividualwork/socialpsychologisthelp",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_mygroupindividualwork_socialpsychologisthelp");}
 });
-//
+//Страница докладных на группу
 app.get("/mygroupindividualwork/reports",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_mygroupindividualwork_reports");}
 });
-//
+//Страница-галерея
 app.get("/mygroupgallery",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("c_mygroupgallery");}
 });
-//
 //Страницы студента
+//Страница достижений
 app.get("/portfolio",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
@@ -310,20 +277,21 @@ app.get("/portfolio",(req,res)=>{
         res.render("s_portfolio");}
 });
 //Страницы тьютора
+//Список групп
 app.get("/grouplist",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("t_grouplist");}
 });
-//
+//Страница группы
 app.get("/group/:id",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
         res.render("t_grouplist");}
 });
-//
+//Страница студента
 app.get("/group/:id/student/:id",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
@@ -337,6 +305,55 @@ app.get("/logout",(req,res)=>{
     delete req.session.user;
     res.redirect("/");
 })
+//Express POST-запросы
+//Авторизация
+app.post('/authorisation', urlencodedParser, (req,res)=>{
+    var connect = connect_db();
+    var login = `${req.body.login}`.replace(/\'|\"|\s|\`/gi,'');
+    var password = `${req.body.password}`.replace(/\'|\"|\s|\`/gi,'');
+    if(login.slice(0,1)=="@")
+        connect.query(`SELECT courator_id,courator_sur_name,courator_name,courator_mid_name,courator_photo \ 
+        FROM curators WHERE curator_login='${login}' AND curator_password='${password}'`, (err,data)=>{
+            if(err) throw err;
+            if(typeof data[0]!=='undefined'){
+                serverUser.setUser(data[0],"courator", `${data[0]}courator${data[0]}`,data[1],data[2],data[3],data[4]);
+                req.session.user=`@courator/${data[0]}`;
+                server.setUserGroup(serverUser.createQuery(`SELECT group_id FROM groups a inner join courators b on a.courator_id=b.courator_id WHERE a.courator_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW() ORDER BY group_id DESC LIMIT 1`));
+                connect.end();
+                res.end("Succsess");}
+            else{
+                connect.end();
+                res.end("nExist");}
+        });
+    else if(login.slice(0,1)=="$")
+        connect.query(`SELECT tutor_id,tutor_sur_name,tutor_name,tutor_mid_name,tutor_photo \ 
+        FROM tutors WHERE tutor_login='${login}' AND tutor_password='${password}'`, (err,data)=>{
+            if(err) throw err;
+            if(typeof data[0]!=='undefined'){
+                serverUser.setUser(data[0],"tutor", `${data[0]}tutor${data[0]}`,data[1],data[2],data[3],data[4]);
+                req.session.user=`$tutor/${data[0]}`;
+                server.setUserGroup(serverUser.createQuery(`SELECT group_id FROM groups a inner join tutor b on a.tutor_id=b.tutor_id WHERE a.tutor_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW()`));
+                connect.end();
+                res.end("Succsess");}
+            else{
+                connect.end();
+                res.end("nExist");}
+        });
+    else
+        connect.query(`SELECT student_id,student_sur_name,student_name,student_mid_name,student_photo,group_id \ 
+        FROM students WHERE student_login='${login}' AND student_password='${password}'`, (err,data)=>{
+            if(err) throw err;
+            if(typeof data[0]!=='undefined'){
+                serverUser.setUser(data[0],"student", `${damta[0]}student${data[0]}`,data[1],data[2],data[3],data[4]);
+                server.setUserGroup(data[5]);
+                req.session.user=`#student/${data[0]}`;
+                connect.end();
+                res.end("Succsess");}
+            else{
+                connect.end();
+                res.end("nExist");}
+        });
+});
 //Обработка ошибок
 app.get("/accsesserror",(req,res)=>{
     res.render("accsesserror");
