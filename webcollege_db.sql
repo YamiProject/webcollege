@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Фев 24 2021 г., 20:00
+-- Время создания: Фев 25 2021 г., 12:29
 -- Версия сервера: 10.3.22-MariaDB
 -- Версия PHP: 7.1.33
 
@@ -64,7 +64,6 @@ CREATE TABLE `courators` (
   `courator_birth_date` date NOT NULL,
   `courator_login` varchar(300) NOT NULL,
   `courator_password` varchar(300) NOT NULL,
-  `courator_accs_lvl` tinyint(1) NOT NULL,
   `courator_photo` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -180,6 +179,7 @@ CREATE TABLE `feed` (
 CREATE TABLE `groups` (
   `group_id` int(11) NOT NULL,
   `curator_id` int(11) NOT NULL,
+  `tutor_id` int(11) NOT NULL,
   `department_id` int(11) NOT NULL,
   `spetiality_id` int(11) NOT NULL,
   `group_beg_education_date` date NOT NULL,
@@ -279,8 +279,21 @@ CREATE TABLE `reports` (
 
 CREATE TABLE `spetialities` (
   `spetiality_id` int(11) NOT NULL,
+  `spetiality_profession_id` int(11) NOT NULL,
   `spetiality_full_name` varchar(200) NOT NULL,
-  `spetiality_abbreviated` varchar(20) NOT NULL,
+  `spetiality_abbreviated` varchar(100) NOT NULL,
+  `spetiality_profession` varchar(200) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `spetiality_professions`
+--
+
+CREATE TABLE `spetiality_professions` (
+  `spetiality_profession_id` int(11) NOT NULL,
+  `spetiality_full_name` varchar(200) NOT NULL,
   `spetiality_profession` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -304,6 +317,24 @@ CREATE TABLE `students` (
   `student_headman` tinyint(1) NOT NULL,
   `student_login` varchar(300) NOT NULL,
   `student_password` varchar(300) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `tutors`
+--
+
+CREATE TABLE `tutors` (
+  `tutor_id` int(11) NOT NULL,
+  `tutor_sur_name` varchar(200) NOT NULL,
+  `tutor_name` varchar(200) NOT NULL,
+  `tutor_mid_name` varchar(200) DEFAULT NULL,
+  `tutor_number` varchar(13) NOT NULL,
+  `tutor_birth_date` date NOT NULL,
+  `tutor_login` varchar(300) NOT NULL,
+  `tutor_password` varchar(300) NOT NULL,
+  `tutor_photo` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -397,7 +428,8 @@ ALTER TABLE `groups`
   ADD PRIMARY KEY (`group_id`) USING BTREE,
   ADD KEY `teacher_id` (`curator_id`),
   ADD KEY `department_id` (`department_id`),
-  ADD KEY `id_spetiality` (`spetiality_id`);
+  ADD KEY `id_spetiality` (`spetiality_id`),
+  ADD KEY `tutor_id` (`tutor_id`);
 
 --
 -- Индексы таблицы `individual_works`
@@ -448,7 +480,14 @@ ALTER TABLE `reports`
 -- Индексы таблицы `spetialities`
 --
 ALTER TABLE `spetialities`
-  ADD PRIMARY KEY (`spetiality_id`);
+  ADD PRIMARY KEY (`spetiality_id`),
+  ADD KEY `spetiality_profession_id` (`spetiality_profession_id`);
+
+--
+-- Индексы таблицы `spetiality_professions`
+--
+ALTER TABLE `spetiality_professions`
+  ADD PRIMARY KEY (`spetiality_profession_id`);
 
 --
 -- Индексы таблицы `students`
@@ -457,6 +496,13 @@ ALTER TABLE `students`
   ADD PRIMARY KEY (`student_id`),
   ADD UNIQUE KEY `student_login` (`student_login`),
   ADD KEY `group_id` (`group_id`) USING BTREE;
+
+--
+-- Индексы таблицы `tutors`
+--
+ALTER TABLE `tutors`
+  ADD PRIMARY KEY (`tutor_id`),
+  ADD UNIQUE KEY `teacher_login` (`tutor_login`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
@@ -583,6 +629,12 @@ ALTER TABLE `students`
   MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT для таблицы `tutors`
+--
+ALTER TABLE `tutors`
+  MODIFY `tutor_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- Ограничения внешнего ключа сохраненных таблиц
 --
 
@@ -641,7 +693,8 @@ ALTER TABLE `feed`
 ALTER TABLE `groups`
   ADD CONSTRAINT `groups_ibfk_1` FOREIGN KEY (`curator_id`) REFERENCES `courators` (`courator_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `groups_ibfk_2` FOREIGN KEY (`spetiality_id`) REFERENCES `spetialities` (`spetiality_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `groups_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `groups_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `groups_ibfk_4` FOREIGN KEY (`tutor_id`) REFERENCES `tutors` (`tutor_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `individual_works`
@@ -674,6 +727,12 @@ ALTER TABLE `portfolio`
 ALTER TABLE `reports`
   ADD CONSTRAINT `reports_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `reports_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `spetialities`
+--
+ALTER TABLE `spetialities`
+  ADD CONSTRAINT `spetialities_ibfk_1` FOREIGN KEY (`spetiality_profession_id`) REFERENCES `spetiality_professions` (`spetiality_profession_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `students`

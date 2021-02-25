@@ -15,11 +15,14 @@ function connect_db_promise(){return mysql_promise.createConnection({host:'local
 const hbs=require('hbs');
 app.set('view engine','hbs');
 hbs.registerPartials('./pages/templates');
-hbs.registerHelper('equal',(first,second)=>{
-    return first==second?true:false;
+hbs.registerHelper('equal',(val1,val2,options)=>{
+    return (val1==val2)?options.fn(this):options.inverse(this);
 });
-hbs.registerHelper('define', val=>{
-    return typeof val!=='undefined'?true:false;
+hbs.registerHelper('define', (val,options)=>{
+    return typeof val!=='undefined'?options.fn(this):options.inverse(this);
+});
+hbs.registerHelper('datenormalise', val=>{
+    return val;
 });
 //Класс пользователя серверной части
 class ServerUser{

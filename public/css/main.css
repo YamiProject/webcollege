@@ -2,6 +2,9 @@
 html, body{
 height: 100%;
 }
+header{
+background-color: rgb(28, 25, 70);
+}
 a{
     text-decoration: none;
     color: white;
@@ -47,25 +50,58 @@ a{
 /*Sidebar*/
 #sidebar{
     width: 330px;
+    box-shadow: 2px 0 10px rgb(20, 16, 68);
+    z-index: 9;
+    overflow: hidden;
 }
 #sidebar_menu{
-    background-color: rgb(47, 30, 80);
+    background-color: rgb(20, 16, 68);
     left: 0;
     right: 0;
 }
-#sidebar_menu>div{
-    margin: 0;
-    padding: 0;
+.sidebar-user-block{
+    border-bottom: 1px solid white;
 }
 #sidebar_menu .avatar_img{
     width: 200px;
     height: 200px;
+    box-shadow: 2px 2px 20px rgb(20, 16, 68);
 }
-
-/*Main*/
-.main{
-    background-color: blue;
+#sidebar_menu .user-text-name{
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif ;
+    font-size: 16pt;
+    font-weight: 800;
+}
+#sidebar_menu button{
+    color: white;
+    border-top: white;
+    border-bottom: white;
+    border-radius: 0;
+}
+#sidebar_menu button:hover{
+    background-color: rgb(38, 31, 114);
+    transform: scale(1.2);
+}
+#sidebar_menu .logo{
+    width: 250px;
+    height: 250px;
+}
+.close-button{
     position: absolute;
     left: 330px;
-    width: calc(100% - 315px);
+    top: 10px;
+    background-color: rgb(20, 16, 68);
+    z-index: 8;
+    height: 160px;
+    width: 40px;
+    border-top-right-radius: 250px;
+    border-bottom-right-radius: 250px;
+    border-left: 2px solid white;
+}
+/*Main*/
+.main{
+    background-color: white;
+    position: absolute;
+    left: 345px;
+    width: calc(100% - 330px);
 }
