@@ -1,29 +1,25 @@
-<header class="col-12 h-25vh px-0 m-0">
+<header class="col-12 row justify-content-center align-items-end h-20vh px-0 m-0">
     <!--Панель навигации-->
-    <nav>
-        <!--Навигационная панель куратора-->
-        {{#equal role 'courator'}}
+    <nav class="col-12" id="navbar">
         <ul>
-            <li><a href="">Главная</a></li>
-            <li><a href="">Моя группа</a></li>
-            <li><a href="">Главная</a></li>
-            <li><a href="">Главная</a></li>
-            <li><a href="">Главная</a></li>
-            <li><a href="">Главная</a></li>
-        </ul>
-        {{/equal}}
-        <!--Навигационная панель тьютора-->
-        {{#equal role 'tutor'}}
-        <ul>
-            <li><a href="">aaa</a></li>
-        </ul>
-        {{/equal}}
-        <!--Навигационная панель студента-->
-        {{#equal role 'student'}}
-        <ul>
-            <li><a href="">www</a></li>
-        </ul>
-        {{/equal}}
-        
+            <!--Навигационная панель куратора-->
+            {{#equal role 'courator'}}
+                <li><a href="" class="col-12">Главная</a></li>
+                <li><a href="" class="col-12">Лента</a></li>
+                <li><a href="" class="col-12">Моя группа</a></li>
+                <li><a href="" class="col-12">Мероприятия</a></li>
+                <li><a href="" class="col-12">Индивидуальная работа</a></li>
+                <li><a href="" class="col-12">Галерея</a></li>
+                <li><a href="" class="col-12">Посещаемость</a></li>
+            {{/equal}}
+            <!--Навигационная панель тьютора-->
+            {{#equal role 'tutor'}}
+                <li><a href="">aaa</a></li>
+            {{/equal}}
+            <!--Навигационная панель студента-->
+            {{#equal role 'student'}}
+                <li><a href="">www</a></li>
+            {{/equal}}
+        </ul>    
     </nav>
 </header>

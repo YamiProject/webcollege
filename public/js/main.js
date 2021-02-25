@@ -1,13 +1,10 @@
 $(document).ready(function(){
-    class ClientCommon{
+    class UserClient{
 
     }
-    class ClientCourator extends ClientCommon{
-
-    }
-    class ClientStudent extends ClientCommon{
-
-    }
-    var client_courator = new ClientCourator();
-    var client_student = new ClientStudent();
-})
+    $("#navbar a").hover(function(){
+        $(this).animate({paddingBottom:"+=20px"},200);
+    },function(){
+        $(this).animate({paddingBottom:"-=20px"},200);
+    });
+});

@@ -51,9 +51,6 @@ class ServerUser{
     setUserGroup(group_id){
         this.user_group=group_id;
     }
-    setUserTOKEN(){
-
-    }
     //Функции
     getUserState(){
         return [this.user_id,this.user_role];
@@ -135,7 +132,8 @@ app.get("/profile",(req,res)=>{
         res.redirect("/")
     else{
         let userData = serverUser.createQuery(`SELECT * \ 
-        FROM ${serverUser.getUserState()[1]}s WHERE ${serverUser.getUserState()[1]}_id=${serverUser.getUserState()[0]}`)
+        FROM ${serverUser.getUserState()[1]}s \
+        WHERE ${serverUser.getUserState()[1]}_id=${serverUser.getUserState()[0]}`)
         res.render("profile",{userData:userData});}
 })
 //
@@ -152,7 +150,8 @@ app.get("/feed",(req,res)=>{
         res.redirect("/")
     else{
         let posts = serverUser.createQuery(`SELECT feed_id, feed_data,feed_text \
-        FROM feed WHERE group_id=${serverUser.getUserGroups()}`);
+        FROM feed \
+        WHERE group_id=${serverUser.getUserGroups()}`);
         res.render("c_feed",{posts:posts});}
 });
 //Страница группы
@@ -161,7 +160,8 @@ app.get("/mygroup",(req,res)=>{
         res.redirect("/")
     else{
         let studentsList = serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman \
-        FROM students WHERE group_id=${serverUser.getUserGroups()}`); 
+        FROM students \
+        WHERE group_id=${serverUser.getUserGroups()}`); 
         res.render("c_mygroup",{studentsList:studentsList});}
 });
 //Страница студента
@@ -316,12 +316,15 @@ app.post('/authorisation', urlencodedParser, (req,res)=>{
     var password = `${req.body.password}`.replace(/\'|\"|\s|\`/gi,'');
     if(login.slice(0,1)=="@")
         connect.query(`SELECT courator_id,courator_sur_name,courator_name,courator_mid_name,courator_photo \ 
-        FROM curators WHERE curator_login='${login}' AND curator_password='${password}'`, (err,data)=>{
+        FROM curators \
+        WHERE curator_login='${login}' AND curator_password='${password}'`, (err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
                 serverUser.setUser(data[0],"courator", `${data[0]}courator${data[0]}`,data[1],data[2],data[3],data[4]);
                 req.session.user=`@courator/${data[0]}`;
-                server.setUserGroup(serverUser.createQuery(`SELECT group_id FROM groups a inner join courators b on a.courator_id=b.courator_id WHERE a.courator_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW() ORDER BY group_id DESC LIMIT 1`));
+                server.setUserGroup(serverUser.createQuery(`SELECT group_id \
+                FROM groups a INNER JOIN courators b ON a.courator_id=b.courator_id \
+                WHERE a.courator_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW() ORDER BY group_id DESC LIMIT 1`));
                 connect.end();
                 res.end("Succsess");}
             else{
@@ -330,12 +333,15 @@ app.post('/authorisation', urlencodedParser, (req,res)=>{
         });
     else if(login.slice(0,1)=="$")
         connect.query(`SELECT tutor_id,tutor_sur_name,tutor_name,tutor_mid_name,tutor_photo \ 
-        FROM tutors WHERE tutor_login='${login}' AND tutor_password='${password}'`, (err,data)=>{
+        FROM tutors \
+        WHERE tutor_login='${login}' AND tutor_password='${password}'`, (err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
                 serverUser.setUser(data[0],"tutor", `${data[0]}tutor${data[0]}`,data[1],data[2],data[3],data[4]);
                 req.session.user=`$tutor/${data[0]}`;
-                server.setUserGroup(serverUser.createQuery(`SELECT group_id FROM groups a inner join tutor b on a.tutor_id=b.tutor_id WHERE a.tutor_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW()`));
+                server.setUserGroup(serverUser.createQuery(`SELECT group_id \
+                FROM groups a INNER JOIN tutor b ON a.tutor_id=b.tutor_id \
+                WHERE a.tutor_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW()`));
                 connect.end();
                 res.end("Succsess");}
             else{
@@ -344,7 +350,8 @@ app.post('/authorisation', urlencodedParser, (req,res)=>{
         });
     else
         connect.query(`SELECT student_id,student_sur_name,student_name,student_mid_name,student_photo,group_id \ 
-        FROM students WHERE student_login='${login}' AND student_password='${password}'`, (err,data)=>{
+        FROM students \
+        WHERE student_login='${login}' AND student_password='${password}'`, (err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
                 serverUser.setUser(data[0],"student", `${damta[0]}student${data[0]}`,data[1],data[2],data[3],data[4]);
