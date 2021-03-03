@@ -10,12 +10,25 @@ const bodyParser=require('body-parser');
 const urlencodedParser=bodyParser.urlencoded({extended: false});
 //Модуль Express-Сессия
 const session=require('express-session');
-app.use(session({secret:'SupaPassword',proxy:true,resave:true,saveUninitialized:true,cookie:{maxAge: 86000*60*60*60}}));
+app.use(session({
+    secret:'SupaPassword',
+    proxy:true,
+    resave:true,
+    saveUninitialized:true,
+    cookie:{maxAge: 86000*60*60*60}
+    }));
 //Модуль Cookit-парсер
 const cookieParser=require('cookie-parser');
 //Модуль для работы с базой данных MySql2/Promise
 const mysql_promise=require('mysql2/promise');
-function connect_db_promise(){return mysql_promise.createConnection({host:'localhost',user:'root',password:'',database:'webcollege_db',multipleStatements:true})};
+function connect_db_promise(){
+    return mysql_promise.createConnection({
+        host:'localhost',
+        user:'root',
+        password:'',
+        database:'webcollege_db',
+        multipleStatements:true
+    })};
 //Шаблонизатор Handlebars
 const hbs=require('hbs');
 app.set('view engine','hbs');
@@ -158,7 +171,11 @@ app.get("/mainpage",(req,res)=>{
         res.redirect("/");
     }
     else{
-        res.render("index",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1], role:serverUser.getUserState()[1]});
+        res.render("index",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1], 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Страница профиля пользователя
@@ -169,7 +186,11 @@ app.get("/profile",async(req,res)=>{
         let userData=await serverUser.createQuery(`SELECT * \ 
         FROM ${serverUser.getUserState()[1]}s \
         WHERE ${serverUser.getUserState()[1]}_id=${serverUser.getUserState()[0]}`);
-        res.render("profile",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],userData:userData});
+        res.render("profile",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            userData:userData
+        });
     }
 });
 //Страница опций
@@ -178,7 +199,10 @@ app.get("/options",(req,res)=>{
         res.redirect("/");
     }
     else{
-        res.render("options",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1]});
+        res.render("options",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Страницы куратора
@@ -191,7 +215,11 @@ app.get("/feed",async(req,res)=>{
         let posts=await serverUser.createQuery(`SELECT feed_id, feed_data,feed_text \
         FROM feed \
         WHERE group_id=${serverUser.getUserGroups()}`);
-        res.render("c_feed",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],posts:posts});
+        res.render("c_feed",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            posts:posts
+        });
     }
 });
 //Страница группы
@@ -206,7 +234,12 @@ app.get("/mygroup",async(req,res)=>{
         SELECT spetiality_abbreviated \
         FROM spetialities a inner join groups b on a.spetiality_id=b.spetiality_id \
         WHERE b.group_id=${serverUser.getUserGroups()} LIMIT 1`);
-        res.render("c_mygroup",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],title:group[1][0].spetiality_abbreviated,studentsList:group[0]});
+        res.render("c_mygroup",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            title:group[1][0].spetiality_abbreviated,
+            studentsList:group[0]
+        });
     }
 });
 //Страница студента
@@ -221,7 +254,12 @@ app.get("/student/:id",async(req,res)=>{
         let student=await serverUser.createQuery(`SELECT * \
         FROM students \ 
         WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')}`);
-        res.render("c_student",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],title:`${student[0].student_sur_name} ${student[0].student_name} ${student[0].student_mid_name}`,student:student});
+        res.render("c_student",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            title:`${student[0].student_sur_name} ${student[0].student_name} ${student[0].student_mid_name}`,
+            student:student
+        });
     }
 });
 //Страница информации о студенте
@@ -242,7 +280,14 @@ app.get("/student/:id/documents",async(req,res)=>{
         SELECT * \ 
         FROM documents \
         WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};`)
-        res.render("c_student_documents",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],title:`${studentsDocumentary[0][0].student_sur_name} ${studentsDocumentary[0][0].student_name} ${studentsDocumentary[0][0].student_mid_name}`,student:studentsDocumentary[0][0],passport:studentsDocumentary[1],documents:studentsDocumentary[2]});
+        res.render("c_student_documents",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            title:`${studentsDocumentary[0][0].student_sur_name} ${studentsDocumentary[0][0].student_name} ${studentsDocumentary[0][0].student_mid_name}`,
+            student:studentsDocumentary[0][0],
+            passport:studentsDocumentary[1],
+            documents:studentsDocumentary[2]
+        });
     }
 });
 //Страница достижений студента
@@ -260,7 +305,13 @@ app.get("/student/:id/portfolio",async(req,res)=>{
         SELECT * \
         FROM portfolio \
         WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};`)
-        res.render("c_student_portfolio",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],title:`${studentPortfolio[0][0].student_sur_name} ${studentPortfolio[0][0].student_name} ${studentPortfolio[0][0].student_mid_name}`,student:studentPortfolio[0][0],portfolio:studentPortfolio[1]});
+        res.render("c_student_portfolio",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            title:`${studentPortfolio[0][0].student_sur_name} ${studentPortfolio[0][0].student_name} ${studentPortfolio[0][0].student_mid_name}`,
+            student:studentPortfolio[0][0],
+            portfolio:studentPortfolio[1]
+        });
     }
 });
 //Страница ДО/ДПО студента
@@ -278,7 +329,13 @@ app.get("/student/:id/additionaleducation",async(req,res)=>{
         SELECT * \
         FROM additional_educations a INNER JOIN courses b ON a.ae_id=b.ae_id \
         WHERE b.student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')}`);
-        res.render("c_student_additionaleducation",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],title:`${studentAdditionEducation[0][0].student_sur_name} ${studentAdditionEducation[0][0].student_name} ${studentAdditionEducation[0][0].student_mid_name}`,student:studentAdditionEducation[0][0],portfolio:studentAdditionEducation[1]});
+        res.render("c_student_additionaleducation",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            title:`${studentAdditionEducation[0][0].student_sur_name} ${studentAdditionEducation[0][0].student_name} ${studentAdditionEducation[0][0].student_mid_name}`,
+            student:studentAdditionEducation[0][0],
+            portfolio:studentAdditionEducation[1]
+        });
     }
 });
 //Страница посещаемости студента
@@ -296,7 +353,11 @@ app.get("/student/:id/attendance",async(res,req)=>{
         SELECT * \
         FROM absenteeismes \
         WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};`);
-        res.render("c_student_attendance",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],title:`${studentAttendance[0][0].student_sur_name} ${studentAttendance[0][0].student_name} ${studentAttendance[0][0].student_mid_name}`,student:studentAttendance[0][0],absenteeismes:studentAttendance[1]});
+        res.render("c_student_attendance",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            title:`${studentAttendance[0][0].student_sur_name} ${studentAttendance[0][0].student_name} ${studentAttendance[0][0].student_mid_name}`,
+            student:studentAttendance[0][0],absenteeismes:studentAttendance[1]});
     }
 });
 //Страница мероприятий
@@ -305,7 +366,10 @@ app.get("/mygroupevents",(req,res)=>{
         res.redirect("/");
     }
     else{
-        res.render("c_mygroupevents",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1]});
+        res.render("c_mygroupevents",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Страница родительских собраний
@@ -317,7 +381,10 @@ app.get("/mygroupevents/parentingmeetings",async(req,res)=>{
         let meetingsList=await serverUser.createQuery(`SELECT * \
         FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
         WHERE event_type_name LIKE 'Родительское собрание'`);
-        res.render("c_parentingmeetings",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1]});
+        res.render("c_parentingmeetings",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Страница классных часов
@@ -329,7 +396,11 @@ app.get("/mygroupevents/classhours",async(req,res)=>{
         let classHoursList=await serverUser.createQuery(`SELECT * \
         FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
         WHERE event_type_name LIKE 'Классный час'`);
-        res.render("c_classhours",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],classHoursList:classHoursList});
+        res.render("c_classhours",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            classHoursList:classHoursList
+        });
     }
 });
 //Страница выездных мероприятий
@@ -341,7 +412,10 @@ app.get("/mygroupevents/offsite",async(req,res)=>{
         let offsiteEventsList=await serverUser.createQuery(`SELECT * \
         FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
         WHERE event_type_name LIKE 'Выездное мироприятие'`);
-        res.render("c_offsite",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1]});
+        res.render("c_offsite",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Страница индвидуальной работы
@@ -350,7 +424,10 @@ app.get("/mygroupindividualwork",(req,res)=>{
         res.redirect("/");
     }
     else{
-        res.render("c_mygroupindividualwork",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1]});
+        res.render("c_mygroupindividualwork",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Страница студентов, состоящих на учёте
@@ -363,7 +440,11 @@ app.get("/mygroupindividualwork/accounting",async(req,res)=>{
         FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
         INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
         WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Учёт'`);
-        res.render("c_mygroupindividualwork_accounting",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],iwAccountingList:iwAccountingList});
+        res.render("c_mygroupindividualwork_accounting",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            iwAccountingList:iwAccountingList
+        });
     }
 });
 //Страница студентов приглашённых(на)/посетивших совет по прафилактике
@@ -376,7 +457,11 @@ app.get("/mygroupindividualwork/preventionadvice",async(req,res)=>{
         FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
         INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
         WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Совет по профилактике'`);
-        res.render("c_mygroupindividualwork_preventionadvice",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],iwPreventionAdviceList:iwPreventionAdviceList});
+        res.render("c_mygroupindividualwork_preventionadvice",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            iwPreventionAdviceList:iwPreventionAdviceList
+        });
     }
 });
 //Страница работы социального психолога
@@ -389,7 +474,11 @@ app.get("/mygroupindividualwork/socialpsychologisthelp",async(req,res)=>{
         FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
         INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
         WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Совет по профилактике'`);
-        res.render("c_mygroupindividualwork_socialpsychologisthelp",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],iwSPHelpList:iwSPHelpList});
+        res.render("c_mygroupindividualwork_socialpsychologisthelp",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            iwSPHelpList:iwSPHelpList
+        });
     }
 });
 //Страница докладных на группу
@@ -399,7 +488,10 @@ app.get("/mygroupindividualwork/reports",async(req,res)=>{
     }
     else{
         let reports=await serverUser.createQuery(``);
-        res.render("c_mygroupindividualwork_reports",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1]});
+        res.render("c_mygroupindividualwork_reports",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Страница посещаемости
@@ -408,7 +500,10 @@ app.get("/attendance",(req,res)=>{
         res.redirect("/");
     }
     else{
-        res.render("c_attendance",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1]});
+        res.render("c_attendance",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Страница-галерея
@@ -419,7 +514,11 @@ app.get("/mygroupgallery",async(req,res)=>{
     else{
         let gallery=await serverUser.createQuery(`SELECT event_archive \
         FROM events a INNER JOIN groups b ON a.group_id=b.group_id`);
-        res.render("c_mygroupgallery",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],gallery:gallery});
+        res.render("c_mygroupgallery",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1],
+            gallery:gallery
+        });
     }
 });
 //Страницы студента
@@ -429,7 +528,10 @@ app.get("/portfolio",async(req,res)=>{
         res.redirect("/");
     }
     else{
-        res.render("s_portfolio",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1],});
+        res.render("s_portfolio",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Страницы тьютора
@@ -439,7 +541,10 @@ app.get("/grouplist",async(req,res)=>{
         res.redirect("/");
     }
     else{
-        res.render("t_grouplist");
+        res.render("t_grouplist",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Страница группы
@@ -448,7 +553,10 @@ app.get("/group/:id",async(req,res)=>{
         res.redirect("/");
     }
     else{
-        res.render("t_grouplist",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1]});
+        res.render("t_grouplist",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Страница студента
@@ -457,7 +565,10 @@ app.get("/group/:id/student/:id",async(req,res)=>{
         res.redirect("/");
     }
     else{
-        res.render("t_grouplist",{username:serverUser.getUserFullName(), role:serverUser.getUserState()[1]});
+        res.render("t_grouplist",{
+            username:serverUser.getUserFullName(), 
+            role:serverUser.getUserState()[1]
+        });
     }
 });
 //Выход
