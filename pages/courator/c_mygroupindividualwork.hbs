@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Kostin Vladislav">
-    <meta name="description" content="">
-    <meta name="keywords" content="">
-    <title></title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="author" content="Kostin Vladislav"/>
+    <meta name="description" content="Страница содержит перекрсётные ссылки на типы индвидуальной работы."/>
+    <title>Индвидуальная работа</title>
+    {{>linkscripts}}
 </head>
 <body>
-    
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            {{>sidebar}}
+            <div class="row h-100 main">
+                <div class="row justify-content-center col-12 mx-0 px-0">
+                    {{>header}}
+                    <div class="col-12 justify-content-center align-items-center row mx-0 px-0 app-window c-individual-work">
+                        
+                    </div>
+                    {{>footer}}
+                </div>
+            </div>
+        </div>
+    </div>  
 </body>
 </html>
