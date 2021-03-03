@@ -17,11 +17,19 @@
                 <div class="row justify-content-center col-12 mx-0 px-0">
                     {{>header}}
                     <div class="col-12 justify-content-center align-items-center row mx-0 px-0 app-window studentlist">
-                        {{#each studentsList}}
-                            <div class="col-5 m-2 h-20vh rounded-circle" style="background-color: yellowgreen;">
-                                
-                            </div>
-                        {{/each}}
+                        <div>
+                            <h1></h1>
+                            <hr>
+                            
+                        </div>
+                        <div>
+                            {{#each studentsList}}
+                                <div class="col-5 m-2 h-20vh rounded-circle" style="background-color: yellowgreen;">
+                                    <img src="" alt="">
+                                    <span></span>
+                                </div>
+                            {{/each}}
+                        </div>
                     </div>
                     {{>footer}}
                 </div>
