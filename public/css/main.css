@@ -1,12 +1,11 @@
 /*Standarts*/
-*{
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif !important;
-}
 html, body{
-height: 100%;
+    height: 100%;
 }
 header{
-background-color: rgb(28, 25, 70);
+    background-color: #3bb78f; 
+    background-image: linear-gradient(315deg, 
+    #4d3f9b 0%, #19033d 74%); 
 }
 a{
     text-decoration: none;
@@ -15,6 +14,10 @@ a{
 a:hover{
     text-decoration: none;
 }
+.textlogo{
+    font-family: Harlow Solid;
+    text-shadow: 1px 1px 5px blueviolet;
+}
 /*Computer-version*/
 @media screen and (min-width:768px){
     /*Heights*/
@@ -22,13 +25,13 @@ a:hover{
         height: 5vh;
     }
     .h-10vh{
-        height: 10vh;
+        min-height: 10vh;
     }
     .h-15vh{
         height: 15vh;
     }
     .h-20vh{
-        height: 20vh;
+        min-height: 20vh;
     }
     .h-25vh{
         height: 25vh;
@@ -60,34 +63,48 @@ a:hover{
         overflow-x: initial;
         overflow-y: hidden;
         border-bottom: 5px solid rgb(28, 25, 70);
+        margin: 0;
+        padding-bottom: -40px;
+        box-shadow: 0px 1px 10px rgb(35, 23, 77);
     }
     #navbar ul{
         display: flex;
         flex: row wrap;
+        justify-content: space-around;
         align-items: flex-end;
-        width: 100%;
+        padding:0;
+        height: auto;
+        flex-wrap: wrap;
+        margin-bottom: -20px;
+        min-height: 100px;
+    }
+    #navbar li{
+        text-decoration: none;
+        list-style: none;
+        display: block;
     }
     #navbar a{
         display: block;
         background-color: white;
-        width: 196px !important;
-        padding: 15px 10px 20px 10px;
-        margin: -30px 10px;
+        color:  rgb(28, 25, 70);
         text-align: center;
-        border-top-left-radius: 20px;
-        border-top-right-radius: 20px;
         font-size: 10pt;
-        font-family: Arial, Helvetica, sans-serif;
-        color: rgb(28, 25, 70);
-        box-shadow: 5px 5px 45px rgb(69, 65, 131);
+        width: 200px !important;
+        margin: 10px;
+        padding: 10px 10px 30px 10px;
+        border-top-right-radius: 40px;
+        border-top-left-radius: 40px;
+        box-shadow: 2px 2px 45px rgb(89, 85, 148);
     }
 
     /*Sidebar*/
     #sidebar{
         width: 330px;
+        height: 100%;
         box-shadow: 2px 0 10px rgb(20, 16, 68);
         z-index: 9;
         overflow: hidden;
+        position: fixed;
     }
     #sidebar_menu{
         background-color: rgb(20, 16, 68);
@@ -127,11 +144,22 @@ a:hover{
         top: 10px;
         background-color: rgb(20, 16, 68);
         z-index: 8;
-        height: 160px;
-        width: 40px;
-        border-top-right-radius: 250px;
-        border-bottom-right-radius: 250px;
+        height: 80px;
+        width: 80px;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border: 1px solid rgb(40, 23, 83);
         border-left: 2px solid white;
+    }
+    .close-button label{
+        color: white;
+        writing-mode: vertical-lr;
+        text-orientation: mixed;
+        text-align: center;
+        height: 100%;
+        padding-left: 8px;
+        font-family: 'Times New Roman', Times, serif;
+        cursor: pointer;
     }
     /*Main*/
     .main{
@@ -141,8 +169,8 @@ a:hover{
         width: calc(100% - 330px);
     }
     .app-window{
-        overflow: auto;
-        height: 80vh;
+        overflow-y: auto;
+        min-height: 75vh;
     }
     .mainfeed,.mainmygroup,.mainevents{
         border-radius: 40px;
@@ -152,6 +180,10 @@ a:hover{
     }
     .mainfeed:hover,.mainmygroup:hover,.mainevents:hover{
         transform: scale(1.05); 
+    }
+    /*Mygroup*/
+    .studentlist{
+        
     }
 }
 /*Smartphone-version*/

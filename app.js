@@ -8,10 +8,8 @@ const urlencodedParser=bodyParser.urlencoded({extended: false});
 const session=require('express-session');
 app.use(session({secret:'SupaPassword',proxy:true,resave:true,saveUninitialized:true,cookie:{maxAge: 86000*60*60*60}}));
 const cookieParser=require('cookie-parser');
-const mysql=require('mysql2');
-function connect_db(){return mysql.createConnection({host:'localhost', user:'root',password:'',database:'webcollege_db'})};
-const mysql_promise=require('promise-mysql');
-function connect_db_promise(){return mysql_promise.createConnection({host:'localhost',user:'root',password:'',database:'',multipleStatements:true})};
+const mysql_promise=require('mysql2/promise');
+function connect_db_promise(){return mysql_promise.createConnection({host:'localhost',user:'root',password:'',database:'webcollege_db',multipleStatements:true})};
 const hbs=require('hbs');
 app.set('view engine','hbs');
 hbs.registerPartials('./pages/templates');
@@ -67,12 +65,11 @@ class ServerUser{
     addPortfolio(){
 
     }
-    createQuery(query){
-        var connect=connect_db();
-        connect.query(`${query}`, (err,data)=>{
-            if(err) throw err;
-            return data;
-        });
+    async createQuery(query){
+        var connect = await connect_db_promise();
+        var [rows, fields] = await connect.query(query);
+        connect.end()
+        return rows;
     }
     clearData(){
         this.user_id="";
@@ -95,7 +92,8 @@ app.use((req,res,next)=>{
 });
 //Создание проверочной сессии
 app.use((req,res,next) =>{
-    serverUser.setUser(1,"courator","12345",'Киселёва','Светлана', 'Владимировна','89166666666','./img/profile_avatars/c_1.png',1);
+    serverUser.setUser(1,"courator","12345",'Киселёва','Светлана', 'Владимировна','89166666666','./img/profile_avatars/c_1.png');
+    serverUser.setUserGroup(1);
     req.session.user="@courator/1/2";
     app.set('views', `./pages/${serverUser.getUserState()[1]}`);
     next();
@@ -122,7 +120,7 @@ app.get('/', (req,res)=>{
 //Общие страницы
 app.get("/mainpage",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
-        res.redirect("/")
+        res.redirect("/");
     else{
         res.render("index",{username: `${serverUser.getUserData()[0]} ${serverUser.getUserData()[1]} ${serverUser.getUserData()[2]}`, role:serverUser.getUserState()[1]});}
 });
@@ -133,7 +131,7 @@ app.get("/profile",(req,res)=>{
     else{
         let userData = serverUser.createQuery(`SELECT * \ 
         FROM ${serverUser.getUserState()[1]}s \
-        WHERE ${serverUser.getUserState()[1]}_id=${serverUser.getUserState()[0]}`)
+        WHERE ${serverUser.getUserState()[1]}_id=${serverUser.getUserState()[0]}`);
         res.render("profile",{userData:userData});}
 })
 //
@@ -155,29 +153,40 @@ app.get("/feed",(req,res)=>{
         res.render("c_feed",{posts:posts});}
 });
 //Страница группы
-app.get("/mygroup",(req,res)=>{
+app.get("/mygroup",async(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
-        let studentsList = serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman \
-        FROM students \
-        WHERE group_id=${serverUser.getUserGroups()}`); 
-        res.render("c_mygroup",{studentsList:studentsList});}
+        let Query = await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman\
+        FROM students\
+        WHERE group_id=${serverUser.getUserGroups()};\ 
+        SELECT spetiality_abbreviated\
+        FROM spetialities a inner join groups b on a.spetiality_id=b.spetiality_id\
+        WHERE b.group_id=${serverUser.getUserGroups()} LIMIT 1`);
+        res.render("c_mygroup",{studentsList:Query[0],title:Query[1][0].spetiality_abbreviated});}
 });
 //Страница студента
 app.get("/student/:id",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
-        let student = serverUser.createQuery(`SELECT * FROM student`)
-        console.log(parseInt(JSON.stringify(req.params.id).replace(/\"/gi,'')));
-        res.render("c_student");}
+        let student = serverUser.createQuery(`SELECT * \
+        FROM students \ 
+        WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')}`);
+        if(serverUser.getUserGroups()==data[1])
+            res.render("c_student", {info:data});
+        else
+            res.redirect('/mygroup');
+    }
 });
 //Страница информации о студенте
-app.get("/student/:id/info",(req,res)=>{
+app.get("/student/:id/documents",(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none')
         res.redirect("/")
     else{
+        serverUser.createQuery(`;SELECT * \ 
+        FROM documents \
+        WHERE a.student_id`)
         res.render("c_student_info");}
 });
 //Страница достижений студента
