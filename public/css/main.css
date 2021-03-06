@@ -60,31 +60,32 @@ a:hover{
     }
     /*Header*/
     header{
-        overflow-x: initial;
         overflow-y: hidden;
         border-bottom: 5px solid rgb(28, 25, 70);
         margin: 0;
-        padding-bottom: -40px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
         box-shadow: 0px 1px 10px rgb(35, 23, 77);
+        height: 180px;
     }
     #navbar ul{
-        display: flex;
-        flex: row wrap;
-        justify-content: space-around;
-        align-items: flex-end;
         padding:0;
         height: auto;
-        flex-wrap: wrap;
         margin-bottom: -20px;
-        min-height: 100px;
+        min-height: 50px;
+        width: 100%;
+        text-align: center;
+        vertical-align: bottom;
+        white-space: nowrap;
     }
     #navbar li{
         text-decoration: none;
         list-style: none;
-        display: block;
+        display: inline-block;
     }
     #navbar a{
-        display: block;
+        display: inline-block;
         background-color: white;
         color:  rgb(28, 25, 70);
         text-align: center;
@@ -171,6 +172,8 @@ a:hover{
     .app-window{
         overflow-y: auto;
         min-height: 75vh;
+        background-color: rgb(72, 72, 153);
+        padding: 97px;
     }
     .mainfeed,.mainmygroup,.mainevents{
         border-radius: 40px;
@@ -181,9 +184,10 @@ a:hover{
     .mainfeed:hover,.mainmygroup:hover,.mainevents:hover{
         transform: scale(1.05); 
     }
-    /*Mygroup*/
+    /*c_attendance*/
     .studentlist{
         
     }
+
 }
 /*Smartphone-version*/

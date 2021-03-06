@@ -40,6 +40,9 @@ hbs.registerHelper('equal',(val1,val2,options)=>{
 hbs.registerHelper('define', (val,options)=>{
     return typeof val!=='undefined'?options.fn(this):options.inverse(this);
 });
+hbs.registerHelper('notnull', (val,options)=>{
+    return val!==null?options.fn(this):options.inverse(this);
+});
 hbs.registerHelper('datenormalise', val=>{
     return val;
 });
