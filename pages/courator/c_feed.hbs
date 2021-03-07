@@ -16,7 +16,9 @@
                 <div class="row justify-content-center col-12 mx-0 px-0">
                     {{>header}}
                     <div class="col-12 justify-content-center align-items-center row mx-0 px-0 app-window c-feed-page">
-                        
+                        {{#each posts}}
+                            <div>{{#datenormalise feed_data}}{{/datenormalise}}</div>
+                        {{/each}}
                     </div>
                     {{>footer}}
                 </div>

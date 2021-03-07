@@ -40,11 +40,15 @@ hbs.registerHelper('equal',(val1,val2,options)=>{
 hbs.registerHelper('define', (val,options)=>{
     return typeof val!=='undefined'?options.fn(this):options.inverse(this);
 });
+hbs.registerHelper('imgnotnull', (val,sex)=>{
+    return val!==null?val:sex=="М"?"/img/male.png":"/img/girl.png";
+});
 hbs.registerHelper('notnull', (val,options)=>{
     return val!==null?options.fn(this):options.inverse(this);
 });
 hbs.registerHelper('datenormalise', val=>{
-    return val;
+    let date = new Date(val);
+    return `${date.getDay()<10?"0"+date.getDay():date.getDay()}-${date.getMonth()<10?"0"+date.getMonth():date.getMonth()}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
 });
 //Класс пользователя серверной части
 class ServerUser{
@@ -215,9 +219,10 @@ app.get("/feed",async(req,res)=>{
         res.redirect("/");
     }
     else{
-        let posts=await serverUser.createQuery(`SELECT feed_id, feed_data,feed_text \
+        let posts=await serverUser.createQuery(`SELECT feed_id,feed_data,feed_text \
         FROM feed \
-        WHERE group_id=${serverUser.getUserGroups()}`);
+        WHERE group_id=${serverUser.getUserGroups()} \
+        ORDER BY feed_data DESC`);
         res.render("c_feed",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
@@ -231,9 +236,10 @@ app.get("/mygroup",async(req,res)=>{
         res.redirect("/");
     }
     else{
-        let group = await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman \
+        let group = await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
         FROM students \
-        WHERE group_id=${serverUser.getUserGroups()};\ 
+        WHERE group_id=${serverUser.getUserGroups()}\
+        ORDER BY student_sur_name;\ 
         SELECT spetiality_abbreviated \
         FROM spetialities a inner join groups b on a.spetiality_id=b.spetiality_id \
         WHERE b.group_id=${serverUser.getUserGroups()} LIMIT 1`);
