@@ -17,8 +17,9 @@ app.use(session({
     saveUninitialized:true,
     cookie:{maxAge: 86000*60*60*60}
     }));
-//Модуль Cookit-парсер
+//Модуль Cookie-парсер
 const cookieParser=require('cookie-parser');
+app.use(cookieParser());
 //Модуль для работы с базой данных MySql2/Promise
 const mysql_promise=require('mysql2/promise');
 function connect_db_promise(){
@@ -41,10 +42,13 @@ hbs.registerHelper('define', (val,options)=>{
     return typeof val!=='undefined'?options.fn(this):options.inverse(this);
 });
 hbs.registerHelper('imgnotnull', (val,sex)=>{
-    return val!==null?val:sex=="М"?"/img/male.png":"/img/girl.png";
+    return val!==null?sex=="М"?"/img/male.png":"/img/girl.png":val;
 });
 hbs.registerHelper('notnull', (val,options)=>{
     return val!==null?options.fn(this):options.inverse(this);
+});
+hbs.registerHelper('arrayNotNull', (val,options)=>{
+    return val.length>0?options.fn(this):options.inverse(this);
 });
 hbs.registerHelper('datenormalise', val=>{
     let date = new Date(val);
@@ -63,6 +67,7 @@ class ServerUser{
         this.user_middlename;
         this.user_photo;
         this.user_group;
+        this.options;
     }
     //Методы
     setUser(id,role,token,surname,name,middlename,photo){
@@ -73,6 +78,7 @@ class ServerUser{
         this.user_name=name;
         this.user_middlename=middlename;
         this.user_photo=photo;
+        this.options='true;default;default';
     }
     setUserGroup(group_id){
         this.user_group=group_id;
@@ -97,8 +103,8 @@ class ServerUser{
 
     }
     async createQuery(query){
-        var connect = await connect_db_promise();
-        var [rows, fields] = await connect.query(query);
+        var connect=await connect_db_promise();
+        var [rows, fields]=await connect.query(query);
         connect.end()
         return rows;
     }
@@ -106,7 +112,9 @@ class ServerUser{
         let result;
         switch(type){
             case "s":
-                result=await this.createQuery(`SELECT group_id FROM students WHERE student_id=${id} LIMIT 1`);
+                result=await this.createQuery(`SELECT group_id \ 
+                FROM students \ 
+                WHERE student_id=${id} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) LIMIT 1`);
                 break;
             case "g":
                 result=-1;
@@ -181,7 +189,6 @@ app.get("/mainpage",(req,res)=>{
         res.render("index",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1], 
-            role:serverUser.getUserState()[1]
         });
     }
 });
@@ -194,6 +201,7 @@ app.get("/profile",async(req,res)=>{
         FROM ${serverUser.getUserState()[1]}s \
         WHERE ${serverUser.getUserState()[1]}_id=${serverUser.getUserState()[0]}`);
         res.render("profile",{
+            title:serverUser.getUserFullName(),
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
             userData:userData
@@ -219,14 +227,17 @@ app.get("/feed",async(req,res)=>{
         res.redirect("/");
     }
     else{
-        let posts=await serverUser.createQuery(`SELECT feed_id,feed_data,feed_text \
+        let feed=await serverUser.createQuery(`SELECT feed_id,feed_data,feed_text \
         FROM feed \
         WHERE group_id=${serverUser.getUserGroups()} \
-        ORDER BY feed_data DESC`);
+        ORDER BY feed_data DESC;
+        SELECT * \ 
+        FROM feed_type`);
         res.render("c_feed",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
-            posts:posts
+            posts:feed[0],
+            feed_type:feed[1]
         });
     }
 });
@@ -236,9 +247,9 @@ app.get("/mygroup",async(req,res)=>{
         res.redirect("/");
     }
     else{
-        let group = await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
+        let group=await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
         FROM students \
-        WHERE group_id=${serverUser.getUserGroups()}\
+        WHERE group_id=${serverUser.getUserGroups()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
         ORDER BY student_sur_name;\ 
         SELECT spetiality_abbreviated \
         FROM spetialities a inner join groups b on a.spetiality_id=b.spetiality_id \
@@ -496,22 +507,30 @@ app.get("/mygroupindividualwork/reports",async(req,res)=>{
         res.redirect("/");
     }
     else{
-        let reports=await serverUser.createQuery(``);
+        let reports=await serverUser.createQuery(`SELECT * \ 
+        FROM reports \
+        WHERE group_id=${serverUser.getUserGroups()}`);
         res.render("c_mygroupindividualwork_reports",{
             username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1]
+            role:serverUser.getUserState()[1],
+            reports:reports
         });
     }
 });
 //Страница посещаемости
-app.get("/attendance",(req,res)=>{
+app.get("/attendance",async(req,res)=>{
     if(typeof req.session.user=='undefined' || req.session.user=='none'){
         res.redirect("/");
     }
     else{
+        let studentList=await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
+        FROM students \
+        WHERE group_id=${serverUser.getUserGroups()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
+        ORDER BY student_sur_name`);
         res.render("c_attendance",{
             username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1]
+            role:serverUser.getUserState()[1],
+            studentList:studentList
         });
     }
 });
@@ -583,6 +602,7 @@ app.get("/group/:id/student/:id",async(req,res)=>{
 //Выход
 app.get("/logout",(req,res)=>{
     serverUser.clearData();
+    
     app.set('views', "./pages");
     delete req.session.user;
     res.redirect("/");

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
     <meta name="description" content="Содержит основную информацию о группе куратора, а также список студентов."/>
-    <title>Группа:{{title}}</title>
+    <title>Группа: {{title}}</title>
     {{>linkscripts}}
 </head>
 <body>
@@ -17,19 +17,18 @@
                     {{>header}}
                     <div class="col-12 row align-items-start justify-content-center mx-0 px-0 app-window c-my-group">
                         <div class="col-12 h-10vh">
-                            <h1 class="display-4 col-12 text-right text-white">Моя группа</h1>
+                            <h1 class="display-4 col-12 text-right">Моя группа</h1>
                             <hr>
                         </div>
-                        <div class="col-12 h-75 row justify-content-center align-items-start">
+                        <div class="col-12 h-75 row justify-content-center align-items-start align-content-start">
                             {{#each studentsList}}
-                                <div class="col-5 m-2 h-10vh rounded" style="background-color: rgb(63, 21, 92);">
-                                    <img src="{{#imgnotnull student_photo}}" alt="">
+                                <div class="col-xl-5 col-12 m-2 h-10vh rounded" style="background-color: rgb(63, 21, 92);">
+                                    <img src="{{#imgnotnull student_photo}}{{/imgnotnull}}" alt="">
                                     <span></span>
                                 </div>
                             {{/each}}
                         </div>
                     </div>
-                    {{>footer}}
                 </div>
             </div>
         </div>

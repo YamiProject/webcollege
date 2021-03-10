@@ -6,3 +6,12 @@
 <script src="/js/bootstrap.min.js"></script>
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/main.js"></script>
+{{#equal role 'courator'}}
+<script src="/js/c_main.js"></script>
+{{/equal}}
+{{#equal role 'tutor'}}
+<script src="/js/t_main.js"></script>
+{{/equal}}
+{{#equal role 'student'}}
+<script src="/js/s_main.js"></script>
+{{/equal}}

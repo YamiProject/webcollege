@@ -15,12 +15,39 @@
             <div class="row h-100 main">
                 <div class="row justify-content-center col-12 mx-0 px-0">
                     {{>header}}
-                    <div class="col-12 justify-content-center align-items-center row mx-0 px-0 app-window c-feed-page">
-                        {{#each posts}}
-                            <div>{{#datenormalise feed_data}}{{/datenormalise}}</div>
-                        {{/each}}
+                    <div class="col-12 justify-content-center align-items-center align-content-start row mx-0 px-0 app-window c-feed-page">
+                        <div class="col-12 h-10vh">
+                            <h1 class="display-4 col-12 text-right">Лента</h1>
+                            <hr>
+                        </div>
+                        <div class="col-12 h-50vh row justify-content-center align-content-start align-items-start pt-5">
+                            {{#arrayNotNull posts}}
+                                {{#each posts}}
+                                    <div class="col-10 bg-light h-30vh">{{#datenormalise feed_data}}{{/datenormalise}}
+
+                                    </div>
+                                {{/each}}
+                            {{else}}
+                                <h2 class="display-4 h-40vh pt-5">Лента пуста!</h2>
+                            {{/arrayNotNull}}
+                        </div>
+                        <div class="col-12 row justify-content-center align-items-center position-fixed h-30vh align-self-end">
+                            <div class="col-12 h-15vh row justify-content-center">
+                                <form class="row col-12 justify-content-center">
+                                    <input type="text" name="" id="" class="col-3 form-control m-1" placeholder="Заголовок...">
+                                    <select type="text" class="col-3 form-control m-1" placeholder="Тема">
+                                        <option value="" hidden>Тема...</option>
+                                    {{#each feed_type}}
+                                        <option value="{{feed_type_id}}">{{feed_type_name}}</option>
+                                    {{/each}}
+                                    </select>
+                                    <input type="file" placeholder="" class="col-3 form-control-file m-1 text-light">
+                                    <textarea name="" id="" class="col-8 m-2"></textarea>
+                                    <button class="col-1 m-2 rounded btn btn-danger">+</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    {{>footer}}
                 </div>
             </div>
         </div>
