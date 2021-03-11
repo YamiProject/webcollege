@@ -7,6 +7,7 @@
     <meta name="description" content="Содержит список объявлений, создаваемых куратором или старостой группы."/>
     <title>Лента</title>
     {{>linkscripts}}
+    {{>styles}}
 </head>
 <body>
     <div class="container-fluid h-100">
@@ -23,7 +24,7 @@
                         <div class="col-12 h-50vh row justify-content-center align-content-start align-items-start pt-5">
                             {{#arrayNotNull posts}}
                                 {{#each posts}}
-                                    <div class="col-10 bg-light h-30vh">{{#datenormalise feed_data}}{{/datenormalise}}
+                                    <div class="col-10 bg-light h-30vh">{{feed_id}}{{#datenormalise feed_data}}{{/datenormalise}}
 
                                     </div>
                                 {{/each}}

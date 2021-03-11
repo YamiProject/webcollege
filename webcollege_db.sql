@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Мар 11 2021 г., 10:44
+-- Время создания: Мар 11 2021 г., 13:52
 -- Версия сервера: 10.3.22-MariaDB
 -- Версия PHP: 7.1.33
 
@@ -211,7 +211,8 @@ CREATE TABLE `feed` (
 --
 
 INSERT INTO `feed` (`feed_id`, `group_id`, `feed_data`, `feed_header`, `feed_type`, `feed_theme`, `feed_file`, `feed_text`) VALUES
-(2, 1, '2021-03-12 22:15:52', 'DDSDSDSD', 1, 'DSDSDSD', '/file/img1.png', 'dsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddd');
+(2, 1, '2021-03-12 22:15:52', 'DDSDSDSD', 1, 'DSDSDSD', '/file/img1.png', 'dsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddddsadasfgsddddd'),
+(3, 1, '2021-03-09 11:40:25', 'asdad', 4, 'dawdadawdd', NULL, 'dadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQdadawdwageawgfQWGQ');
 
 -- --------------------------------------------------------
 
@@ -310,7 +311,7 @@ INSERT INTO `options` (`option_login`, `bg_color`, `bg_img`, `font_color`, `font
 ('@kiselova12', 'default', NULL, 'default', 'default', 'default', 1, 'default', 'default', 'default'),
 ('admin', 'default', NULL, 'default', 'default', 'default', 1, 'default', 'default', 'default'),
 ('qwer', 'default', NULL, 'default', 'default', 'default', 1, 'default', 'default', 'default'),
-('QWERYF', '', NULL, '', '', '', 0, '', '', '');
+('QWERYF', 'default', NULL, 'default', 'default', 'default', 1, 'default', 'default', 'default');
 
 -- --------------------------------------------------------
 
@@ -763,7 +764,7 @@ ALTER TABLE `event_types`
 -- AUTO_INCREMENT для таблицы `feed`
 --
 ALTER TABLE `feed`
-  MODIFY `feed_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `feed_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT для таблицы `feed_type`

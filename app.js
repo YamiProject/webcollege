@@ -67,21 +67,22 @@ class ServerUser{
         this.user_middlename;
         this.user_photo;
         this.user_group;
-        this.options;
+        this.user_options;
     }
     //Методы
-    setUser(id,role,token,surname,name,middlename,photo){
+    setUser(id,role,surname,name,middlename,photo){
         this.user_id=id;
         this.user_role=role;
-        this.user_token=token;
         this.user_surname=surname;
         this.user_name=name;
         this.user_middlename=middlename;
         this.user_photo=photo;
-        this.options='true;default;default';
     }
     setUserGroup(group_id){
         this.user_group=group_id;
+    }
+    setUserOptions(user_options){
+        this.user_options=user_options[0];
     }
     //Функции
     getUserState(){
@@ -96,8 +97,8 @@ class ServerUser{
     getUserGroups(){
         return this.user_group;
     }
-    getUserTOKEN(){
-        return this.user_token;
+    getUserOptions(){
+        return this.user_options;
     }
     addPortfolio(){
 
@@ -131,13 +132,14 @@ class ServerUser{
         }
     }
     clearData(){
-        this.user_id="";
-        this.user_role="";
-        this.user_surname="";
-        this.user_name="";
-        this.user_middlename="";
-        this.user_photo="";
-        this.user_group="";
+        this.user_id=null;
+        this.user_role=null;
+        this.user_surname=null;
+        this.user_name=null;
+        this.user_middlename=null;
+        this.user_photo=null;
+        this.user_group=null;
+        this.user_options=null;
     }
 }
 //Экземпляр класса
@@ -150,9 +152,10 @@ app.use((req,res,next)=>{
     next();
 });
 //Создание проверочной сессии
-app.use((req,res,next) =>{
-    serverUser.setUser(1,"courator","12345",'Киселёва','Светлана', 'Владимировна','89166666666','./img/profile_avatars/c_1.png');
-    serverUser.setUserGroup(1);
+app.use(async(req,res,next) =>{
+    await serverUser.setUser(1,"courator",'Киселёва','Светлана', 'Владимировна','89166666666','./img/profile_avatars/c_1.png');
+    await serverUser.setUserGroup(1);
+    await serverUser.setUserOptions(await serverUser.createQuery(`SELECT * FROM options WHERE option_login LIKE '@kiselova12' LIMIT 1`));
     req.session.user="@courator/1/2";
     app.set('views', `./pages/${serverUser.getUserState()[1]}`);
     next();
@@ -187,8 +190,9 @@ app.get("/mainpage",(req,res)=>{
     }
     else{
         res.render("index",{
-            username:serverUser.getUserFullName(), 
+            username:serverUser.getUserFullName(),
             role:serverUser.getUserState()[1], 
+            options:serverUser.getUserOptions()
         });
     }
 });
@@ -204,6 +208,7 @@ app.get("/profile",async(req,res)=>{
             title:serverUser.getUserFullName(),
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             userData:userData
         });
     }
@@ -216,7 +221,8 @@ app.get("/options",(req,res)=>{
     else{
         res.render("options",{
             username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1]
+            role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions()
         });
     }
 });
@@ -236,6 +242,7 @@ app.get("/feed",async(req,res)=>{
         res.render("c_feed",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             posts:feed[0],
             feed_type:feed[1]
         });
@@ -257,6 +264,7 @@ app.get("/mygroup",async(req,res)=>{
         res.render("c_mygroup",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             title:group[1][0].spetiality_abbreviated,
             studentsList:group[0]
         });
@@ -277,6 +285,7 @@ app.get("/student/:id",async(req,res)=>{
         res.render("c_student",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             title:`${student[0].student_sur_name} ${student[0].student_name} ${student[0].student_mid_name}`,
             student:student
         });
@@ -303,6 +312,7 @@ app.get("/student/:id/documents",async(req,res)=>{
         res.render("c_student_documents",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             title:`${studentsDocumentary[0][0].student_sur_name} ${studentsDocumentary[0][0].student_name} ${studentsDocumentary[0][0].student_mid_name}`,
             student:studentsDocumentary[0][0],
             passport:studentsDocumentary[1],
@@ -328,6 +338,7 @@ app.get("/student/:id/portfolio",async(req,res)=>{
         res.render("c_student_portfolio",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             title:`${studentPortfolio[0][0].student_sur_name} ${studentPortfolio[0][0].student_name} ${studentPortfolio[0][0].student_mid_name}`,
             student:studentPortfolio[0][0],
             portfolio:studentPortfolio[1]
@@ -352,6 +363,7 @@ app.get("/student/:id/additionaleducation",async(req,res)=>{
         res.render("c_student_additionaleducation",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             title:`${studentAdditionEducation[0][0].student_sur_name} ${studentAdditionEducation[0][0].student_name} ${studentAdditionEducation[0][0].student_mid_name}`,
             student:studentAdditionEducation[0][0],
             portfolio:studentAdditionEducation[1]
@@ -376,6 +388,7 @@ app.get("/student/:id/attendance",async(res,req)=>{
         res.render("c_student_attendance",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             title:`${studentAttendance[0][0].student_sur_name} ${studentAttendance[0][0].student_name} ${studentAttendance[0][0].student_mid_name}`,
             student:studentAttendance[0][0],absenteeismes:studentAttendance[1]});
     }
@@ -388,7 +401,8 @@ app.get("/mygroupevents",(req,res)=>{
     else{
         res.render("c_mygroupevents",{
             username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1]
+            role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions()
         });
     }
 });
@@ -403,7 +417,8 @@ app.get("/mygroupevents/parentingmeetings",async(req,res)=>{
         WHERE event_type_name LIKE 'Родительское собрание'`);
         res.render("c_parentingmeetings",{
             username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1]
+            role:serverUser.getUserState()[1],
+            options:serverUser.getUseOptions()
         });
     }
 });
@@ -419,6 +434,7 @@ app.get("/mygroupevents/classhours",async(req,res)=>{
         res.render("c_classhours",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             classHoursList:classHoursList
         });
     }
@@ -434,7 +450,8 @@ app.get("/mygroupevents/offsite",async(req,res)=>{
         WHERE event_type_name LIKE 'Выездное мироприятие'`);
         res.render("c_offsite",{
             username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1]
+            role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions()
         });
     }
 });
@@ -446,7 +463,8 @@ app.get("/mygroupindividualwork",(req,res)=>{
     else{
         res.render("c_mygroupindividualwork",{
             username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1]
+            role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions()
         });
     }
 });
@@ -463,6 +481,7 @@ app.get("/mygroupindividualwork/accounting",async(req,res)=>{
         res.render("c_mygroupindividualwork_accounting",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             iwAccountingList:iwAccountingList
         });
     }
@@ -480,6 +499,7 @@ app.get("/mygroupindividualwork/preventionadvice",async(req,res)=>{
         res.render("c_mygroupindividualwork_preventionadvice",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             iwPreventionAdviceList:iwPreventionAdviceList
         });
     }
@@ -497,6 +517,7 @@ app.get("/mygroupindividualwork/socialpsychologisthelp",async(req,res)=>{
         res.render("c_mygroupindividualwork_socialpsychologisthelp",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             iwSPHelpList:iwSPHelpList
         });
     }
@@ -513,6 +534,7 @@ app.get("/mygroupindividualwork/reports",async(req,res)=>{
         res.render("c_mygroupindividualwork_reports",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             reports:reports
         });
     }
@@ -530,6 +552,7 @@ app.get("/attendance",async(req,res)=>{
         res.render("c_attendance",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             studentList:studentList
         });
     }
@@ -545,6 +568,7 @@ app.get("/mygroupgallery",async(req,res)=>{
         res.render("c_mygroupgallery",{
             username:serverUser.getUserFullName(), 
             role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions(),
             gallery:gallery
         });
     }
@@ -558,7 +582,8 @@ app.get("/portfolio",async(req,res)=>{
     else{
         res.render("s_portfolio",{
             username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1]
+            role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions()
         });
     }
 });
@@ -571,7 +596,8 @@ app.get("/grouplist",async(req,res)=>{
     else{
         res.render("t_grouplist",{
             username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1]
+            role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions()
         });
     }
 });
@@ -583,7 +609,8 @@ app.get("/group/:id",async(req,res)=>{
     else{
         res.render("t_grouplist",{
             username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1]
+            role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions()
         });
     }
 });
@@ -595,7 +622,8 @@ app.get("/group/:id/student/:id",async(req,res)=>{
     else{
         res.render("t_grouplist",{
             username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1]
+            role:serverUser.getUserState()[1],
+            options:serverUser.getUserOptions()
         });
     }
 });
@@ -614,16 +642,17 @@ app.post('/authorisation',urlencodedParser,async(req,res)=>{
     var login = `${req.body.login}`.replace(/\'|\"|\s|\`/gi,'');
     var password = `${req.body.password}`.replace(/\'|\"|\s|\`/gi,'');
     if(login.slice(0,1)=="@"){
-        connect.query(`SELECT courator_id,courator_sur_name,courator_name,courator_mid_name,courator_photo\ 
+        connect.query(`SELECT courator_id,courator_sur_name,courator_name,courator_mid_name,courator_photo,courator_login \ 
         FROM curators\
-        WHERE curator_login='${login}' AND curator_password='${password}'`, (err,data)=>{
+        WHERE curator_login='${login}' AND curator_password='${password}'`, async(err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],"courator", `${data[0]}courator${data[0]}`,data[1],data[2],data[3],data[4]);
+                serverUser.setUser(data[0],"courator",data[1],data[2],data[3],data[4]);
                 req.session.user=`@courator/${data[0]}`;
-                server.setUserGroup(serverUser.createQuery(`SELECT group_id \
+                server.setUserGroup(await serverUser.createQuery(`SELECT group_id \
                 FROM groups a INNER JOIN courators b ON a.courator_id=b.courator_id \
                 WHERE a.courator_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW() ORDER BY group_id DESC LIMIT 1`));
+                serverUser.setUserOptions(await serverUser.createQuery(`SELECT * FROM options WHERE option_login LIKE ${data[5]}`));
                 connect.end();
                 res.end("Succsess");
             }
@@ -634,16 +663,17 @@ app.post('/authorisation',urlencodedParser,async(req,res)=>{
         });
     }
     else if(login.slice(0,1)=="$"){
-        connect.query(`SELECT tutor_id,tutor_sur_name,tutor_name,tutor_mid_name,tutor_photo \ 
+        connect.query(`SELECT tutor_id,tutor_sur_name,tutor_name,tutor_mid_name,tutor_photo,tutor_login \ 
         FROM tutors \
-        WHERE tutor_login='${login}' AND tutor_password='${password}'`, (err,data)=>{
+        WHERE tutor_login='${login}' AND tutor_password='${password}'`, async(err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],"tutor", `${data[0]}tutor${data[0]}`,data[1],data[2],data[3],data[4]);
+                serverUser.setUser(data[0],"tutor",data[1],data[2],data[3],data[4]);
                 req.session.user=`$tutor/${data[0]}`;
-                server.setUserGroup(serverUser.createQuery(`SELECT group_id \
+                server.setUserGroup(await serverUser.createQuery(`SELECT group_id \
                 FROM groups a INNER JOIN tutor b ON a.tutor_id=b.tutor_id \
                 WHERE a.tutor_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW()`));
+                serverUser.setUserOptions(await serverUser.createQuery(`SELECT * FROM options WHERE option_login LIKE ${data[5]}`));
                 connect.end();
                 res.end("Succsess");
             }
@@ -654,13 +684,14 @@ app.post('/authorisation',urlencodedParser,async(req,res)=>{
         });
     }
     else{
-        connect.query(`SELECT student_id,student_sur_name,student_name,student_mid_name,student_photo,group_id \ 
+        connect.query(`SELECT student_id,student_sur_name,student_name,student_mid_name,student_photo,group_id,student_login \ 
         FROM students \
-        WHERE student_login='${login}' AND student_password='${password}'`, (err,data)=>{
+        WHERE student_login='${login}' AND student_password='${password}'`, async(err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],"student", `${damta[0]}student${data[0]}`,data[1],data[2],data[3],data[4]);
+                serverUser.setUser(data[0],"student",data[1],data[2],data[3],data[4]);
                 server.setUserGroup(data[5]);
+                serverUser.setUserOptions(await serverUser.createQuery(`SELECT * FROM options WHERE option_login LIKE ${data[6]}`));
                 req.session.user=`#student/${data[0]}`;
                 connect.end();
                 res.end("Succsess");
