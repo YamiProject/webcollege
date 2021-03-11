@@ -22,15 +22,13 @@
                             <hr>
                         </div>
                         <div class="col-12 h-50vh row justify-content-center align-content-start align-items-start pt-5">
-                            {{#arrayNotNull posts}}
-                                {{#each posts}}
+                            {{#each posts}}
                                     <div class="col-10 bg-light h-30vh">{{feed_id}}{{#datenormalise feed_data}}{{/datenormalise}}
 
                                     </div>
-                                {{/each}}
                             {{else}}
                                 <h2 class="display-4 h-40vh pt-5">Лента пуста!</h2>
-                            {{/arrayNotNull}}
+                            {{/each}}
                         </div>
                         <div class="col-12 row justify-content-center align-items-center position-fixed h-30vh align-self-end">
                             <div class="col-12 h-15vh row justify-content-center">

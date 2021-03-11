@@ -21,10 +21,10 @@
                             <h1 class="display-4 col-12 text-right">Галерея</h1>
                             <hr>
                         </div>
-                        {{#arrayNotNull gallery}}
+                        {{#each gallery}}
                         {{else}}
                             <h2 class="text-center display-4">Галерея пуста</h2>
-                        {{/arrayNotNull}}
+                        {{/each}}
                     </div>
                 </div>
             </div>

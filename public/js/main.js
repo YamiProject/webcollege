@@ -3,9 +3,9 @@ $(document).ready(function(){
 
     }
     $("#navbar a").hover(function(){
-        $(this).animate({paddingTop:"+=20px"},200);
+        $(this).animate({paddingTop:"+=10px"},200);
     },function(){
-        $(this).animate({paddingTop:"-=20px"},200);
+        $(this).animate({paddingTop:"-=10px"},200);
     });
      /*
     $(".close-button").hover(function(){

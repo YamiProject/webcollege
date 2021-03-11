@@ -47,9 +47,6 @@ hbs.registerHelper('imgnotnull', (val,sex)=>{
 hbs.registerHelper('notnull', (val,options)=>{
     return val!==null?options.fn(this):options.inverse(this);
 });
-hbs.registerHelper('arrayNotNull', (val,options)=>{
-    return val.length>0?options.fn(this):options.inverse(this);
-});
 hbs.registerHelper('datenormalise', val=>{
     let date = new Date(val);
     return `${date.getDay()<10?"0"+date.getDay():date.getDay()}-${date.getMonth()<10?"0"+date.getMonth():date.getMonth()}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
@@ -153,7 +150,7 @@ app.use((req,res,next)=>{
 });
 //Создание проверочной сессии
 app.use(async(req,res,next) =>{
-    await serverUser.setUser(1,"courator",'Киселёва','Светлана', 'Владимировна','89166666666','./img/profile_avatars/c_1.png');
+    await serverUser.setUser(1,"courator",'Киселёва','Светлана', 'Владимировна','89166666666','/img/profile_avatars/c_1.png');
     await serverUser.setUserGroup(1);
     await serverUser.setUserOptions(await serverUser.createQuery(`SELECT * FROM options WHERE option_login LIKE '@kiselova12' LIMIT 1`));
     req.session.user="@courator/1/2";
@@ -233,7 +230,7 @@ app.get("/feed",async(req,res)=>{
         res.redirect("/");
     }
     else{
-        let feed=await serverUser.createQuery(`SELECT feed_id,feed_data,feed_text \
+        let feed=await serverUser.createQuery(`SELECT * \
         FROM feed \
         WHERE group_id=${serverUser.getUserGroups()} \
         ORDER BY feed_data DESC;
