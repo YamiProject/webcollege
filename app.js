@@ -142,12 +142,6 @@ class ServerUser{
 //Экземпляр класса
 var serverUser = new ServerUser();
 //Конвейер обработки
-//Проверка на существование сессии
-app.use((req,res,next)=>{
-    if(typeof req.session.user=='undefined')
-        req.session.user="none";
-    next();
-});
 //Создание проверочной сессии
 app.use(async(req,res,next) =>{
     await serverUser.setUser(1,"courator",'Киселёва','Светлана', 'Владимировна','89166666666','/img/profile_avatars/c_1.png');
@@ -157,11 +151,20 @@ app.use(async(req,res,next) =>{
     app.set('views', `./pages/${serverUser.getUserState()[1]}`);
     next();
 });
+//Проверка на существование сессии
+app.use((req,res,next)=>{
+    if(typeof req.session.user=='undefined'){
+        res.redirect("/welcomepage");
+    }
+    else{
+        next();
+    }
+});
 //Express GET-запросы
 //Главная страница приложения
 app.get('/welcomepage', (req,res)=>{
     app.set('views', "./pages");
-    if(typeof req.session.user!=='undefined' && req.session.user!=='none'){
+    if(typeof req.session.user!=='undefined'){
         res.redirect('/');
     }
     else{
@@ -171,7 +174,7 @@ app.get('/welcomepage', (req,res)=>{
 //Маршрутизация
 app.get('/', (req,res)=>{
     app.set('views', "./pages");
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
+    if(typeof req.session.user=='undefined'){
         res.redirect('/welcomepage');
     }
     else{
@@ -182,97 +185,75 @@ app.get('/', (req,res)=>{
 //Общие страницы
 //Главная страница веб-приложения
 app.get("/mainpage",(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        res.render("index",{
-            username:serverUser.getUserFullName(),
-            role:serverUser.getUserState()[1], 
-            options:serverUser.getUserOptions()
-        });
-    }
+    res.render("index",{
+        username:serverUser.getUserFullName(),
+        role:serverUser.getUserState()[1], 
+        options:serverUser.getUserOptions()
+    });
 });
 //Страница профиля пользователя
 app.get("/profile",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none')
-        res.redirect("/");
-    else{
-        let userData=await serverUser.createQuery(`SELECT * \ 
-        FROM ${serverUser.getUserState()[1]}s \
-        WHERE ${serverUser.getUserState()[1]}_id=${serverUser.getUserState()[0]}`);
-        res.render("profile",{
-            title:serverUser.getUserFullName(),
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions(),
-            userData:userData
-        });
-    }
+    let userData=await serverUser.createQuery(`SELECT * \ 
+    FROM ${serverUser.getUserState()[1]}s \
+    WHERE ${serverUser.getUserState()[1]}_id=${serverUser.getUserState()[0]}`);
+    res.render("profile",{
+        title:serverUser.getUserFullName(),
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions(),
+        userData:userData
+    });
 });
 //Страница опций
 app.get("/options",(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        res.render("options",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions()
-        });
-    }
+    res.render("options",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions()
+    });
 });
 //Страницы куратора
 //Лента
 app.get("/feed",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        let feed=await serverUser.createQuery(`SELECT * \
-        FROM feed \
-        WHERE group_id=${serverUser.getUserGroups()} \
-        ORDER BY feed_data DESC;
-        SELECT * \ 
-        FROM feed_type`);
-        res.render("c_feed",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions(),
-            posts:feed[0],
-            feed_type:feed[1]
-        });
-    }
+    let feed=await serverUser.createQuery(`SELECT * \
+    FROM feed a INNER JOIN feed_type b on a.feed_type=b.feed_type_id \
+    WHERE group_id=${serverUser.getUserGroups()} \
+    ORDER BY feed_data DESC;
+    SELECT * \ 
+    FROM feed_type`);
+    console.log(feed[0]);
+    res.render("c_feed",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions(),
+        posts:feed[0],
+        feed_type:feed[1]
+    });
 });
 //Страница группы
 app.get("/mygroup",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        let group=await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
-        FROM students \
-        WHERE group_id=${serverUser.getUserGroups()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
-        ORDER BY student_sur_name;\ 
-        SELECT spetiality_abbreviated \
-        FROM spetialities a inner join groups b on a.spetiality_id=b.spetiality_id \
-        WHERE b.group_id=${serverUser.getUserGroups()} LIMIT 1`);
-        res.render("c_mygroup",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions(),
-            title:group[1][0].spetiality_abbreviated,
-            studentsList:group[0]
-        });
-    }
+    let group=await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
+    FROM students \
+    WHERE group_id=${serverUser.getUserGroups()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
+    ORDER BY student_sur_name;\ 
+    SELECT spetiality_abbreviated \
+    FROM spetialities a inner join groups b on a.spetiality_id=b.spetiality_id \
+    WHERE b.group_id=${serverUser.getUserGroups()} LIMIT 1;
+    SELECT * \
+    FROM groups \
+    WHERE group_id=${serverUser.getUserGroups()}`);
+    res.render("c_mygroup",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions(),
+        title:group[1][0].spetiality_abbreviated,
+        studentsList:group[0],
+        groupInfo: group[2][0]
+    });
 });
 //Страница студента
 app.get("/student/:id",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
+    if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
         res.redirect("/accsesserror");
     }
     else{
@@ -290,10 +271,7 @@ app.get("/student/:id",async(req,res)=>{
 });
 //Страница информации о студенте
 app.get("/student/:id/documents",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
+    if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
         res.redirect("/accsesserror");
     }
     else{
@@ -319,10 +297,7 @@ app.get("/student/:id/documents",async(req,res)=>{
 });
 //Страница достижений студента
 app.get("/student/:id/portfolio",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
+    if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
         res.redirect("/accsesserror");
     }
     else{
@@ -344,10 +319,7 @@ app.get("/student/:id/portfolio",async(req,res)=>{
 });
 //Страница ДО/ДПО студента
 app.get("/student/:id/additionaleducation",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
+    if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
         res.redirect("/accsesserror");
     }
     else{
@@ -369,10 +341,7 @@ app.get("/student/:id/additionaleducation",async(req,res)=>{
 });
 //Страница посещаемости студента
 app.get("/student/:id/attendance",async(res,req)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
+    if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
         res.redirect("/accsesserror");
     }
     else{
@@ -392,237 +361,190 @@ app.get("/student/:id/attendance",async(res,req)=>{
 });
 //Страница мероприятий
 app.get("/mygroupevents",(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        res.render("c_mygroupevents",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions()
-        });
-    }
+    res.render("c_mygroupevents",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions()
+    });
 });
 //Страница родительских собраний
 app.get("/mygroupevents/parentingmeetings",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        let meetingsList=await serverUser.createQuery(`SELECT * \
-        FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
-        WHERE event_type_name LIKE 'Родительское собрание'`);
-        res.render("c_parentingmeetings",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUseOptions()
-        });
-    }
+    let meetingsList=await serverUser.createQuery(`SELECT * \
+    FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
+    WHERE event_type_name LIKE 'Родительское собрание'`);
+    res.render("c_parentingmeetings",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUseOptions()
+    });
 });
 //Страница классных часов
 app.get("/mygroupevents/classhours",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        let classHoursList=await serverUser.createQuery(`SELECT * \
-        FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
-        WHERE event_type_name LIKE 'Классный час'`);
-        res.render("c_classhours",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions(),
-            classHoursList:classHoursList
-        });
-    }
+    let classHoursList=await serverUser.createQuery(`SELECT * \
+    FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
+    WHERE event_type_name LIKE 'Классный час'`);
+    res.render("c_classhours",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions(),
+        classHoursList:classHoursList
+    });
 });
 //Страница выездных мероприятий
 app.get("/mygroupevents/offsite",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        let offsiteEventsList=await serverUser.createQuery(`SELECT * \
-        FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
-        WHERE event_type_name LIKE 'Выездное мироприятие'`);
-        res.render("c_offsite",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions()
-        });
-    }
+    let offsiteEventsList=await serverUser.createQuery(`SELECT * \
+    FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
+    WHERE event_type_name LIKE 'Выездное мироприятие'`);
+    res.render("c_offsite",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions()
+    });
+});
+//Страница с формой создания нового мероприятия
+app.get("/mygroupnewevent",async(req,res)=>{
+    res.render("c_mygroupnewevent",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions()
+    });
 });
 //Страница индвидуальной работы
 app.get("/mygroupindividualwork",(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        res.render("c_mygroupindividualwork",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions()
-        });
-    }
+    res.render("c_mygroupindividualwork",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions()
+    });
 });
 //Страница студентов, состоящих на учёте
 app.get("/mygroupindividualwork/accounting",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        let iwAccountingList=await serverUser.createQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
-        FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
-        INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
-        WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Учёт'`);
-        res.render("c_mygroupindividualwork_accounting",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions(),
-            iwAccountingList:iwAccountingList
-        });
-    }
+    let iwAccountingList=await serverUser.createQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
+    FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
+    INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
+    WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Учёт'`);
+    res.render("c_mygroupindividualwork_accounting",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions(),
+        iwAccountingList:iwAccountingList
+    });
 });
 //Страница студентов приглашённых(на)/посетивших совет по прафилактике
 app.get("/mygroupindividualwork/preventionadvice",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        let iwPreventionAdviceList=await serverUser.createQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
-        FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
-        INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
-        WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Совет по профилактике'`);
-        res.render("c_mygroupindividualwork_preventionadvice",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions(),
-            iwPreventionAdviceList:iwPreventionAdviceList
-        });
-    }
+    let iwPreventionAdviceList=await serverUser.createQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
+    FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
+    INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
+    WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Совет по профилактике'`);
+    res.render("c_mygroupindividualwork_preventionadvice",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions(),
+        iwPreventionAdviceList:iwPreventionAdviceList
+    });
 });
 //Страница работы социального психолога
 app.get("/mygroupindividualwork/socialpsychologisthelp",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        let iwSPHelpList=await serverUser.createQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
-        FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
-        INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
-        WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Совет по профилактике'`);
-        res.render("c_mygroupindividualwork_socialpsychologisthelp",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions(),
-            iwSPHelpList:iwSPHelpList
-        });
-    }
+    let iwSPHelpList=await serverUser.createQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
+    FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
+    INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
+    WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Совет по профилактике'`);
+    res.render("c_mygroupindividualwork_socialpsychologisthelp",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions(),
+        iwSPHelpList:iwSPHelpList
+    });
 });
 //Страница докладных на группу
 app.get("/mygroupindividualwork/reports",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        let reports=await serverUser.createQuery(`SELECT * \ 
-        FROM reports \
-        WHERE group_id=${serverUser.getUserGroups()}`);
-        res.render("c_mygroupindividualwork_reports",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions(),
-            reports:reports
-        });
-    }
+    let reports=await serverUser.createQuery(`SELECT * \ 
+    FROM reports \
+    WHERE group_id=${serverUser.getUserGroups()}`);
+    res.render("c_mygroupindividualwork_reports",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions(),
+        reports:reports
+    });
+});
+//Страница с формой создания новой докладной на группу/студента
+app.get("/newreport",async(req,res)=>{
+    res.render("c_newreport",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions()
+    });
 });
 //Страница посещаемости
 app.get("/attendance",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        let studentList=await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
-        FROM students \
-        WHERE group_id=${serverUser.getUserGroups()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
-        ORDER BY student_sur_name`);
-        res.render("c_attendance",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions(),
-            studentList:studentList
-        });
-    }
+    let studentList=await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
+    FROM students \
+    WHERE group_id=${serverUser.getUserGroups()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
+    ORDER BY student_sur_name`);
+    res.render("c_attendance",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions(),
+        studentList:studentList
+    });
+});
+app.get("/newattendance",async(req,res)=>{
+    let studentList=await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
+    FROM students \
+    WHERE group_id=${serverUser.getUserGroups()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
+    ORDER BY student_sur_name`);
+    res.render("c_newattendance",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions(),
+        studentList:studentList
+    });
 });
 //Страница-галерея
 app.get("/mygroupgallery",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        let gallery=await serverUser.createQuery(`SELECT event_archive \
-        FROM events a INNER JOIN groups b ON a.group_id=b.group_id`);
-        res.render("c_mygroupgallery",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions(),
-            gallery:gallery
-        });
-    }
+    let gallery=await serverUser.createQuery(`SELECT event_archive \
+    FROM events a INNER JOIN groups b ON a.group_id=b.group_id`);
+    res.render("c_mygroupgallery",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions(),
+        gallery:gallery
+    });
 });
 //Страницы студента
 //Страница достижений
 app.get("/portfolio",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        res.render("s_portfolio",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions()
-        });
-    }
+    res.render("s_portfolio",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions()
+    });
 });
 //Страницы тьютора
 //Список групп
 app.get("/grouplist",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        res.render("t_grouplist",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions()
-        });
-    }
+    res.render("t_grouplist",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions()
+    });
 });
 //Страница группы
 app.get("/group/:id",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        res.render("t_grouplist",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions()
-        });
-    }
+    res.render("t_grouplist",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions()
+    });
 });
 //Страница студента
 app.get("/group/:id/student/:id",async(req,res)=>{
-    if(typeof req.session.user=='undefined' || req.session.user=='none'){
-        res.redirect("/");
-    }
-    else{
-        res.render("t_grouplist",{
-            username:serverUser.getUserFullName(), 
-            role:serverUser.getUserState()[1],
-            options:serverUser.getUserOptions()
-        });
-    }
+    res.render("t_grouplist",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[1],
+        options:serverUser.getUserOptions()
+    });
 });
 //Выход
 app.get("/logout",(req,res)=>{

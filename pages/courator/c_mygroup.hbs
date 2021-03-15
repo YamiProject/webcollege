@@ -14,7 +14,7 @@
         <div class="row h-100">
             {{>sidebar}}
             <div class="row h-100 main">
-                <div class="row justify-content-center col-12 mx-0 px-0">
+                <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
                     <div class="col-12 row align-items-start justify-content-center mx-0 px-0 app-window c-my-group">
                         <div class="col-12 h-10vh">
@@ -25,7 +25,7 @@
                             {{#each studentsList}}
                                 <div class="col-xl-5 col-12 m-2 h-10vh rounded" style="background-color: rgb(63, 21, 92);">
                                     <img src="{{#imgnotnull student_photo}}{{/imgnotnull}}" alt="">
-                                    <span></span>
+                                    <span>{{student_name}} {{student_sur_name}} {{student_mid_name}}</span>
                                 </div>
                             {{/each}}
                         </div>

@@ -1,13 +1,20 @@
 /*Standarts*/
 html, body{
-    height: 100%;
+    min-height: 100%;
 }
 header{
     background-color: #3bb78f; 
-    background-image: linear-gradient(315deg, #4d3f9b 0%, #19033d 74%);
+    background-image: linear-gradient(315deg, #493c92 0%, #19043a 74%);
 }
 h1{
     text-shadow: 5px 5px 20px rgb(255, 255, 255);
+    user-select: none;
+}
+h2{
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: 100;
+    font-size: 16pt;
+    user-select: none;
 }
 a{
     text-decoration: none;
@@ -17,9 +24,33 @@ a{
 a:hover{
     text-decoration: none;
 }
+p{
+    word-wrap: break-word;
+    overflow-y: initial;
+    height: 100%;
+}
+p::first-letter{
+    margin-left: 40px;
+}
+textarea{
+    resize: none;
+}
 .text-logo{
     font-family: Harlow Solid;
     text-shadow: 1px 1px 5px blueviolet;
+}
+::-webkit-scrollbar{
+    width: 12px;
+}
+::-webkit-scrollbar-track{
+   box-shadow: inset 0 0 6px rgba(135, 23, 240, 0.3); 
+    border-radius: 10px;
+    background: rgb(56, 128, 170);
+}
+::-webkit-scrollbar-thumb{
+    background: rgb(52, 27, 110);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+    border-radius: 10px;
 }
 /*Computer-version*/
 @media screen and (min-width:768px){
@@ -61,6 +92,9 @@ a:hover{
     .avatar_img{
         border-radius: 250px;
     }
+    .application{
+        background: linear-gradient(#8ad2f37e, #07106ee5) no-repeat;
+    }
     /*Header*/
     header{
         overflow-y: hidden;
@@ -72,6 +106,7 @@ a:hover{
         box-shadow: 0px 1px 10px rgb(35, 23, 77);
         height: 180px;
         z-index: 8;
+
     }
     #navbar ul{
         padding:0;
@@ -102,27 +137,6 @@ a:hover{
         border-top-left-radius: 40px;
         box-shadow: -10px 0 0 rgb(146, 140, 212);
     }
-    ::-webkit-scrollbar {
-        width: 12px;
-    }
-    ::-webkit-scrollbar-button{
-        background-color: #bbbbbb;
-        display: block;
-        border-style: solid;
-        height: 13px;
-        width: 16px;
-    }
-    ::-webkit-scrollbar-track {
-       box-shadow: inset 0 0 6px rgba(135, 23, 240, 0.3); 
-        border-radius: 10px;
-        background: rgb(56, 128, 170);
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: rgb(52, 27, 110);
-        box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
-    }
-
     /*Sidebar*/
     #sidebar{
         width: 330px;
@@ -149,6 +163,9 @@ a:hover{
         font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif ;
         font-size: 16pt;
         font-weight: 800;
+    }
+    #sidebar_menu .user-text-name:hover{
+        color: #827bc5 !important;
     }
     #sidebar_menu button{
         color: white;
@@ -192,22 +209,46 @@ a:hover{
         position: absolute;
         left: 345px;
         width: calc(100% - 330px);
-        background: linear-gradient(#8ad2f37e, #07106ee5);
     }
     .app-window{
         overflow-y: auto;
         min-height: 75vh;
+        background-color: #bbbbbb00;
     }
-    .mainfeed,.mainmygroup,.mainevents{
+    .mainpage>div:nth-child(n+2){
         border-radius: 40px;
-        background-color: rgb(14, 14, 63);
+        background-color: #ffffff44;
         cursor: pointer;
         transition: all .2s ease-in-out;
+        box-shadow: -10px 2px 10px #4d3f9b;
     }
-    .mainfeed:hover,.mainmygroup:hover,.mainevents:hover{
+    .mainpage>div:nth-child(n+2):hover{
         transform: scale(1.05); 
     }
     /*c_attendance*/
-
+    /*c_feed*/
+    .c-feed-page .feed-block{
+        height: 46.5vh;
+    }
+    .c-feed-page .feed-block>div{
+        overflow-y: initial;
+    }
+    .c-feed-page .feed-form{
+        border-top: #110941 5px solid;
+    }
+    .feed-form-button{
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        background-color: #827bc5;
+        outline: none;
+        border: none;
+        display: block;
+    }
+    .feed-form-button:hover{
+        background-color: #6d66ad;
+    }
+    .feed-form-button:active{
+        box-shadow: #110941 1px 1px 2px inset;
+    }
 }
 /*Smartphone-version*/
