@@ -7,7 +7,7 @@ app.use(express.static("./public"));
 app.set('views',"./pages");
 //Модуль BodyParser
 const bodyParser=require('body-parser');
-const urlencodedParser=bodyParser.urlencoded({extended: false});
+const urlencodedParser = bodyParser.urlencoded({extended:false});
 //Модуль Express-Сессия
 const session=require('express-session');
 app.use(session({
@@ -32,6 +32,7 @@ function connect_db_promise(){
     })};
 //Шаблонизатор Handlebars
 const hbs=require('hbs');
+const { response } = require('express');
 app.set('view engine','hbs');
 hbs.registerPartials('./pages/templates');
 //HandleBars хелперы
@@ -97,20 +98,23 @@ class ServerUser{
     getUserOptions(){
         return this.user_options;
     }
-    addPortfolio(){
-
-    }
-    async createQuery(query){
+    async createSelectQuery(query){
         var connect=await connect_db_promise();
         var [rows, fields]=await connect.query(query);
         connect.end()
         return rows;
     }
+    async createInsertQuery(query){
+        var connect=await connect_db_promise();
+        await connect.query(query);
+        connect.end()
+        return "Succsess";
+    }
     async checkAccsess(type,id,equal_id){
         let result;
         switch(type){
             case "s":
-                result=await this.createQuery(`SELECT group_id \ 
+                result=await this.createSelectQuery(`SELECT group_id \ 
                 FROM students \ 
                 WHERE student_id=${id} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) LIMIT 1`);
                 break;
@@ -126,6 +130,24 @@ class ServerUser{
         }
         else{
             return false;
+        }
+    }
+    async fileNormalisePath(file,type,user_id){
+        if(file==""){
+            return null;
+        }
+        else{
+            switch(type){
+                case "common_img":
+                    return `'/files/${this.getUserGroups()}/images/${file}'`;
+                    break;
+                case "personal_img":
+                    return `'/files/${this.getUserGroups()}/images/${file}'`;
+                    break;
+                case "portfolio":
+                    return `'/files/${this.getUserGroups()}/images/${file}'`;
+                    break;
+            }
         }
     }
     clearData(){
@@ -146,7 +168,7 @@ var serverUser = new ServerUser();
 app.use(async(req,res,next) =>{
     await serverUser.setUser(1,"courator",'Киселёва','Светлана', 'Владимировна','89166666666','/img/profile_avatars/c_1.png');
     await serverUser.setUserGroup(1);
-    await serverUser.setUserOptions(await serverUser.createQuery(`SELECT * FROM options WHERE option_login LIKE '@kiselova12' LIMIT 1`));
+    await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * FROM options WHERE option_login LIKE '@kiselova12' LIMIT 1`));
     req.session.user="@courator/1/2";
     app.set('views', `./pages/${serverUser.getUserState()[1]}`);
     next();
@@ -193,7 +215,7 @@ app.get("/mainpage",(req,res)=>{
 });
 //Страница профиля пользователя
 app.get("/profile",async(req,res)=>{
-    let userData=await serverUser.createQuery(`SELECT * \ 
+    let userData=await serverUser.createSelectQuery(`SELECT * \ 
     FROM ${serverUser.getUserState()[1]}s \
     WHERE ${serverUser.getUserState()[1]}_id=${serverUser.getUserState()[0]}`);
     res.render("profile",{
@@ -213,26 +235,30 @@ app.get("/options",(req,res)=>{
     });
 });
 //Страницы куратора
-//Лента
-app.get("/feed",async(req,res)=>{
-    let feed=await serverUser.createQuery(`SELECT * \
-    FROM feed a INNER JOIN feed_type b on a.feed_type=b.feed_type_id \
+//Объявления
+app.route("/announcements").get(async(req,res)=>{
+    let announcement=await serverUser.createSelectQuery(`SELECT * \
+    FROM announcements a INNER JOIN announcement_types b on a.announcement_type=b.announcement_type_id \
     WHERE group_id=${serverUser.getUserGroups()} \
-    ORDER BY feed_data DESC;
+    ORDER BY announcement_data DESC;
     SELECT * \ 
-    FROM feed_type`);
-    console.log(feed[0]);
-    res.render("c_feed",{
+    FROM announcement_types`);
+    res.render("c_announcement",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[1],
         options:serverUser.getUserOptions(),
-        posts:feed[0],
-        feed_type:feed[1]
+        posts:announcement[0],
+        announcement_type:announcement[1]
     });
+}).post(urlencodedParser, async(req,res)=>{
+    let file = await serverUser.fileNormalisePath(req.body.file,'common_img',null);
+    let result=await serverUser.createInsertQuery(`INSERT INTO announcements \
+    VALUE(null,${serverUser.getUserGroups()},NOW(),'${req.body.head}','${req.body.type}',${file},'${req.body.text}');`);
+    res.end("Complete");
 });
 //Страница группы
 app.get("/mygroup",async(req,res)=>{
-    let group=await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
+    let group=await serverUser.createSelectQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
     FROM students \
     WHERE group_id=${serverUser.getUserGroups()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
     ORDER BY student_sur_name;\ 
@@ -257,7 +283,7 @@ app.get("/student/:id",async(req,res)=>{
         res.redirect("/accsesserror");
     }
     else{
-        let student=await serverUser.createQuery(`SELECT * \
+        let student=await serverUser.createSelectQuery(`SELECT * \
         FROM students \ 
         WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')}`);
         res.render("c_student",{
@@ -275,7 +301,7 @@ app.get("/student/:id/documents",async(req,res)=>{
         res.redirect("/accsesserror");
     }
     else{
-        let studentsDocumentary=await serverUser.createQuery(`SELECT * \
+        let studentsDocumentary=await serverUser.createSelectQuery(`SELECT * \
         FROM students \ 
         WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
         SELECT * \
@@ -296,12 +322,12 @@ app.get("/student/:id/documents",async(req,res)=>{
     }
 });
 //Страница достижений студента
-app.get("/student/:id/portfolio",async(req,res)=>{
+app.route("/student/:id/portfolio").get(async(req,res)=>{
     if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
         res.redirect("/accsesserror");
     }
     else{
-        let studentPortfolio=serverUser.createQuery(`SELECT * \
+        let studentPortfolio=serverUser.createSelectQuery(`SELECT * \
         FROM students \ 
         WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
         SELECT * \
@@ -316,14 +342,17 @@ app.get("/student/:id/portfolio",async(req,res)=>{
             portfolio:studentPortfolio[1]
         });
     }
-});
+}).post(urlencodedParser, async(req,res)=>{
+
+    res.end();
+});;
 //Страница ДО/ДПО студента
 app.get("/student/:id/additionaleducation",async(req,res)=>{
     if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
         res.redirect("/accsesserror");
     }
     else{
-        let studentAdditionEducation=serverUser.createQuery(`SELECT * \
+        let studentAdditionEducation=serverUser.createSelectQuery(`SELECT * \
         FROM students \ 
         WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
         SELECT * \
@@ -340,12 +369,12 @@ app.get("/student/:id/additionaleducation",async(req,res)=>{
     }
 });
 //Страница посещаемости студента
-app.get("/student/:id/attendance",async(res,req)=>{
+app.route("/student/:id/attendance").get(async(res,req)=>{
     if(!await serverUser.checkAccsess("s",JSON.stringify(req.params.id).replace(/\"/gi,''),serverUser.getUserGroups())){
         res.redirect("/accsesserror");
     }
     else{
-        let studentAttendance=await serverUser.createQuery(`SELECT * \
+        let studentAttendance=await serverUser.createSelectQuery(`SELECT * \
         FROM students \ 
         WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
         SELECT * \
@@ -358,6 +387,9 @@ app.get("/student/:id/attendance",async(res,req)=>{
             title:`${studentAttendance[0][0].student_sur_name} ${studentAttendance[0][0].student_name} ${studentAttendance[0][0].student_mid_name}`,
             student:studentAttendance[0][0],absenteeismes:studentAttendance[1]});
     }
+}).post(urlencodedParser, async(res,req)=>{
+
+    res.end();
 });
 //Страница мероприятий
 app.get("/mygroupevents",(req,res)=>{
@@ -369,7 +401,7 @@ app.get("/mygroupevents",(req,res)=>{
 });
 //Страница родительских собраний
 app.get("/mygroupevents/parentingmeetings",async(req,res)=>{
-    let meetingsList=await serverUser.createQuery(`SELECT * \
+    let meetingsList=await serverUser.createSelectQuery(`SELECT * \
     FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
     WHERE event_type_name LIKE 'Родительское собрание'`);
     res.render("c_parentingmeetings",{
@@ -380,7 +412,7 @@ app.get("/mygroupevents/parentingmeetings",async(req,res)=>{
 });
 //Страница классных часов
 app.get("/mygroupevents/classhours",async(req,res)=>{
-    let classHoursList=await serverUser.createQuery(`SELECT * \
+    let classHoursList=await serverUser.createSelectQuery(`SELECT * \
     FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
     WHERE event_type_name LIKE 'Классный час'`);
     res.render("c_classhours",{
@@ -392,7 +424,7 @@ app.get("/mygroupevents/classhours",async(req,res)=>{
 });
 //Страница выездных мероприятий
 app.get("/mygroupevents/offsite",async(req,res)=>{
-    let offsiteEventsList=await serverUser.createQuery(`SELECT * \
+    let offsiteEventsList=await serverUser.createSelectQuery(`SELECT * \
     FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \ 
     WHERE event_type_name LIKE 'Выездное мироприятие'`);
     res.render("c_offsite",{
@@ -402,12 +434,14 @@ app.get("/mygroupevents/offsite",async(req,res)=>{
     });
 });
 //Страница с формой создания нового мероприятия
-app.get("/mygroupnewevent",async(req,res)=>{
+app.route("/mygroupnewevent").get(async(req,res)=>{
     res.render("c_mygroupnewevent",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[1],
         options:serverUser.getUserOptions()
     });
+}).post(urlencodedParser, async(req,res)=>{
+    res.end();
 });
 //Страница индвидуальной работы
 app.get("/mygroupindividualwork",(req,res)=>{
@@ -419,7 +453,7 @@ app.get("/mygroupindividualwork",(req,res)=>{
 });
 //Страница студентов, состоящих на учёте
 app.get("/mygroupindividualwork/accounting",async(req,res)=>{
-    let iwAccountingList=await serverUser.createQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
+    let iwAccountingList=await serverUser.createSelectQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
     FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
     INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
     WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Учёт'`);
@@ -432,7 +466,7 @@ app.get("/mygroupindividualwork/accounting",async(req,res)=>{
 });
 //Страница студентов приглашённых(на)/посетивших совет по прафилактике
 app.get("/mygroupindividualwork/preventionadvice",async(req,res)=>{
-    let iwPreventionAdviceList=await serverUser.createQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
+    let iwPreventionAdviceList=await serverUser.createSelectQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
     FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
     INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
     WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Совет по профилактике'`);
@@ -445,7 +479,7 @@ app.get("/mygroupindividualwork/preventionadvice",async(req,res)=>{
 });
 //Страница работы социального психолога
 app.get("/mygroupindividualwork/socialpsychologisthelp",async(req,res)=>{
-    let iwSPHelpList=await serverUser.createQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
+    let iwSPHelpList=await serverUser.createSelectQuery(`SELECT iw_id,iw_type_name,iw_reasone,iw_date \
     FROM individual_works a INNER JOIN students b on a.student_id=b.student_id \
     INNER JOIN individual_work_types c on a.iw_type_id=b.iw_type_id \
     WHERE b.group_id=${serverUser.getUserGroups()} AND a.iw_type_name LIKE 'Совет по профилактике'`);
@@ -458,7 +492,7 @@ app.get("/mygroupindividualwork/socialpsychologisthelp",async(req,res)=>{
 });
 //Страница докладных на группу
 app.get("/mygroupindividualwork/reports",async(req,res)=>{
-    let reports=await serverUser.createQuery(`SELECT * \ 
+    let reports=await serverUser.createSelectQuery(`SELECT * \ 
     FROM reports \
     WHERE group_id=${serverUser.getUserGroups()}`);
     res.render("c_mygroupindividualwork_reports",{
@@ -469,16 +503,18 @@ app.get("/mygroupindividualwork/reports",async(req,res)=>{
     });
 });
 //Страница с формой создания новой докладной на группу/студента
-app.get("/newreport",async(req,res)=>{
+app.route("/newreport").get(async(req,res)=>{
     res.render("c_newreport",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[1],
         options:serverUser.getUserOptions()
     });
+}).post(urlencodedParser, async(req,res)=>{
+    res.end();
 });
 //Страница посещаемости
 app.get("/attendance",async(req,res)=>{
-    let studentList=await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
+    let studentList=await serverUser.createSelectQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
     FROM students \
     WHERE group_id=${serverUser.getUserGroups()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
     ORDER BY student_sur_name`);
@@ -489,8 +525,8 @@ app.get("/attendance",async(req,res)=>{
         studentList:studentList
     });
 });
-app.get("/newattendance",async(req,res)=>{
-    let studentList=await serverUser.createQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
+app.route("/newattendance").get(async(req,res)=>{
+    let studentList=await serverUser.createSelectQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
     FROM students \
     WHERE group_id=${serverUser.getUserGroups()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
     ORDER BY student_sur_name`);
@@ -500,10 +536,12 @@ app.get("/newattendance",async(req,res)=>{
         options:serverUser.getUserOptions(),
         studentList:studentList
     });
+}).post(urlencodedParser, async(req,res)=>{
+    res.end();
 });
 //Страница-галерея
 app.get("/mygroupgallery",async(req,res)=>{
-    let gallery=await serverUser.createQuery(`SELECT event_archive \
+    let gallery=await serverUser.createSelectQuery(`SELECT event_archive \
     FROM events a INNER JOIN groups b ON a.group_id=b.group_id`);
     res.render("c_mygroupgallery",{
         username:serverUser.getUserFullName(), 
@@ -568,10 +606,10 @@ app.post('/authorisation',urlencodedParser,async(req,res)=>{
             if(typeof data[0]!=='undefined'){
                 serverUser.setUser(data[0],"courator",data[1],data[2],data[3],data[4]);
                 req.session.user=`@courator/${data[0]}`;
-                server.setUserGroup(await serverUser.createQuery(`SELECT group_id \
+                server.setUserGroup(await serverUser.createSelectQuery(`SELECT group_id \
                 FROM groups a INNER JOIN courators b ON a.courator_id=b.courator_id \
                 WHERE a.courator_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW() ORDER BY group_id DESC LIMIT 1`));
-                serverUser.setUserOptions(await serverUser.createQuery(`SELECT * FROM options WHERE option_login LIKE ${data[5]}`));
+                serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * FROM options WHERE option_login LIKE ${data[5]}`));
                 connect.end();
                 res.end("Succsess");
             }
@@ -589,10 +627,10 @@ app.post('/authorisation',urlencodedParser,async(req,res)=>{
             if(typeof data[0]!=='undefined'){
                 serverUser.setUser(data[0],"tutor",data[1],data[2],data[3],data[4]);
                 req.session.user=`$tutor/${data[0]}`;
-                server.setUserGroup(await serverUser.createQuery(`SELECT group_id \
+                server.setUserGroup(await serverUser.createSelectQuery(`SELECT group_id \
                 FROM groups a INNER JOIN tutor b ON a.tutor_id=b.tutor_id \
                 WHERE a.tutor_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW()`));
-                serverUser.setUserOptions(await serverUser.createQuery(`SELECT * FROM options WHERE option_login LIKE ${data[5]}`));
+                serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * FROM options WHERE option_login LIKE ${data[5]}`));
                 connect.end();
                 res.end("Succsess");
             }
@@ -610,7 +648,7 @@ app.post('/authorisation',urlencodedParser,async(req,res)=>{
             if(typeof data[0]!=='undefined'){
                 serverUser.setUser(data[0],"student",data[1],data[2],data[3],data[4]);
                 server.setUserGroup(data[5]);
-                serverUser.setUserOptions(await serverUser.createQuery(`SELECT * FROM options WHERE option_login LIKE ${data[6]}`));
+                serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * FROM options WHERE option_login LIKE ${data[6]}`));
                 req.session.user=`#student/${data[0]}`;
                 connect.end();
                 res.end("Succsess");

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="author" content="Kostin Vladislav"/>
+    <meta name="description" content="Содержит список объявлений, создаваемых куратором или старостой группы."/>
+    <title>Объявления</title>
+    {{>linkscripts}}
+    {{>styles}}
+</head>
+<body>
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            {{>sidebar}}
+            <div class="row main h-100">
+                <div class="row justify-content-center col-12 mx-0 px-0 application">
+                    {{>header}}
+                    <div class="col-12 justify-content-center align-items-start align-content-start row mx-0 px-0 app-window c-announcement-page">
+                        <div class="col-12 h-of">
+                            <h1 class="display-4 col-12 text-right">Объявления</h1>
+                        </div>
+                        <section class="col-12 row justify-content-center align-content-start align-items-start overflow-auto announcement-block">
+                            {{#each posts}}
+                                    <article class="col-xl-8 col-11 row justify-content-center">
+                                        <div class="col-xl-11 col-12 row justify-content-center">
+                                            <div class="col-12">
+                                                <div class="col-12 announcement-header">
+                                                    <h2 class="col-12 text-center display-4">{{announcement_header}}</h2>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-10 col-4 row announcement-info">
+                                                <div class="col-xl-4 col-12">
+                                                    <label class="col-12 text-center">{{#datenormalise announcement_data}}{{/datenormalise}}</label>
+                                                </div>
+                                                <div class="col-xl-8 col-12">
+                                                    <label class="col-12 text-center">{{announcement_type_name}}</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-12 col-8 announcement-text">
+                                                    <p class="col">{{announcement_text}}</p>
+                                            </div>
+                                        </div>  
+                                    </article>
+                            {{else}}
+                                <h2 class="display-4 pt-5">Нет объявлений!</h2>
+                            {{/each}}
+                        </section>
+                    </div>
+                    <div class="col-7 row justify-content-center align-items-center announcement-form">
+                        <div class="col-12 row align-items-center justify-content-center">
+                            <form class="row col-12 justify-content-center h-100 align-items-center">
+                                <input type="text" id="anouncement-form-head" class="col-3 form-control m-1" placeholder="Заголовок...">
+                                <select type="text" id="anouncement-form-type" class="col-3 form-control m-1" placeholder="Тема">
+                                    <option value="" hidden>Тема...</option>
+                                {{#each announcement_type}}
+                                    <option value="{{announcement_type_id}}">{{announcement_type_name}}</option>
+                                {{/each}}
+                                </select>
+                                <input type="file" id="anouncement-form-file" placeholder="" class="col-3 form-control-file m-1 text-light">
+                                <textarea class="col-8" id="anouncement-form-text"></textarea>
+                                <button class="col-1 my-2 mr-3 announcement-form-button" id="anouncement-form-sumbit">+</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+</body>
+</html>

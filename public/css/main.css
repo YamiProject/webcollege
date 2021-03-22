@@ -1,6 +1,7 @@
 /*Standarts*/
 html, body{
-    min-height: 100%;
+    min-height: 100vh;
+    overflow-y: initial;
 }
 header{
     background-color: #3bb78f; 
@@ -24,8 +25,10 @@ a{
 a:hover{
     text-decoration: none;
 }
-p{
+h1,h2,a,span,p{
     word-wrap: break-word;
+}
+p{
     overflow-y: initial;
     height: 100%;
 }
@@ -54,46 +57,18 @@ textarea{
 }
 /*Computer-version*/
 @media screen and (min-width:768px){
-    /*Heights*/
-    .h-5vh{
-        height: 5vh;
-    }
-    .h-10vh{
-        height: 10vh;
-    }
-    .h-15vh{
-        height: 15vh;
-    }
-    .h-20vh{
-        height: 20vh;
-    }
-    .h-25vh{
-        height: 25vh;
-    }
-    .h-30vh{
-        height: 30vh;
-    }
-    .h-35vh{
-        height: 35vh;
-    }
-    .h-40vh{
-        height: 40vh;
-    }
-    .h-45vh{
-        height: 45vh;
-    }
-    .h-50vh{
-        height: 50vh;
-    }
-    .h-55vh{
-        height: 55vh;
-    }
     /*Common*/
     .avatar_img{
         border-radius: 250px;
+        width: auto;
+        height: auto;
     }
     .application{
         background: linear-gradient(#8ad2f37e, #07106ee5) no-repeat;
+    }
+    .h-of{
+        height: 80px;
+        box-shadow: rgba(13, 18, 85, 0.363) 1px 1px 50px;
     }
     /*Header*/
     header{
@@ -106,7 +81,6 @@ textarea{
         box-shadow: 0px 1px 10px rgb(35, 23, 77);
         height: 180px;
         z-index: 8;
-
     }
     #navbar ul{
         padding:0;
@@ -145,11 +119,13 @@ textarea{
         z-index: 9;
         overflow: hidden;
         position: fixed;
+        left: 0;
     }
     #sidebar_menu{
         background-color: rgb(20, 16, 68);
         left: 0;
         right: 0;
+        height: 100%;
     }
     .sidebar-user-block{
         border-bottom: 1px solid white;
@@ -184,7 +160,7 @@ textarea{
     .close-button{
         position: absolute;
         left: 330px;
-        top: 10px;
+        top: auto;
         background-color: rgb(20, 16, 68);
         z-index: 8;
         height: 80px;
@@ -209,46 +185,70 @@ textarea{
         position: absolute;
         left: 345px;
         width: calc(100% - 330px);
+        height: auto;
     }
     .app-window{
         overflow-y: auto;
-        min-height: 75vh;
+        min-height: 80vh;
         background-color: #bbbbbb00;
     }
-    .mainpage>div:nth-child(n+2){
+    .mainpage-links{
+        min-height: 65vh;
+    }
+    .mainpage-links>div{
         border-radius: 40px;
         background-color: #ffffff44;
         cursor: pointer;
         transition: all .2s ease-in-out;
         box-shadow: -10px 2px 10px #4d3f9b;
+        height: 20vh;
     }
-    .mainpage>div:nth-child(n+2):hover{
+    .mainpage-links>div:hover{
         transform: scale(1.05); 
     }
-    /*c_attendance*/
-    /*c_feed*/
-    .c-feed-page .feed-block{
-        height: 46.5vh;
+    /*c_announcements*/
+    .announcement-block{
+        height: 60vh;
+        padding-top: 20px;
     }
-    .c-feed-page .feed-block>div{
-        overflow-y: initial;
+    .announcement-block>article{
+        margin-bottom: 50px;
     }
-    .c-feed-page .feed-form{
-        border-top: #110941 5px solid;
+    .announcement-block>article:last-child{
+        margin-bottom: 0 !important;
     }
-    .feed-form-button{
-        border-top-right-radius: 20px;
-        border-bottom-right-radius: 20px;
-        background-color: #827bc5;
-        outline: none;
-        border: none;
-        display: block;
+    .announcement-header{
+        border-radius: 40px;
+        background-color: #ffffff44;
+        box-shadow: 0px 0px 10px #4d3f9b;
+        padding: 5px;
     }
-    .feed-form-button:hover{
-        background-color: #6d66ad;
+    .announcement-info>div{
+        padding: 10px 0;
+        box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
+        background-color: #ffffff44;
     }
-    .feed-form-button:active{
-        box-shadow: #110941 1px 1px 2px inset;
+    .announcement-info>div:first-child{
+        border-bottom-left-radius: 25px;
+    }
+    .announcement-info>div:last-child{
+        border-bottom-right-radius: 25px;
+    }
+    .announcement-text{
+        margin-top: 10px;
+        padding: 10px 0;
+        box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
+        background-color: #ffffff44;
+        border-radius: 40px;
+    }
+    .announcement-form{
+        position: fixed;
+        bottom: 0;
+        background-color: #110941;
+        border-top-right-radius: 40px;
+        border-top-left-radius: 40px;
+        box-shadow: #291ba3 -2px -2px 50px;
+        height: 120px;
     }
 }
 /*Smartphone-version*/

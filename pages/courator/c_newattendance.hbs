@@ -17,13 +17,13 @@
                 <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
                     <div class="col-12 justify-content-center align-items-start align-content-start row m-0 p-0 app-window mainpage">
-                        <div class="col-12 h-10vh mb-5">
-                            <h1 class="display-4 col-12 text-right">Создать список отсутствующих</h1>
+                        <div class="col-12 h-of">
+                            <h1 class="display-4 col-12 text-right">Отсутствующие</h1>
                             <hr>
                         </div>
                         <form class="col-12 row ml-1">
                             {{#each studentList}}
-                                <div class="col-2 h-25vh bg-primary rounded">
+                                <div class="col-2  bg-primary rounded">
                                     <img src="{{#imgnotnull student_photo student_sex}}{{/imgnotnull}}" alt="">
                                     <span>{{student_sur_name}} {{student_name}}</span>
                                     <select name="statement" class="col-12 text-center">
