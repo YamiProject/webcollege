@@ -1,17 +1,22 @@
 import * as functions from "./functions.js";
 $(document).ready(function(){
-    $("#login-form-sumbit").on('click',function(e){
+    $("#login-form-submit").on('click',async function(e){
         e.preventDefault();
-        if(functions.filledCheck($(this))==true){
+        if(await functions.filledCheck($(this),[':input:text'])==true){
             $.ajax({
                 type:"POST",
                 url:"/authorisation",
                 data:{
-                    user_login: functions.escapeHTML($("#user-login").val()),
-                    user_password: functions.escapeHTML($("#user-password").val())
+                    user_login:functions.escapeHTML($("#user-login").val()),
+                    user_password:functions.escapeHTML($("#user-password").val())
                 },
-                succsess: function(){
-                    window.location.reload();
+                success: function(answer){
+                    if(answer=="Succsess"){
+                        window.location.reload();
+                    }
+                    else{
+                        alert("Пользователя не существует!");
+                    }
                 }
             });
         }

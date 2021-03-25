@@ -19,7 +19,8 @@ $(document).ready(function(){
     //announcements
     $("#anouncement-form-sumbit").on('click', function(e){
         e.preventDefault();
-        if(functions.filledCheck($(this))==true){
+        if(functions.filledCheck($(this),[':input:text','textarea','select'])==true){
+            functions.escapeHTML("dsdsdsd");
             $.ajax({
                 type:"POST",
                 url:"/announcements",
@@ -35,7 +36,7 @@ $(document).ready(function(){
                         <div class="col-xl-11 col-12 row justify-content-center">
                             <div class="col-12">
                                 <div class="col-12 announcement-header">
-                                    <h2 class="col-12 text-center display-4">${escapeHTML($("#anouncement-form-head").val())}</h2>
+                                    <h2 class="col-12 text-center display-4">${functions.escapeHTML($("#anouncement-form-head").val())}</h2>
                                 </div>
                             </div>
                             <div class="col-xl-10 col-4 row announcement-info">
@@ -43,11 +44,11 @@ $(document).ready(function(){
                                     <label class="col-12 text-center">${$.now()}</label>
                                 </div>
                                 <div class="col-xl-8 col-12">
-                                    <label class="col-12 text-center">${escapeHTML($("#anouncement-form-type").val())}</label>
+                                    <label class="col-12 text-center">${$("#anouncement-form-type").val()}</label>
                                 </div>
                             </div>
                             <div class="col-xl-12 col-8 announcement-text">
-                                    <p class="col">${escapeHTML($("#anouncement-form-text").val())}</p>
+                                    <p class="col">${functions.escapeHTML($("#anouncement-form-text").val())}</p>
                             </div>
                         </div>  
                     </article>

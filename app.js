@@ -25,18 +25,27 @@ function isAuthenticated(req,res,next){
     else{
        return next();
     }
-};
+}
 //Модуль Cookie-парсер
 const cookieParser=require('cookie-parser');
 app.use(cookieParser());
 //Модуль для работы с базой данных MySql2/Promise
+const mysql=require("mysql2");
+function connect_db(){
+    return mysql.createConnection({
+        host:'localhost',
+        user:'root',
+        password:'',
+        database:'webcollege_database',
+        multipleStatements:true
+    })};
 const mysql_promise=require('mysql2/promise');
 function connect_db_promise(){
     return mysql_promise.createConnection({
         host:'localhost',
         user:'root',
         password:'',
-        database:'webcollege_db',
+        database:'webcollege_database',
         multipleStatements:true
     })};
 //Шаблонизатор Handlebars
@@ -171,11 +180,11 @@ var serverUser = new ServerUser();
 //Конвейер обработки
 //Создание проверочной сессии
 app.use(async(req,res,next) =>{
-    /*await serverUser.setUser(1,"courator",'Киселёва','Светлана', 'Владимировна','89166666666','/img/profile_avatars/c_1.png');
+    await serverUser.setUser(1,"courator",'Киселёва','Светлана', 'Владимировна','/img/profile_avatars/c_1.png');
     await serverUser.setUserGroup(1);
-    await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * FROM options WHERE option_login LIKE '@kiselova12' LIMIT 1`));
+    await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * FROM options WHERE option_id=8 LIMIT 1`));
     req.session.user="@courator/1/2";
-    app.set('views', `./pages/${serverUser.getUserState()[1]}`);*/
+    app.set('views', `./pages/${serverUser.getUserState()[1]}`);
     next();
 });
 //Express GET-запросы
@@ -236,8 +245,9 @@ app.route("/announcements").get(isAuthenticated,async(req,res)=>{
         posts:announcement[0],
         announcement_type:announcement[1]
     });
-}).post(urlencodedParser, isAuthenticated,async(req,res)=>{
-    let file = await serverUser.fileNormalisePath(req.body.file,'common_img',null);
+}).post(urlencodedParser,async(req,res)=>{
+    console.log("dadsasdasd");
+    let file=await serverUser.fileNormalisePath(req.body.file,'common_img',null);
     let result=await serverUser.createInsertQuery(`INSERT INTO announcements \
     VALUE(null,${serverUser.getUserGroups()},NOW(),'${req.body.head}','${req.body.type}',${file},'${req.body.text}');`);
     res.end();
@@ -580,72 +590,91 @@ app.get("/logout",(req,res)=>{
 })
 //Express POST-запросы
 //Авторизация
-app.post('/authorisation',urlencodedParser,isAuthenticated,async(req,res)=>{
-    var connect = connect_db();
+app.post('/authorisation',urlencodedParser,async(req,res)=>{
+    let connect = connect_db();
     let login = req.body.user_login;
     let password = req.body.user_password;
     if(login.slice(0,1)=="@"){
         connect.query(`SELECT courator_id,courator_sur_name,courator_name,courator_mid_name,courator_photo,courator_login \ 
-        FROM curators\
-        WHERE curator_login='${login}' AND curator_password='${password}'`, async(err,data)=>{
+        FROM courators\
+        WHERE courator_login LIKE '${login}' AND courator_password LIKE '${password}'`, async(err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],"courator",data[1],data[2],data[3],data[4]);
-                req.session.user=`@courator/${data[0]}`;
-                server.setUserGroup(await serverUser.createSelectQuery(`SELECT group_id \
+                await serverUser.setUser(data[0].courator_id,
+                    "courator",
+                    data[0].courator_sur_name,
+                    data[0].courator_name,
+                    data[0].courator_mid_name,
+                    data[0].courator_photo);
+                req.session.user=`@courator/${data[0].courator_id}`;
+                serverUser.setUserGroup(await serverUser.createSelectQuery(`SELECT group_id \
                 FROM groups a INNER JOIN courators b ON a.courator_id=b.courator_id \
                 WHERE a.courator_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW() ORDER BY group_id DESC LIMIT 1`));
-                serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * FROM options WHERE option_login LIKE ${data[5]}`));
+                serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * \ 
+                FROM options a inner join users b on a.option_id=b.user_id WHERE user_login LIKE '${data[0].courator_login}'`));
                 connect.end();
                 res.end("Succsess");
             }
             else{
                 connect.end();
-                res.end();
+                res.end("nExist");
             }
         });
     }
     else if(login.slice(0,1)=="$"){
         connect.query(`SELECT tutor_id,tutor_sur_name,tutor_name,tutor_mid_name,tutor_photo,tutor_login \ 
         FROM tutors \
-        WHERE tutor_login='${login}' AND tutor_password='${password}'`, async(err,data)=>{
+        WHERE tutor_login LIKE '${login}' AND tutor_password LIKE '${password}'`, async(err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],"tutor",data[1],data[2],data[3],data[4]);
-                req.session.user=`$tutor/${data[0]}`;
-                server.setUserGroup(await serverUser.createSelectQuery(`SELECT group_id \
-                FROM groups a INNER JOIN tutor b ON a.tutor_id=b.tutor_id \
-                WHERE a.tutor_id=${serverUser.getUserState()[0]} AND group_end_education_date<NOW()`));
-                serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * FROM options WHERE option_login LIKE ${data[5]}`));
+                serverUser.setUser(data[0].tutor_id,
+                    "tutor",
+                    data[0].tutor_sur_name,
+                    data[0].tutor_name,
+                    data[0].tutor_mid_name,
+                    data[0].tutor_photo);
+                req.session.user=`$tutor/${data[0].tutor_id}`;
+                serverUser.setUserGroup(await serverUser.createSelectQuery(`SELECT group_id \
+                FROM groups a INNER JOIN tutors b ON a.tutor_id=b.tutor_id \
+                WHERE a.tutor_id=${serverUser.getUserState()[0]} AND group_end_education_date>NOW()`));
+                serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * \ 
+                FROM options a inner join users b on a.option_id=b.user_id WHERE user_login LIKE '${data[0].tutor_login}'`));
                 connect.end();
-                res.end();
+                res.end("Succsess");
             }
             else{
                 connect.end();
-                res.end();
+                res.end("nExist");
             }
         });
     }
     else{
         connect.query(`SELECT student_id,student_sur_name,student_name,student_mid_name,student_photo,group_id,student_login \ 
         FROM students \
-        WHERE student_login='${login}' AND student_password='${password}'`, async(err,data)=>{
+        WHERE student_login LIKE '${login}' AND student_password LIKE '${password}'`, async(err,data)=>{
             if(err) throw err;
             if(typeof data[0]!=='undefined'){
-                serverUser.setUser(data[0],"student",data[1],data[2],data[3],data[4]);
-                server.setUserGroup(data[5]);
-                serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * FROM options WHERE option_login LIKE ${data[6]}`));
+                await serverUser.setUser(data[0].student_id,
+                    "student",
+                    data[0].student_sur_name,
+                    data[0].student_name,
+                    data[0].student_mid_name,
+                    data[0].student_photo);
                 req.session.user=`#student/${data[0]}`;
+                await server.setUserGroup(data[0].group_id);
+                await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * \ 
+                FROM options a inner join users b on a.option_id=b.user_id WHERE user_login LIKE '${data[0].student_login}'`));
                 connect.end();
-                res.end();
+                res.end("Succsess");
             }
             else{
                 connect.end();
-                res.end();
+                res.end("nExist");
             }
         });
     }
 });
+//Обработка ошибок
 app.use((req, res)=>{
     res.status(404).render('error404',{title: "Ошибка 404"});
 });
