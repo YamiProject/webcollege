@@ -7,9 +7,25 @@
     <meta name="description" content="Index-страница приложения, предназначенная для авторизации зарегистрированных в системе пользователей"/>
     <title>Добро пожаловать!</title>
     {{>linkscripts}}
+    <script src="./js/welcome_page_slider.js"></script>
     {{>styles}}
 </head>
 <body>
-
+    <div class="row align-content-center justify-content-center m-0 p-0" id="welcome-page-background">
+            
+    </div>
+    <div class="container-fluid h-100" id="welcome-page_container">
+        <div class="col-12 row justify-content-end align-content-center m-0 p-0" id="welcome-page">
+                <div class="col-6 row justify-content-center align-content-center" id="welcome-page-form">
+                    <form class="col-6" id="login-form">
+                        <label for="login">Логин</label>
+                        <input type="text" class="form-control" id="user-login">
+                        <label for="password">Пароль</label>
+                        <input type="text" class="form-control" id="user-password">
+                        <button id="login-form-sumbit">Войти</button>
+                    </form>
+                </div>
+           </div>
+    </div>  
 </body>
 </html>

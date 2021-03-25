@@ -12,8 +12,6 @@ h1{
     user-select: none;
 }
 h2{
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-weight: 100;
     font-size: 16pt;
     user-select: none;
 }
@@ -38,6 +36,9 @@ p::first-letter{
 textarea{
     resize: none;
 }
+th,td{
+    text-align: center;
+}
 .text-logo{
     font-family: Harlow Solid;
     text-shadow: 1px 1px 5px blueviolet;
@@ -57,6 +58,34 @@ textarea{
 }
 /*Computer-version*/
 @media screen and (min-width:768px){
+    /*welcome_page*/
+    #welcome-page{
+        min-height: 100vh;
+    }
+    #welcome-page_container{
+        background-color: rgba(39, 16, 68, 0.815);
+    }
+    #welcome-page-background{
+        min-height: 100vh;
+        min-width: 100vw;
+        background: url("/img/backgrounds/wp1.jpg") no-repeat;
+        background-size: cover;
+        background-position-y: center;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: -1;
+    }
+    #welcome-page img{
+        width: 150px;
+        height: 150px;
+    }
+    #welcome-page-form{
+        height: 500px;
+        background-color: rgb(20, 16, 68);
+        border-radius: 40px 0 0 40px;
+        box-shadow: rgb(23, 11, 65) -2px 5px 10px;
+    }
     /*Common*/
     .avatar_img{
         border-radius: 250px;
@@ -68,7 +97,12 @@ textarea{
     }
     .h-of{
         height: 80px;
-        box-shadow: rgba(13, 18, 85, 0.363) 1px 1px 50px;
+        /*padding: 20px 0 !important;*/
+        padding-bottom: 20px;
+    }
+    .h-of h1{
+        border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+        padding-bottom: 10px;
     }
     /*Header*/
     header{
@@ -148,6 +182,7 @@ textarea{
         border-top: white;
         border-bottom: white;
         border-radius: 0;
+        height: 60px;
     }
     #sidebar_menu button:hover{
         background-color: rgb(38, 31, 114);
@@ -249,6 +284,19 @@ textarea{
         border-top-left-radius: 40px;
         box-shadow: #291ba3 -2px -2px 50px;
         height: 120px;
+    }
+    .announcement-form-button{
+        height: 55px;
+        border-top-right-radius: 25px;
+        border-bottom-right-radius: 25px;
+    }
+    /*c_mygroup*/
+    .c-my-group .student-block{
+        height: 160px;
+    }
+    .c-my-group .student-block img{
+        width: 150px;
+        height: 150px;
     }
 }
 /*Smartphone-version*/
