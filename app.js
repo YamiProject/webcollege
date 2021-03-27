@@ -120,28 +120,6 @@ class ServerUser{
         connect.end()
         return "Succsess";
     }
-    async checkAccsess(type,id,equal_id){
-        let result;
-        switch(type){
-            case "s":
-                result=await this.createSelectQuery(`SELECT group_id \ 
-                FROM students \ 
-                WHERE student_id=${id} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) LIMIT 1`);
-                break;
-            case "g":
-                result=-1;
-                break;
-            case "sg":
-                result=-1;
-                break;
-        }
-        if(typeof result[0]!=='undefined'){
-            return result[0].group_id==equal_id?true:false;
-        }
-        else{
-            return false;
-        }
-    }
     async fileNormalisePath(file,type,user_id){
         if(file==""){
             return null;
