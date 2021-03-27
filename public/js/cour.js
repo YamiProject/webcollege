@@ -2,19 +2,19 @@ import * as functions from "./functions.js";
 $(document).ready(function(){
     //main_Page
     $("#mg-link").on('click', function(){
-        window.location.href="/mygroup";
+        window.location.href="/c/mygroup";
     });
     $("#al-link").on('click', function(){
-        window.location.href="/newattendance";
+        window.location.href="/c/newattendance";
     });
     $("#ep-link").on('click', function(){
-        window.location.href="/mygroupnewevent";
+        window.location.href="/c/mygroup/newevent";
     });
     $("#r-link").on('click', function(){
-        window.location.href="/newreport";
+        window.location.href="/c/newreport";
     });
     $("#l-link").on('click', function(){
-        window.location.href="/announcements";
+        window.location.href="/c/announcements";
     });
     //announcements
     $("#anouncement-form-sumbit").on('click', function(e){
