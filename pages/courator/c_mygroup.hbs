@@ -21,11 +21,15 @@
                             <h1 class="display-4 col-12 text-right">Моя группа</h1>
                             
                         </div>
-                        <div class="col-12 h-75 row justify-content-center align-items-start align-content-start">
+                        <div class="col-11 h-75 row justify-content-center align-items-start align-content-start">
                             {{#each studentsList}}
-                                <div class="col-xl-5 col-12 m-2 rounded student-block row align-items-center" style="background-color: rgb(63, 21, 92);">
-                                    <img src="{{#imgnotnull student_photo}}{{/imgnotnull}}" alt="">
-                                    <span>{{student_name}} {{student_sur_name}} {{student_mid_name}}</span>
+                                <div class="col-xl-5 col-12 m-3 student-block row align-items-center justify-content-start" id="{{student_id}}">
+                                    <div class="col-4">
+                                        <img src="{{#imgnotnull student_photo}}{{/imgnotnull}}" alt="">
+                                    </div>
+                                    <div class="col-8">
+                                        <p>{{student_sur_name}} {{student_name}} {{student_mid_name}}</p>
+                                    </div>
                                 </div>
                             {{/each}}
                         </div>

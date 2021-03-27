@@ -48,6 +48,7 @@ hbs.registerHelper('equal',(val1,val2,options)=>{
     return (val1==val2)?options.fn(this):options.inverse(this);
 });
 hbs.registerHelper('define', (val,options)=>{
+    console.log(val);
     return typeof val!=='undefined'?options.fn(this):options.inverse(this);
 });
 hbs.registerHelper('imgnotnull', (val,sex)=>{
@@ -92,6 +93,19 @@ class ServerUser{
     setUserOptions(user_options){
         this.user_options=user_options[0];
     }
+    //БД
+    async createSelectQuery(query){
+        var connect=await connect_db_promise();
+        var [rows, fields]=await connect.query(query);
+        connect.end()
+        return rows;
+    }
+    async createIUDQuery(query){
+        var connect=await connect_db_promise();
+        await connect.query(query);
+        connect.end()
+        return("succsess");
+    }
     //Функции
     getUserState(){
         return [this.user_id,this.user_role,this.user_role_min];
@@ -107,18 +121,6 @@ class ServerUser{
     }
     getUserOptions(){
         return this.user_options;
-    }
-    async createSelectQuery(query){
-        var connect=await connect_db_promise();
-        var [rows, fields]=await connect.query(query);
-        connect.end()
-        return rows;
-    }
-    async createInsertQuery(query){
-        var connect=await connect_db_promise();
-        await connect.query(query);
-        connect.end()
-        return "Succsess";
     }
     async fileNormalisePath(file,type,user_id){
         if(file==""){
@@ -327,9 +329,8 @@ app.route("/c/announcements").get(isAuthenticated,interfaceSplitter,async(req,re
         announcement_type:announcement[1]
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
-    console.log("dadsasdasd");
     let file=await serverUser.fileNormalisePath(req.body.file,'common_img',null);
-    let result=await serverUser.createInsertQuery(`INSERT INTO announcements \
+    await serverUser.createIUDQuery(`INSERT INTO announcements \
     VALUE(null,${serverUser.getUserGroup()},NOW(),'${req.body.head}','${req.body.type}',${file},'${req.body.text}');`);
     res.end();
 });
@@ -438,7 +439,8 @@ app.route("/c/student/:id/attendance").get(isAuthenticated,interfaceSplitter,isA
         role:serverUser.getUserState()[1],
         options:serverUser.getUserOptions(),
         title:`${studentAttendance[0][0].student_sur_name} ${studentAttendance[0][0].student_name} ${studentAttendance[0][0].student_mid_name}`,
-        student:studentAttendance[0][0],absenteeismes:studentAttendance[1]
+        student:studentAttendance[0][0],
+        absenteeismes:studentAttendance[1]
     });
 }).post(isAuthenticated,interfaceSplitter,isAccsessable,urlencodedParser, async(res,req)=>{
 
@@ -557,12 +559,18 @@ app.get("/c/mygroup/individualwork/reports",isAuthenticated,interfaceSplitter,as
 });
 //Страница с формой создания новой докладной на группу/студента
 app.route("/c/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    let data=await serverUser.createSelectQuery("SELECT group_id, spetiality_abbreviated \
+    FROM groups a INNER JOIN spetialities b ON a.spetiality_id=b.spetiality_id \
+    WHERE a.group_end_education_date>NOW();");
     res.render("c_newreport",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[1],
-        options:serverUser.getUserOptions()
+        options:serverUser.getUserOptions(),
+        group_list:data
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
+    await serverUser.createIUDQuery(`INSERT INTO reports \ 
+    VALUES(null,${serverUser.getUserState()[0]},${req.body.group_id},'${req.body.text}',NOW())`);
     res.end();
 });
 //Страница посещаемости
@@ -590,7 +598,6 @@ app.route("/c/newattendance").get(isAuthenticated,interfaceSplitter,async(req,re
         studentList:studentList
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
-    res.end();
 });
 //Страница-галерея
 app.get("/c/mygroup/gallery",isAuthenticated,interfaceSplitter,async(req,res)=>{

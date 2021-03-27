@@ -1,7 +1,10 @@
 import * as functions from "./functions.js";
 $(document).ready(function(){
-    $("#error404-back-main").on('click', function(){
+    $("#error-back-main").on('click', function(){
         window.location.href="/";
+    });
+    $("#error-back").on('click', function(){
+        history.back();
     });
     $("#login-form-submit").on('click',async function(e){
         e.preventDefault();
@@ -42,7 +45,7 @@ $(document).ready(function(){
     });
     $()*/
     //Обнуление состояния ошибки
-    $(":input:text,textarea").on('click', function(){
-        $(this).removeClass("border-warning");
+    $("input,textarea,select").on('click', function(){
+        $(this).removeClass("border-danger");
     });
 });

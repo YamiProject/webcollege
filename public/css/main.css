@@ -26,13 +26,6 @@ a:hover{
 h1,h2,a,span,p{
     word-wrap: break-word;
 }
-p{
-    overflow-y: initial;
-    height: 100%;
-}
-p::first-letter{
-    margin-left: 40px;
-}
 textarea{
     resize: none;
 }
@@ -189,8 +182,8 @@ th,td{
         transform: scale(1.2);
     }
     #sidebar_menu .logo{
-        width: 250px;
-        height: 250px;
+        width: 150px;
+        height: 150px;
     }
     .close-button{
         position: absolute;
@@ -241,6 +234,7 @@ th,td{
     .mainpage-links>div:hover{
         transform: scale(1.05); 
     }
+    /*courator*/
     /*c_announcements*/
     .announcement-block{
         height: 60vh;
@@ -276,6 +270,13 @@ th,td{
         background-color: #ffffff44;
         border-radius: 40px;
     }
+    .announcement-text p{
+        overflow-y: initial;
+        height: 100%;
+    }
+    .announcement-text p::first-letter{
+        margin-left: 40px;
+    }
     .announcement-form{
         position: fixed;
         bottom: 0;
@@ -293,10 +294,20 @@ th,td{
     /*c_mygroup*/
     .c-my-group .student-block{
         height: 160px;
+        border-radius: 40px;
+        background-color: #ffffff44;
+        cursor: pointer;
+        transition: all .2s ease-in-out;
+        box-shadow: -10px 2px 10px #4d3f9b;
+        height: 20vh;
+    }
+    .c-my-group .student-block:hover{
+        transform: scale(1.05); 
     }
     .c-my-group .student-block img{
-        width: 150px;
-        height: 150px;
+        width: 130px;
+        height: 130px;
+        border-radius: 150px;
     }
 }
 /*Smartphone-version*/

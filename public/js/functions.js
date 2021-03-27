@@ -1,10 +1,15 @@
 export function escapeHTML(string){
-    return string.replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;")
-    .replace(/\s/g,'');
+    try{
+        return string.replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+        .replace(/\s/g,'');
+    }
+    catch{
+        return false;
+    }
 };
 export function filledCheck(element,fields){
     var check=true;
@@ -13,10 +18,15 @@ export function filledCheck(element,fields){
         selector+=`#${$(element).closest("form").attr("id")} ${val},`;
     });
     $(selector.substring(0,selector.length-1)).each(function(){
-        if(escapeHTML($(this).val())==""){
-            $(this).addClass("border-warning");
+        if(escapeHTML($(this).val())==""||$(this).val()==null){
+            $(this).addClass("border-danger");
             check=false;
         }
     });
     return check;
+}
+export function clear(element){
+    $(`#${$(element).closest("form").attr("id")} input, #${$(element).closest("form").attr("id")} textarea`).each(function(){
+        $(this).val("");
+    });
 }

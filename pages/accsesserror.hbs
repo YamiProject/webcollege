@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
-    <meta name="description" content="Страница для обработки ошибки 404 на первом уровне приложения."/>
+    <meta name="description" content="Страница для обработки ошибки доступа."/>
     <title>{{title}}</title>
     {{>linkscripts}}
 </head>
@@ -13,9 +13,9 @@
         <div class="col-12 h-100 row align-content-center justify-content-center">
             <div class="col-10">
                 <h1>Ошибка 401</h1>
-                <p>Похоже, что вы пытаетесь попасть на страницу, к которой у вас нет доступа.</p>
-                <button id="error404-back-main">Вурнуться на главную страницу</button>
-                <button id="error404-back-main">Вурнуться на предыдщую страницу</button>
+                <p>Похоже, что у Вас отсвутствуют права доступа к данной странице.</p>
+                <button id="error-back">Вурнуться на предыдщую страницу</button>
+                <button id="error-back-main">Вурнуться на главную страницу</button>
             </div>
         </div>
     </div>
