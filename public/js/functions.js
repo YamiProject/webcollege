@@ -8,7 +8,7 @@ export function escapeHTML(string){
         .replace(/\s/g,'');
     }
     catch{
-        return false;
+        return "";
     }
 };
 export function filledCheck(element,fields){
@@ -18,7 +18,7 @@ export function filledCheck(element,fields){
         selector+=`#${$(element).closest("form").attr("id")} ${val},`;
     });
     $(selector.substring(0,selector.length-1)).each(function(){
-        if(escapeHTML($(this).val())==""||$(this).val()==null){
+        if(escapeHTML($(this).val())==""){
             $(this).addClass("border-danger");
             check=false;
         }

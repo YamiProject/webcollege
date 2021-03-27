@@ -93,19 +93,6 @@ class ServerUser{
     setUserOptions(user_options){
         this.user_options=user_options[0];
     }
-    //БД
-    async createSelectQuery(query){
-        var connect=await connect_db_promise();
-        var [rows, fields]=await connect.query(query);
-        connect.end()
-        return rows;
-    }
-    async createIUDQuery(query){
-        var connect=await connect_db_promise();
-        await connect.query(query);
-        connect.end()
-        return("succsess");
-    }
     //Функции
     getUserState(){
         return [this.user_id,this.user_role,this.user_role_min];
@@ -136,6 +123,18 @@ class ServerUser{
                     return `'/files/${this.getUserGroup()}/images/${file}'`;
             }
         }
+    }
+    async createSelectQuery(query){
+        var connect=await connect_db_promise();
+        var [rows, fields]=await connect.query(query);
+        connect.end()
+        return rows;
+    }
+    async createIUDQuery(query){
+        var connect=await connect_db_promise();
+        await connect.query(query);
+        connect.end()
+        return("succsess");
     }
     clearData(){
         this.user_id=null;
