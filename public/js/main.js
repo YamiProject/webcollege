@@ -1,11 +1,14 @@
 import * as functions from "./functions.js";
 $(document).ready(function(){
+    $("#error404-back-main").on('click', function(){
+        window.location.href="/";
+    });
     $("#login-form-submit").on('click',async function(e){
         e.preventDefault();
         if(await functions.filledCheck($(this),[':input:text'])==true){
             $.ajax({
                 type:"POST",
-                url:"/authorisation",
+                url: "/welcomepage",
                 data:{
                     user_login:functions.escapeHTML($("#user-login").val()),
                     user_password:functions.escapeHTML($("#user-password").val())

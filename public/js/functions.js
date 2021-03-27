@@ -6,10 +6,10 @@ export function escapeHTML(string){
     .replace(/'/g, "&#039;")
     .replace(/\s/g,'');
 };
-export function filledCheck(element,check_elements){
+export function filledCheck(element,fields){
     var check=true;
     let selector="";
-    check_elements.forEach(val=>{
+    fields.forEach(val=>{
         selector+=`#${$(element).closest("form").attr("id")} ${val},`;
     });
     $(selector.substring(0,selector.length-1)).each(function(){

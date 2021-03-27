@@ -23,7 +23,7 @@ $(document).ready(function(){
             functions.escapeHTML("dsdsdsd");
             $.ajax({
                 type:"POST",
-                url:"/announcements",
+                url:"/c/announcements",
                 data:{
                     head:functions.escapeHTML($("#anouncement-form-head").val()),
                     type:functions.escapeHTML($("#anouncement-form-type").val()),
