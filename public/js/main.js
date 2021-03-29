@@ -3,7 +3,7 @@ $(document).ready(function(){
     $("#error-back-main").on('click', function(){
         window.location.href="/";
     });
-    $("#error-back").on('click', function(){
+    $("#error-back,.back-button").on('click', function(){
         history.back();
     });
     $("#login-form-submit").on('click',async function(e){
@@ -32,8 +32,11 @@ $(document).ready(function(){
     },function(){
         $(this).animate({paddingTop:"-=10px"},200);
     });
-     /*
-    $(".close-button").hover(function(){
+    //Обнуление состояния ошибки
+    $("input,textarea,select").on('click', function(){
+        $(this).removeClass("border-danger");
+    });    
+    /*$(".close-button").hover(function(){
         $(this).animate({width:"+=20px",paddingLeft:"+=10px"},200);
     },function(){
         $(this).animate({width:"-=20px",paddingLeft:"-=10px"},200);
@@ -42,10 +45,5 @@ $(document).ready(function(){
         $("#sidebar").animate({width:"0"},400);
         $(".close-button").animate({left:"-=330px"},400);
         $(".main").animate({left:"0",width:"100.8%"},400)
-    });
-    $()*/
-    //Обнуление состояния ошибки
-    $("input,textarea,select").on('click', function(){
-        $(this).removeClass("border-danger");
-    });
+    });*/
 });

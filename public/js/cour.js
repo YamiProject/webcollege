@@ -65,6 +65,19 @@ $(document).ready(function(){
     $(".student-block").on('click', function(){
         window.location.href=`/c/student/${$(this).attr("id")}`;
     });
+    //student
+    $(".student-sections>div[id^=st-doc-link]").on('click', function(){
+        window.location.href=`/c/student/${$(this).attr("id").substr(-1)}/documents`;
+    });
+    $(".student-sections>div[id^=st-ach-link]").on('click', function(){
+        window.location.href=`/c/student/${$(this).attr("id").substr(-1)}/achievements`;
+    });
+    $(".student-sections>div[id^=st-ae-link]").on('click', function(){
+        window.location.href=`/c/student/${$(this).attr("id").substr(-1)}/additionaleducation`;
+    });
+    $(".student-sections>div[id^=st-abs-link]").on('click', function(){
+        window.location.href=`/c/student/${$(this).attr("id").substr(-1)}/attendance`;
+    });
     //newreport
     $("#report-form-submit").on('click',function(e){
         e.preventDefault();
