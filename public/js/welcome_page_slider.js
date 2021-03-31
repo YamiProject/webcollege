@@ -8,10 +8,10 @@ $(document).ready(function(){
         .toString()
         .substr(2));
         if(num+1<5){
-            $('#welcome-page-background').css("background-image", `url(/img/backgrounds/wp${num+1}.jpg)`).fadeIn(1000);
+            $('#welcome-page-background').css("background-image", `url(/img/other/wp${num+1}.jpg)`).fadeIn(1000);
         }
         else{
-            $('#welcome-page-background').css("background-image", `url(/img/backgrounds/wp${1}.jpg)`).fadeIn(1000);
+            $('#welcome-page-background').css("background-image", `url(/img/other/wp${1}.jpg)`).fadeIn(1000);
         }
     })
     }, 10000);

@@ -1,3 +1,32 @@
 <style>
+    h1{
+        font-size: {{options.h_size}}pt !important;
+    }
+    h2{
+        font-size: {{#math options.h_size '-' 2}}{{/math}}pt !important;
+    }
+    .mainpage-links h2{
+        font-size: {{#math options.h_size '-' 22}}{{/math}}pt !important;
+    }
+    h1,h2{
+        color: {{options.h_color}} !important;
+    }
+    p,label{
+        font-size: {{options.font_size}}pt !important;
+        color: {{options.font_color}} !important;
+    }
+    .student-block p{
+        font-size: 16pt !important;
+    }
+    {{#equal options.logo_d 0}}
+    .logo{
+        opacity: 0;
+    }
+    {{/equal}}
+    {{#equal options.app_name_d 0}}
+    .block-text-logo{
+        opacity: 0;
+    }
+    {{/equal}}
 </style>
 

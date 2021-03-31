@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="author" content="Kostin Vladislav"/>
+    <meta name="description" content="Страница для обработки ошибок."/>
+    <title>{{title}}</title>
+    {{>linkscripts}}
+</head>
+<body>
+    <div class="container-fluid" id="error-page">
+        <div class="col-12 h-auto row align-content-center align-items-center justify-content-center">
+            <div class="col-7 row justify-content-center">
+                {{#equal status '400'}}
+                    <div class="col-12">
+                        <h1>Ошибка 404</h1>
+                        <p>Ой! Похоже, что такой страницы не существует.</p>
+                    </div>
+                {{/equal}}
+                {{#equal status '500'}}
+                    <div class="col-12">
+                        <h1>Ошибка 500</h1>
+                        <p>Ой! Похоже, что произошла непредвиденная ошибка!</p>
+                    </div>
+                {{/equal}}
+                {{#equal status 'acs'}}
+                    <div class="col-12">
+                        <h1>Ошибка доступа</h1>
+                        <p>Ой! Похоже, что у Вас отсвутствуют права доступа к данной странице.</p>
+                    </div>
+                {{/equal}}
+                <div class="col-12 row justify-content-center">
+                    <button class="btn col-5 mx-3" id="error-back">Вернуться на предыдщую страницу</button>
+                    <button class="btn col-5 mx-3" id="error-back-main">Вурнуться на главную страницу</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

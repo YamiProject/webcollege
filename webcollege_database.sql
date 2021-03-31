@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Мар 29 2021 г., 22:37
+-- Время создания: Мар 31 2021 г., 10:44
 -- Версия сервера: 10.3.22-MariaDB
 -- Версия PHP: 7.1.33
 
@@ -71,7 +71,10 @@ CREATE TABLE `announcements` (
 --
 
 INSERT INTO `announcements` (`announcement_id`, `group_id`, `announcement_data`, `announcement_header`, `announcement_type`, `announcement_file`, `announcement_text`) VALUES
-(13, 1, '2021-03-29 20:34:40', 'FAFASF', 4, NULL, 'FAFAFS');
+(13, 1, '2021-03-29 20:34:40', 'FAFASF', 4, NULL, 'FAFAFS'),
+(14, 1, '2021-03-30 20:58:17', 'Внимание!', 3, NULL, 'Лалалалалалала'),
+(15, 1, '2021-03-30 20:59:08', 'dsd', 4, NULL, 'fsfsf'),
+(16, 1, '2021-03-30 21:00:17', 'fasfasff', 3, NULL, 'fsafaf');
 
 -- --------------------------------------------------------
 
@@ -301,19 +304,12 @@ CREATE TABLE `individual_work_types` (
 
 CREATE TABLE `options` (
   `option_id` int(11) NOT NULL,
-  `bg_color` varchar(100) NOT NULL,
-  `bg_img` text DEFAULT NULL,
-  `bg_color_use` tinyint(1) NOT NULL,
   `font_color` varchar(100) NOT NULL,
-  `font_size` varchar(10) NOT NULL,
+  `font_size` int(3) NOT NULL,
   `font_family` varchar(300) NOT NULL,
-  `h_size` varchar(10) NOT NULL,
+  `h_size` int(3) NOT NULL,
   `h_color` varchar(300) NOT NULL,
   `h_font_family` varchar(500) NOT NULL,
-  `sidebar_color` varchar(100) NOT NULL,
-  `menu_color` varchar(100) NOT NULL,
-  `objects_color` varchar(100) NOT NULL,
-  `sidebar_d` tinyint(1) NOT NULL,
   `logo_d` tinyint(1) NOT NULL,
   `img_d` tinyint(1) NOT NULL,
   `app_name_d` tinyint(1) NOT NULL
@@ -323,11 +319,11 @@ CREATE TABLE `options` (
 -- Дамп данных таблицы `options`
 --
 
-INSERT INTO `options` (`option_id`, `bg_color`, `bg_img`, `bg_color_use`, `font_color`, `font_size`, `font_family`, `h_size`, `h_color`, `h_font_family`, `sidebar_color`, `menu_color`, `objects_color`, `sidebar_d`, `logo_d`, `img_d`, `app_name_d`) VALUES
-(6, 'default', NULL, 1, 'default', 'default', 'default', 'default', 'default', 'default', 'default', 'default', 'default', 1, 1, 1, 1),
-(7, 'default', NULL, 1, 'default', 'default', 'default', 'default', 'default', 'default', 'default', 'default', 'default', 1, 1, 1, 1),
-(8, 'default', NULL, 1, 'default', 'default', 'default', 'default', 'default', 'default', 'default', 'default', 'default', 1, 1, 1, 1),
-(15, 'default', NULL, 1, 'default', 'default', 'default', 'default', 'default', 'default', 'default', 'default', 'default', 1, 1, 1, 1);
+INSERT INTO `options` (`option_id`, `font_color`, `font_size`, `font_family`, `h_size`, `h_color`, `h_font_family`, `logo_d`, `img_d`, `app_name_d`) VALUES
+(6, 'default', 16, 'default', 42, 'default', 'default', 1, 1, 1),
+(7, 'default', 16, 'default', 42, 'default', 'default', 1, 1, 1),
+(8, 'default', 16, 'default', 42, 'default', 'default', 1, 1, 1),
+(15, 'default', 16, 'default', 42, 'default', 'default', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -550,7 +546,7 @@ INSERT INTO `users` (`user_id`, `user_login`, `user_role`) VALUES
 --
 DELIMITER $$
 CREATE TRIGGER `new_user_options` AFTER INSERT ON `users` FOR EACH ROW INSERT IGNORE INTO options
-  VALUES (NEW.user_id,'default',NULL,1,'default','default','default','default','default','default','default','default','default',1,1,1,1)
+  VALUES (NEW.user_id,'default',16,'default',42,'default','default',1,1,1)
 $$
 DELIMITER ;
 DELIMITER $$
@@ -774,7 +770,7 @@ ALTER TABLE `additional_educations`
 -- AUTO_INCREMENT для таблицы `announcements`
 --
 ALTER TABLE `announcements`
-  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT для таблицы `announcement_types`

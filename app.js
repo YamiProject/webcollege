@@ -45,10 +45,14 @@ app.set('view engine','hbs');
 hbs.registerPartials('./pages/templates');
 //HandleBars хелперы
 hbs.registerHelper('equal',(val1,val2,options)=>{
+    //console.log(val1,' ',val2);
     return (val1==val2)?options.fn(this):options.inverse(this);
 });
-hbs.registerHelper('define', (val,options)=>{
-    return typeof val!=='undefined'?options.fn(this):options.inverse(this);
+hbs.registerHelper('nequal',(val1,val2,options)=>{
+    return (val1!==val2)?options.fn(this):options.inverse(this);
+});
+hbs.registerHelper('undefine', (val,options)=>{
+    return typeof val=='undefined'?options.fn(this):options.inverse(this);
 });
 hbs.registerHelper('imgnotnull', (val,sex)=>{
     return val!==null&&val!==""?sex=="М"?"/img/male.png":"/img/girl.png":val;
@@ -59,6 +63,20 @@ hbs.registerHelper('notnull', (val,options)=>{
 hbs.registerHelper('datenormalise', val=>{
     let date = new Date(val);
     return `${date.getDay()<10?"0"+date.getDay():date.getDay()}-${date.getMonth()<10?"0"+date.getMonth():date.getMonth()}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+});
+hbs.registerHelper('math', (val,act,num)=>{
+    switch(act){
+        case '*':
+            return val*num;
+        case '/':
+            return val/num;
+        case '+':
+            return val+num;
+        case '-':
+            return val-num;
+        case '^':
+            return val^num;
+    }
 });
 //Класс пользователя серверной части
 class ServerUser{
@@ -135,7 +153,7 @@ class ServerUser{
         var connect=await connect_db_promise();
         await connect.query(query);
         connect.end()
-        return("succsess");
+        return("Success");
     }
     clearData(){
         delete this.user_id;
@@ -231,7 +249,7 @@ app.route('/welcomepage').get((req,res)=>{
                     FROM options
                     WHERE option_id=${data[0].user_id}`));
                     connect.end();
-                    res.end("Succsess");
+                    res.end("Success");
                 }
                 else{
                     connect.end();
@@ -261,7 +279,7 @@ app.route('/welcomepage').get((req,res)=>{
                     FROM options
                     WHERE option_id=${data[0].user_id}`));
                     connect.end();
-                    res.end("Succsess");
+                    res.end("Success");
                 }
                 else{
                     connect.end();
@@ -291,7 +309,7 @@ app.route('/welcomepage').get((req,res)=>{
                     FROM options
                     WHERE option_id=${data[0].user_id}`));
                     connect.end();
-                    res.end("Succsess");
+                    res.end("Success");
                 }
                 else{
                     connect.end();
@@ -325,16 +343,68 @@ app.get("/profile",isAuthenticated,async(req,res)=>{
 });
 //Страница опций
 app.route("/options").get(isAuthenticated,async(req,res)=>{
-    let userOptions=await serverUser.createSelectQuery(`SELECT * \
-    FROM options \
-    WHERE option_id=${serverUser.getUserState()[1]}`);
+    let h_sizeA=[];
+    let font_sizeA=[];
+    for (let i=8;i<=48;i++) {
+        if(i<=36){
+            font_sizeA.push(i);
+        }
+        h_sizeA.push(i);   
+    }
+    let themes=await serverUser.createSelectQuery(`SELECT * \
+    FROM themes`);
     res.render("options",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        h_sizeA:h_sizeA,
+        font_sizeA:font_sizeA,
+        themes:themes
     });
-}).post(isAuthenticated,async(req,res)=>{
-    res.end();
+}).post(isAuthenticated,urlencodedParser,async(req,res)=>{
+    if(req.body.change=='default'){
+        let result=await serverUser.createIUDQuery(`UPDATE options SET \
+        h_size=42, \
+        h_color='#212529', \
+        font_size=16, \
+        font_color='#212529', \
+        theme_id=1, \
+        logo_d=1, \
+        app_name_d=1 \
+        WHERE option_id=${serverUser.getUserState()[1]}`);
+        res.end(result);
+    }
+    else if(req.body.change=='new'){
+        try{
+            let themes=await serverUser.createSelectQuery(`SELECT COUNT(theme_id) count FROM themes`);
+            if((parseInt(req.body.h_size)>=8 && parseInt(req.body.h_size)<=56) &&
+            (parseInt(req.body.font_size)>=8 && parseInt(req.body.font_size)<=36) &&
+            (parseInt(req.body.theme_id)>0 && parseInt(req.body.theme_id)<=themes[0].count)){
+                let logo_d=req.body.logo_d=='true'?1:0;
+                let app_name_d=req.body.app_name_d=='true'?1:0;
+                let result=await serverUser.createIUDQuery(`UPDATE options SET \
+                h_size=${req.body.h_size}, \
+                h_color='${req.body.h_color}', \
+                font_size=${req.body.font_size}, \
+                font_color='${req.body.font_color}', \
+                theme_id=${req.body.theme_id}, \
+                logo_d=${logo_d}, \
+                app_name_d=${app_name_d} \
+                WHERE option_id=${serverUser.getUserState()[1]}`);   
+                res.end(result);
+            }
+            else{
+                res.end("Hacking attempt");
+            }  
+        }
+        catch{
+            res.end("Unexpected error");
+        }
+    }
+    else{
+
+        res.end("Token Error");
+    }
 });
 //Страницы куратора
 //Объявления
@@ -353,9 +423,9 @@ app.route("/c/announcements").get(isAuthenticated,interfaceSplitter,async(req,re
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
     let file=await serverUser.fileNormalisePath(req.body.file,'common_img',null);
-    await serverUser.createIUDQuery(`INSERT INTO announcements \
+    let result=await serverUser.createIUDQuery(`INSERT INTO announcements \
     VALUE(null,${serverUser.getUserGroup()},NOW(),'${req.body.head}','${req.body.type}',${file},'${req.body.text}');`);
-    res.end();
+    res.end(result);
 });
 //Страница группы
 app.get("/c/mygroup",isAuthenticated,interfaceSplitter,async(req,res)=>{
@@ -587,9 +657,9 @@ app.route("/c/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
         group_list:data
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
-    await serverUser.createIUDQuery(`INSERT INTO reports \ 
+    let rault=await serverUser.createIUDQuery(`INSERT INTO reports \ 
     VALUES(null,${serverUser.getUserState()[0]},${req.body.group_id},'${req.body.text}',NOW())`);
-    res.end();
+    res.end(result);
 });
 //Страница посещаемости
 app.get("/c/mygroup/attendance",isAuthenticated,interfaceSplitter,async(req,res)=>{
@@ -678,13 +748,25 @@ app.get("/logout",(req,res)=>{
 })
 //Обработка ошибок
 app.get("/accsesserror",(req,res)=>{
-    res.render("accsesserror");
+    res.render("error", {
+        title:"Ошибка доступа",
+        status:'acs',
+        options:serverUser.getUserOptions()
+    });
 });
 app.use((req, res)=>{
-    res.status(404).render('error404',{title: "Ошибка 404"});
+    res.status(404).render('error',{
+        title:"Ошибка 404",
+        status:400,
+        options:serverUser.getUserOptions()
+    });
 });
 /*app.use((error, req, res, next)=>{
-    res.status(500).render("error500",{title:"Непредвиденная ошибка"});
+    res.status(500).render("error",{
+        title:"Ошибка 500",
+        status:500,
+        options:serverUser.getUserOptions()
+    });
 });*/
 //Прослушивание порта
 app.listen(3000);

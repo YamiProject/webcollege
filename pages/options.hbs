@@ -7,6 +7,7 @@
     <meta name="description" content="Страница настроек приложения."/>
     <title>Настройки</title>
     {{>linkscripts}}
+    {{>styles}}
 </head>
 <body>
     <div class="container-fluid h-100">
@@ -15,71 +16,86 @@
             <div class="row h-100 main">
                 <div class="row justify-content-center align-content-start col-12 mx-0 px-0 application options-page">
                     <div class="col-12 h-of">
-                        <h1 class="display-4 col-12 text-right">Настройки</h1>
+                        <h1 class="col-12 text-right">Настройки</h1>
                     </div>
-                    <div class="col-12 pt-5">
-                        <section class="col-12 row justify-content-center" id="text-options-section">
+                    <div class="col-12">
+                        <section class="col-12 row justify-content-center py-xl-5 py-3" id="text-options-section">
                             <div class="col-12 row justify-content-center">
-                                <h2 class="text-center display-4 col-5">Текст</h2>
+                                <h2 class="text-center col-xl-5 col-9">Текст</h2>
                             </div>
-                            <div class="col-5 row justify-content-center" id="text-options">
+                            <div class="col-xl-7 col-11 row justify-content-center" id="text-options">
                                 <div class="col-xl-6 col-10">
-                                    <label for="">Размер оглавлений</label>
-                                    <input type="text" class="form-control">
+                                    <label for="opt-h-size">Размер оглавлений</label>
+                                    <select class="form-control" id="opt-h-size"> 
+                                        {{#each h_sizeA}}
+                                            <option value="{{this}}" {{#equal ../options.h_size this}}selected{{/equal}}>{{this}}pt</option>
+                                        {{/each}}
+                                    </select>
                                 </div>
                                 <div class="col-xl-6 col-10">
-                                    <label for="">Цвет оглавлений</label>
-                                    <input type="text" class="form-control">
+                                    <label for="opt-h-color">Цвет оглавлений</label>
+                                    <input type="color" class="form-control form-control-color" value="{{options.h_color}}" id="opt-h-color">
                                 </div>
                                 <div class="col-xl-6 col-10">
-                                    <label for="">Размер основного текста</label>
-                                    <input type="text" class="form-control">
+                                    <label for="opt-font-size">Размер основного текста</label>
+                                    <select class="form-control" id="opt-font-size"> 
+                                        {{#each font_sizeA}}
+                                            <option value="{{this}}" {{#equal ../options.font_size this}}selected{{/equal}}>{{this}}pt</option>
+                                        {{/each}}
+                                    </select>
                                 </div>
                                 <div class="col-xl-6 col-10">
-                                    <label for="">Цвет основного текста</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                            </div>
-                        </section>
-                        <section class="col-12" id="bg-options-section">
-                            <div class="col-12">
-                                <h2 class="text-center display-4">Фон</h2>
-                            </div>
-                            <div class="col-12 row" id="bg-options">
-                                <div class="col-xl-6 col-10">
-                                    
-                                </div>
-                                <div class="col-xl-6 col-10">
-
+                                    <label for="opt-font-color">Цвет основного текста</label>
+                                    <input type="color" class="form-control form-control-color" value="{{options.font_color}}" id="opt-font-color">
                                 </div>
                             </div>
                         </section>
-                        <section class="col-12">
-                            <div class="col-12">
-                                <h2 class="text-center display-4">Колоризация</h2>
+                        <section class="col-12 row justify-content-center py-xl-5 py-3" id="theme-options-section">
+                            <div class="col-12 row justify-content-center">
+                                <h2 class="text-center col-xl-5 col-9">Тема</h2>
                             </div>
-                            <div class="col-12 row">
-                                <div class="col-xl-6 col-10">
-                                    <label for="">Цвет боковой панели</label>
-                                    <input type="text" class="form-control">
+                            <div class="col-xl-7 col-11 row justify-content-xl-around justify-content-center" id="theme-options">
+                                <div class="col-xl-6 col-10 row justify-content-center align-content-center">
+                                    <select class="form-control" id="opt-theme">
+                                        {{#each themes}}
+                                            <option value="{{theme_id}}">{{theme_name}}</option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+                                <div class="col-xl-6 col-12 row justify-content-center align-content-center mt-xl-0 mt-4" id="theme-preview-block">
+                                    <img src="/img/themes/theme_{{options.theme_id}}.png" alt="THEME" id="theme-preview">
                                 </div>
                             </div>
                         </section>
-                        <section class="col-12">
-                            <div class="col-12">
-                                <h2 class="text-center display-4">Отображение</h2>
+                        <section class="col-12 row justify-content-center py-xl-5 py-3" id="theme-options-section">
+                            <div class="col-12 row justify-content-center">
+                                <h2 class="text-center col-xl-5 col-9">Отображение</h2>
                             </div>
-                            <div class="col-12 row">
-                                <div class="col-xl-6 col-10">
-                                    <label for="">Цвет боковой панели</label>
-                                    <input type="text" class="form-control">
+                            <div class="col-xl-7 col-11 row justify-content-xl-around justify-content-center py-4" id="theme-options">
+                                <div class="col-12 row justify-content-center pb-5">
+                                    <div class="col-12 row align-content-center align-items-center pb-3">
+                                        <label class="form-check-label" for="opt-logo-d">Логотип?</label> <input class="form-check-input" type="checkbox" {{#equal options.logo_d 1}}checked{{/equal}} id="opt-logo-d">
+                                    </div>
+                                    <div class="col-12 row align-items-center justify-content-center">
+                                        <img src="./img/icons/logo.png" alt="LOGO" id='logo-example'>
+                                    </div>
+                                </div>
+                                <div class="col-12 row justify-content-center pb-1">
+                                    <div class="col-12 row align-content-center align-items-center pb-3">
+                                        <label class="form-check-label" for="opt-app-name-d">Название приложения?</label> <input class="form-check-input" type="checkbox" {{#equal options.app_name_d 1}}checked{{/equal}} id="opt-app-name-d">
+                                    </div>
+                                    <div class="col-12 row justify-content-center">
+                                        <div class="col-12 row justify-content-center align-items-center" id="opt-app-name">
+                                            <span class="col-12 text-center text-logo">WebCollege</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </section>
-                        <section class="col-12">
-                            <div class="col-12">
-                               <button>По умолчанию</button>
-                               <button>Сохранить</button>
+                        <section class="col-12 py-5" id="options-buttons">
+                            <div class="col-12 row justify-content-center">
+                               <button class="btn mx-3 col-xl-3 col-4" id="default-options-button">По умолчанию</button>
+                               <button class="btn mx-3 col-xl-3 col-4" id="save-options-button">Сохранить</button>
                             </div>
                         </section>
                     </div>

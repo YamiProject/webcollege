@@ -16,6 +16,41 @@ $(document).ready(function(){
     $("#l-link").on('click', function(){
         window.location.href="/c/announcements";
     });
+    //profile
+    //options
+    $("#default-options-button").on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+            type:"POST",
+            url:"/options",
+            data:{
+                change:'default'
+            },
+            success: function(){
+                window.location.reload();
+            }
+        });
+    });
+    $("#save-options-button").on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+            type:"POST",
+            url:"/options",
+            data:{
+                change:'new',
+                h_size:functions.escapeHTML($("#opt-h-size").val()),
+                h_color:functions.escapeHTML($("#opt-h-color").val()),
+                font_size:functions.escapeHTML($("#opt-font-size").val()),
+                font_color:functions.escapeHTML($("#opt-font-color").val()),
+                theme_id:functions.escapeHTML($("#opt-theme").val()),
+                logo_d:$("#opt-logo-d").prop("checked"),
+                app_name_d:$("#opt-app-name-d").prop("checked"),
+            },
+            success: function(){
+                window.location.reload();
+            }
+        });
+    });
     //announcements
     $("#anouncement-form-sumbit").on('click', async function(e){
         e.preventDefault();
@@ -43,7 +78,7 @@ $(document).ready(function(){
                             </div>
                             <div class="col-xl-10 col-4 row announcement-info">
                                 <div class="col-xl-4 col-12">
-                                    <label class="col-12 text-center">${$.now()}</label>
+                                    <label class="col-12 text-center">{{#datenormalise ${$.now()}}}{{/datenormalise}}</label>
                                 </div>
                                 <div class="col-xl-8 col-12">
                                     <label class="col-12 text-center">${$("#anouncement-form-type").find('option:selected').text()}</label>
