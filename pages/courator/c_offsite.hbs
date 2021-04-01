@@ -13,7 +13,8 @@
     <div class="container-fluid h-100">
         <div class="row h-100">
             {{>sidebar}}
-            <div class="row h-100 main">
+            <div class="row h-100 main {{#equal sidebar_d 0}}main-full-screen{{else}}main-n-full-screen{{/equal}}">
+                {{>applogo}}
                 <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
                     <div class="col-12 justify-content-center align-items-center row mx-0 px-0 app-window c-offsite">

@@ -1,9 +1,6 @@
-<header class="col-12 p-0 m-0 d-flex row justify-content-center align-items-end">
-    <div class="col-12 row align-self-start pt-3 block-text-logo">
-        <span class="col-12 text-white text-center display-4 text-logo">WebCollege</span>
-    </div>
+<header class="p-0 m-0 row justify-content-center {{#equal sidebar_d 0}}header-full-screen{{else}}header-n-full-screen{{/equal}} align-items-end" id="header">
     <!--Панель навигации-->
-    <nav class="col-12" id="navbar">
+    <nav class="col-12 justify-content-center" id="navbar">
         <ul>
             <!--Навигационная панель куратора-->
             {{#equal role 'courator'}}

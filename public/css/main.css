@@ -2,6 +2,11 @@
 html, body{
     min-height: 100vh;
     overflow-y: initial;
+    overflow-x: hidden;
+}
+div,section{
+    margin-left: 0;
+    margin-right: 0;
 }
 h1{
     user-select: none;
@@ -33,7 +38,7 @@ textarea{
 th,td{
     text-align: center;
 }
-.text-logo{
+.app-logo{
     user-select: none;
     font-family: Harlow Solid;
 }
@@ -82,6 +87,11 @@ th,td{
         box-shadow: rgb(23, 11, 65) -2px 5px 10px;
     }
     /*Common*/
+    .block-app-logo{
+        position: fixed;
+        top: 5px;
+        z-index: 15;
+    }
     .avatar_img{
         border-radius: 250px;
         width: auto;
@@ -98,9 +108,39 @@ th,td{
     .profile-page .h-of h1,.options-page .h-of h1{
         padding-top: 10px;
     }
+    /*screen*/
+    .header-full-screen,.main-full-screen{
+        left: 0;
+        width: 100%; 
+    }
+    .header-n-full-screen,.main-n-full-screen{
+        left: 330px;
+        width: calc(100% - 330px);
+    }
+    .sidebar-full-screen{
+        width: 0;
+    }
+    .sidebar-d-block{
+        width: 330px;
+    }
+    .sidebar-close-button-full-screen{
+        left: 0;
+    }
+    .sidebar-close-button-n-full-screen{
+        left: 330px;
+    }
+    .block-app-logo-n-full-screen{
+        left: 51%;
+    }
+    .block-app-logo-full-screen{
+        left: 43%;
+    }
     /*Header*/
-    header{
+    #header{
+        position: fixed !important;
+        top: 0;
         overflow-y: hidden;
+        overflow-x: initial;
         margin: 0;
         display: flex;
         flex-direction: row;
@@ -108,21 +148,24 @@ th,td{
         height: 180px;
         z-index: 8;
     }
+    #header nav{
+        width: 100%;
+    }
     #navbar ul{
         padding:0;
         height: auto;
-        margin-bottom: -20px;
-        min-height: 50px;
-        width: 100%;
-        text-align: center;
-        vertical-align: center;
-        white-space: nowrap;
-        display: table;
+        width: auto;
+        margin-bottom: -15px;
+        margin-left: 20px;
+        min-height: 100px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: flex-end;
     }
     #navbar li{
         text-decoration: none;
         list-style: none;
-        display: table-cell;
     }
     #navbar a{
         display: block;
@@ -136,12 +179,14 @@ th,td{
     }
     /*Sidebar*/
     #sidebar{
-        width: 330px;
         height: 100%;
         z-index: 9;
         overflow: hidden;
         position: fixed;
         left: 0;
+    }
+    #sidebar>*{
+        word-wrap: none !important;
     }
     #sidebar_menu{
         left: 0;
@@ -168,38 +213,67 @@ th,td{
         width: 150px;
         height: 150px;
     }
-    .close-button{
-        position: absolute;
-        left: 330px;
+    .sidebar-close-button{
+        position: fixed;
         top: auto;
-        z-index: 8;
+        z-index: 40;
         height: 80px;
-        width: 80px;
+        width: 40px;
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
+        cursor: pointer;
+        top: 10px;
     }
-    .close-button label{
-
-        writing-mode: vertical-lr;
-        text-orientation: mixed;
+    .sidebar-close-button label{
         text-align: center;
-        height: 100%;
-        padding-left: 8px;
+        padding-left: 5px;
+        padding-top: 5px;
+        font-weight: bold;
         font-family: 'Times New Roman', Times, serif;
         cursor: pointer;
+        writing-mode: vertical-lr;
+        text-orientation: upright;
+        letter-spacing: -4px;
     }
-    /*main*/
+    .sidebar-close-button:hover{
+        transform: scale(1.08)
+    }
+    /*sideform*/
+    #side-form{
+        position: fixed;
+        width: 0;
+        right: 0;
+        bottom: 0;
+        height: 82%;
+        z-index: 5;
+        overflow: inital;
+        overflow-x: hidden;
+    }
+    #side-form .close-sideform{
+        width: 100%;
+        height: 80px;
+        border-radius: 0 !important;
+        margin-top: -20px;
+    }
+    #side-form>div{
+        height: 80%;
+    }
+    .block-to-slide{
+        width: 100%;
+    }
+    /*app*/
     .main{
         position: absolute;
-        left: 345px;
-        width: calc(100% - 330px);
         height: auto;
+        margin: 0;
     }
     .app-window{
-        overflow-y: auto;
-        min-height: 80vh;
+        padding-top: 190px !important;
+        overflow-y: initial;
+        min-height: 60vh;
         background-color: #bbbbbb00;
     }
+    /*mainpage*/
     .mainpage-links{
         min-height: 65vh;
     }
@@ -280,8 +354,18 @@ th,td{
     /*courator*/
     /*c_announcements*/
     .announcement-block{
-        height: 52vh;
         padding-top: 20px;
+        padding-bottom: 100px;
+        width: 100%;
+        overflow-y: initial;
+    }
+    .announcement-open-form-block{
+        padding: 20px 0 40px 0;
+    }
+    .announcement-open-form-block button{
+        width: 50%;
+        height: 100px;
+        border-radius: 25px !important;
     }
     .announcement-block>article{
         margin-bottom: 50px;
@@ -306,6 +390,7 @@ th,td{
         margin-top: 10px;
         padding: 10px 0;
         border-radius: 40px;
+        min-height: 300px;
     }
     .announcement-text p{
         overflow-y: initial;
@@ -321,8 +406,12 @@ th,td{
         border-top-left-radius: 40px;
         height: 150px;
     }
+    #anouncement-form-text{
+        border-radius: 10px 10px 0 0;
+        height: 400px;
+    }
     .announcement-form-button{
-        border-radius: 0 75px 75px 0 !important;
+        border-radius: 0 0 10px 10px !important;
         outline: none;
         color: white;
     }

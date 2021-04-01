@@ -1,4 +1,4 @@
-<div id="sidebar">
+<div class="{{#equal sidebar_d 0}}sidebar-full-screen{{else}}sidebar-d-block{{/equal}}" id="sidebar">
     <div class="row justify-content-center col-12 m-0 p-0 pt-3" id="sidebar_menu">
         <div class="col-12 row justify-content-center align-content-center py-3 sidebar-user-block">
             <img src="https://avatarko.ru/img/kartinka/33/multfilm_lyagushka_32117.jpg" alt="profile_avatar" class="avatar_img pb-2">
@@ -16,6 +16,6 @@
     </div>                
 </div>
 
-<!--<div class="close-button">
-    <img src="" alt="closer">
-</div>-->
+<div class="sidebar-close-button {{#equal sidebar_d 0}}sidebar-close-button-full-screen sidebar-open-action{{else}}sidebar-close-action sidebar-close-button-n-full-screen{{/equal}}">
+    <label for="">{{#equal sidebar_d 1}}&lt;&lt;&lt;{{else}}&gt;&gt;&gt;{{/equal}}</label>
+</div>

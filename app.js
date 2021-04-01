@@ -205,10 +205,24 @@ async function isAccsessable(req,res,next){
 //Конвейер обработки
 //Создание проверочной сессии
 app.use(async(req,res,next) =>{
-    await serverUser.setUser(1,8,"courator","c",'Киселёва','Светлана', 'Владимировна','/img/profile_avatars/c_1.png');
-    await serverUser.setUserGroup(1);
-    await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * FROM options WHERE option_id=${serverUser.getUserState()[1]} LIMIT 1`));
-    req.session.user="@courator/1/2";
+    let createRole='c';
+    switch(createRole){
+        case "c":
+            await serverUser.setUser(1,8,"courator","c",'Киселёва','Светлана', 'Владимировна','/img/profile_avatars/c_1.png');
+            await serverUser.setUserGroup(1);
+            await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * FROM options WHERE option_id=${serverUser.getUserState()[1]} LIMIT 1`));
+            req.session.user="@courator/1/2";
+            if(!req.cookies.sidebar){
+                res.cookie('sidebar',1);
+            }
+            break;
+        case "t":
+            break;
+        case "s":
+            break;
+        case "a":
+            break;
+    }
     next();
 });
 //Express 
@@ -248,6 +262,7 @@ app.route('/welcomepage').get((req,res)=>{
                     await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * \ 
                     FROM options
                     WHERE option_id=${data[0].user_id}`));
+                    res.cookie('sidebar',1);
                     connect.end();
                     res.end("Success");
                 }
@@ -278,6 +293,7 @@ app.route('/welcomepage').get((req,res)=>{
                     await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * \ 
                     FROM options
                     WHERE option_id=${data[0].user_id}`));
+                    res.cookie('sidebar',1);
                     connect.end();
                     res.end("Success");
                 }
@@ -325,7 +341,8 @@ app.get("/",isAuthenticated,(req,res)=>{
     res.render(`${serverUser.getUserState()[3]}_index`,{
         username:serverUser.getUserFullName(),
         role:serverUser.getUserState()[2], 
-        options:serverUser.getUserOptions()
+        options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
     });
 });
 //Страница профиля пользователя
@@ -338,6 +355,7 @@ app.get("/profile",isAuthenticated,async(req,res)=>{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         userData:userData
     });
 });
@@ -357,6 +375,7 @@ app.route("/options").get(isAuthenticated,async(req,res)=>{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         h_sizeA:h_sizeA,
         font_sizeA:font_sizeA,
         themes:themes
@@ -418,6 +437,8 @@ app.route("/c/announcements").get(isAuthenticated,interfaceSplitter,async(req,re
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
+        form:'c-announce',
         posts:announcement[0],
         announcement_type:announcement[1]
     });
@@ -443,6 +464,7 @@ app.get("/c/mygroup",isAuthenticated,interfaceSplitter,async(req,res)=>{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         title:group[1][0].spetiality_abbreviated,
         studentsList:group[0],
         groupInfo: group[2][0]
@@ -457,6 +479,7 @@ app.get("/c/student/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(r
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         title:`${student[0].student_sur_name} ${student[0].student_name} ${student[0].student_mid_name}`,
         student:student[0],
         student_name: `${student[0].student_sur_name} ${student[0].student_name} ${student[0].student_mid_name}`
@@ -477,6 +500,7 @@ app.get("/c/student/:id/documents",isAuthenticated,interfaceSplitter,isAccsessab
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         title:`${studentsDocumentary[0][0].student_sur_name} ${studentsDocumentary[0][0].student_name} ${studentsDocumentary[0][0].student_mid_name}`,
         student:studentsDocumentary[0][0],
         passport:studentsDocumentary[1],
@@ -495,6 +519,7 @@ app.route("/c/student/:id/achievements").get(isAuthenticated,interfaceSplitter,i
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         title:`${studentPortfolio[0][0].student_sur_name} ${studentPortfolio[0][0].student_name} ${studentPortfolio[0][0].student_mid_name}`,
         student:studentPortfolio[0][0],
         portfolio:studentPortfolio[1]
@@ -515,6 +540,7 @@ app.get("/c/student/:id/additionaleducation",isAuthenticated,interfaceSplitter,i
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         title:`${studentAdditionEducation[0][0].student_sur_name} ${studentAdditionEducation[0][0].student_name} ${studentAdditionEducation[0][0].student_mid_name}`,
         student:studentAdditionEducation[0][0],
         portfolio:studentAdditionEducation[1]
@@ -524,11 +550,15 @@ app.get("/c/student/:id/additionaleducation",isAuthenticated,interfaceSplitter,i
 app.route("/c/student/:id/attendance").get(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     let studentAdditionEducation=await serverUser.createSelectQuery(`SELECT * \
     FROM students \ 
+    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
+    SELECT * \ 
+    FROM courses a INNER JOIN additional_education b ON a.ae_id=b.ae_id \
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};`);
     res.render("c_student_additionaleducation",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         title:`${studentAdditionEducation[0][0].student_sur_name} ${studentAdditionEducation[0][0].student_name} ${studentAdditionEducation[0][0].student_mid_name}`,
     });
 }).post(isAuthenticated,interfaceSplitter,isAccsessable,urlencodedParser,(req,res)=>{
@@ -539,7 +569,8 @@ app.get("/c/mygroup/events",isAuthenticated,interfaceSplitter,(req,res)=>{
     res.render("c_mygroupevents",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
-        options:serverUser.getUserOptions()
+        options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
     });
 });
 //Страница родительских собраний
@@ -550,7 +581,8 @@ app.get("/c/mygroup/events/parentingmeetings",isAuthenticated,interfaceSplitter,
     res.render("c_parentingmeetings",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
-        options:serverUser.getUseOptions()
+        options:serverUser.getUseOptions(),
+        sidebar_d:req.cookies.sidebar,
     });
 });
 //Страница классных часов
@@ -562,6 +594,7 @@ app.get("/c/mygroup/events/classhours",isAuthenticated,interfaceSplitter,async(r
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         classHoursList:classHoursList
     });
 });
@@ -573,7 +606,8 @@ app.get("/c/mygroup/events/offsite",isAuthenticated,interfaceSplitter,async(req,
     res.render("c_offsite",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
-        options:serverUser.getUserOptions()
+        options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
     });
 });
 //Страница с формой создания нового мероприятия
@@ -581,7 +615,8 @@ app.route("/c/mygroup/newevent").get(isAuthenticated,interfaceSplitter,async(req
     res.render("c_mygroupnewevent",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
-        options:serverUser.getUserOptions()
+        options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
     });
 }).post(urlencodedParser,isAuthenticated,interfaceSplitter,async(req,res)=>{
     res.end();
@@ -591,7 +626,8 @@ app.get("/c/mygroup/individualwork",(req,res)=>{
     res.render("c_mygroupindividualwork",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
-        options:serverUser.getUserOptions()
+        options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
     });
 });
 //Страница студентов, состоящих на учёте
@@ -604,6 +640,7 @@ app.get("/c/mygroup/individualwork/accounting",isAuthenticated,interfaceSplitter
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         iwAccountingList:iwAccountingList
     });
 });
@@ -617,6 +654,7 @@ app.get("/c/mygroup/individualwork/preventionadvice",isAuthenticated,interfaceSp
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         iwPreventionAdviceList:iwPreventionAdviceList
     });
 });
@@ -630,6 +668,7 @@ app.get("/c/mygroupindividualwork/socialpsychologisthelp",isAuthenticated,interf
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         iwSPHelpList:iwSPHelpList
     });
 });
@@ -642,6 +681,7 @@ app.get("/c/mygroup/individualwork/reports",isAuthenticated,interfaceSplitter,as
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         reports:reports
     });
 });
@@ -654,6 +694,7 @@ app.route("/c/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         group_list:data
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
@@ -671,6 +712,7 @@ app.get("/c/mygroup/attendance",isAuthenticated,interfaceSplitter,async(req,res)
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         studentList:studentList
     });
 });
@@ -683,6 +725,7 @@ app.route("/c/newattendance").get(isAuthenticated,interfaceSplitter,async(req,re
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         studentList:studentList
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
@@ -695,7 +738,44 @@ app.get("/c/mygroup/gallery",isAuthenticated,interfaceSplitter,async(req,res)=>{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
         gallery:gallery
+    });
+});
+//Страницы тьютора
+//Список групп
+app.get("/t/groups",isAuthenticated,interfaceSplitter,async(req,res)=>{
+    res.render("t_grouplist",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[2],
+        options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
+    });
+});
+//Страница группы
+app.get("/t/group/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
+    res.render("t_grouplist",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[2],
+        options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
+    });
+});
+app.get("/t/group/:id/attendance",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
+    res.render("t_groupattendance",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[2],
+        options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
+    });
+});
+//Страница студента
+app.get("/t/group/:id/student/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
+    res.render("t_student",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[2],
+        options:serverUser.getUserOptions(),
+        sidebar_d:req.cookies.sidebar,
     });
 });
 //Страницы студента
@@ -707,39 +787,20 @@ app.get("/s/portfolio",isAuthenticated,interfaceSplitter,async(req,res)=>{
         options:serverUser.getUserOptions()
     });
 });
-//Страницы тьютора
-//Список групп
-app.get("/t/groups",isAuthenticated,interfaceSplitter,async(req,res)=>{
-    res.render("t_grouplist",{
-        username:serverUser.getUserFullName(), 
-        role:serverUser.getUserState()[2],
-        options:serverUser.getUserOptions()
-    });
-});
-//Страница группы
-app.get("/t/group/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
-    res.render("t_grouplist",{
-        username:serverUser.getUserFullName(), 
-        role:serverUser.getUserState()[2],
-        options:serverUser.getUserOptions()
-    });
-});
-app.get("/t/group/:id/attendance",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
-    res.render("t_groupattendance",{
-        username:serverUser.getUserFullName(), 
-        role:serverUser.getUserState()[2],
-        options:serverUser.getUserOptions()
-    });
-});
-//Страница студента
-app.get("/t/group/:id/student/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
-    res.render("t_student",{
-        username:serverUser.getUserFullName(), 
-        role:serverUser.getUserState()[2],
-        options:serverUser.getUserOptions()
-    });
-});
 //Страницы администратора
+
+//Дополнительные POST-запросы
+app.post('/cookies',isAuthenticated,urlencodedParser,(req,res)=>{
+    switch(req.body.action){
+        case "s_off":
+            res.cookie("sidebar",0);
+            break;
+        case "s_on":
+            res.cookie("sidebar",1);
+            break;
+    }
+    res.end();
+});
 //Выход
 app.get("/logout",(req,res)=>{
     serverUser.clearData();
