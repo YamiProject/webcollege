@@ -18,6 +18,9 @@ h2{
     font-size: 26pt;
     user-select: none;
 }
+img{
+    user-select: none;
+}
 a{
     text-decoration: none;
     font-weight: 600;
@@ -104,6 +107,11 @@ th,td{
     }
     .h-of h1{
         padding-bottom: 10px;
+    }
+    .h-section{
+        font-size: 24pt !important;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.137);
     }
     .profile-page .h-of h1,.options-page .h-of h1{
         padding-top: 10px;
@@ -234,6 +242,7 @@ th,td{
         writing-mode: vertical-lr;
         text-orientation: upright;
         letter-spacing: -4px;
+        font-size: 16pt !important;
     }
     .sidebar-close-button:hover{
         transform: scale(1.08)
@@ -267,22 +276,15 @@ th,td{
         height: auto;
         margin: 0;
     }
+    .application{
+        height: auto;
+        min-height: 60vh;
+    }
     .app-window{
-        padding-top: 190px !important;
+        margin-top: 190px !important;
         overflow-y: initial;
         min-height: 60vh;
         background-color: #bbbbbb00;
-    }
-    /*mainpage*/
-    .mainpage-links{
-        min-height: 65vh;
-    }
-    .mainpage-links>div{
-        min-height: 200px;
-    }
-    .mainpage-links h2{
-        font-weight: 500;
-        font-size: 16pt;
     }
     /*profile*/
     /*options*/
@@ -351,104 +353,117 @@ th,td{
         transform: scale(1.03);
         transition: all .2s ease-in-out;
     }
-    /*courator*/
-    /*c_announcements*/
-    .announcement-block{
+    /*teacher*/
+    /*t_mainpage*/
+    .t-mainpage-links{
+        min-height: 65vh;
+    }
+    .t-mainpage-links>div{
+        min-height: 200px;
+    }
+    .t-mainpage-links h2{
+        font-weight: 500;
+        font-size: 16pt;
+    }
+    /*t_announcements*/
+    .t-announcement-block{
         padding-top: 20px;
         padding-bottom: 100px;
         width: 100%;
-        overflow-y: initial;
     }
-    .announcement-open-form-block{
+    .t-announcement-open-form-block{
         padding: 20px 0 40px 0;
     }
-    .announcement-open-form-block button{
+    .t-announcement-open-form-block button{
         width: 50%;
         height: 100px;
         border-radius: 25px !important;
     }
-    .announcement-block>article{
+    .t-announcement-block>article{
         margin-bottom: 50px;
     }
-    .announcement-block>article:last-child{
+    .t-announcement-block>article:last-child{
         margin-bottom: 0 !important;
     }
-    .announcement-header{
+    .t-announcement-header{
         border-radius: 40px;
         padding: 5px;
     }
-    .announcement-info>div{
+    .t-announcement-info>div{
         padding: 10px 0;
     }
-    .announcement-info>div:first-child{
+    .t-announcement-info>div:first-child{
         border-bottom-left-radius: 25px;
     }
-    .announcement-info>div:last-child{
+    .t-announcement-info>div:last-child{
         border-bottom-right-radius: 25px;
     }
-    .announcement-text{
+    .t-announcement-text{
         margin-top: 10px;
         padding: 10px 0;
         border-radius: 40px;
         min-height: 300px;
     }
-    .announcement-text p{
+    .t-announcement-text p{
         overflow-y: initial;
         height: 100%;
     }
-    .announcement-text p::first-letter{
+    .t-announcement-text p::first-letter{
         margin-left: 40px;
     }
-    .announcement-form{
+    .t-announcement-form{
         position: fixed;
         bottom: 0;
         border-top-right-radius: 40px;
         border-top-left-radius: 40px;
         height: 150px;
     }
-    #anouncement-form-text{
+    #t-anouncement-form-text{
         border-radius: 10px 10px 0 0;
         height: 400px;
     }
-    .announcement-form-button{
+    .t-announcement-form-button{
         border-radius: 0 0 10px 10px !important;
         outline: none;
         color: white;
     }
-    /*c_mygroup*/
-    .c-my-group .student-block{
+    /*t_mygroup*/
+    .t-my-group .t-student-block{
         height: 160px;
     }
-    .c-my-group .student-block:hover{
+    .t-my-group .t-student-block:hover{
         transform: scale(1.05); 
     }
-    .c-my-group .student-block img{
+    .t-my-group .t-student-block img{
         border-radius: 150px;
         height: 120px;
         width: 120px;
     }
-    /*c_student*/
-    .student-profile,.student-profile>div:nth-child(2){
+    #t-my-group-table{
+        border: 1px solid rgba(0, 0, 0, 0.178);
+    }
+    /*t_student*/
+    .t-student-profile,.student-profile>div:nth-child(2){
         min-height: 600px;
     }
-    .student-info{
+    .t-student-info{
         border-radius: 20px;
     }
-    .student-sections>div{
+    .t-student-sections>div{
         min-height: 100px;
     }
-    .student-sections h2{
+    .t-student-sections h2{
         font-weight: 500;
         font-size: 22pt;
     }
 }
 /*Tablet (several tags)*/
 @media screen and (max-width:1200px){
-    /*announcements*/
-    .announcement-info{
+    /*t_announcements*/
+    .t-announcement-info{
         margin-right: 1px;
     }
-    .announcement-info>div{
+    .t-announcement-info>div{
         padding: 20px 0;
         margin-top: 10px;
         border-radius: 25px !important;

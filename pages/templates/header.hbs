@@ -3,17 +3,17 @@
     <nav class="col-12 justify-content-center" id="navbar">
         <ul>
             <!--Навигационная панель куратора-->
-            {{#equal role 'courator'}}
+            {{#equal role 'teacher'}}
                 <li><a href="/" class="col-12">Главная</a></li>
-                <li><a href="/c/announcements" class="col-12">Объявления</a></li>
-                <li><a href="/c/mygroup" class="col-12">Моя группа</a></li>
-                <li><a href="/c/mygroup/events" class="col-12">Мероприятия</a></li>
-                <li><a href="/c/mygroup/individualwork" class="col-12">Индивидуальная работа</a></li>
-                <li><a href="/c/mygroup/attendance" class="col-12">Посещаемость</a></li>
-                <li><a href="/c/mygroup/gallery" class="col-12">Галерея</a></li>
+                <li><a href="/t/announcements" class="col-12">Объявления</a></li>
+                <li><a href="/t/mygroup" class="col-12">Моя группа</a></li>
+                <li><a href="/t/mygroup/events" class="col-12">Мероприятия</a></li>
+                <li><a href="/t/mygroup/individualwork" class="col-12">Индивидуальная работа</a></li>
+                <li><a href="/t/mygroup/attendance" class="col-12">Посещаемость</a></li>
+                <li><a href="/t/mygroup/gallery" class="col-12">Галерея</a></li>
             {{/equal}}
             <!--Навигационная панель тьютора-->
-            {{#equal role 'tutor'}}
+            {{#equal role 'head'}}
                 <li><a href="">aaa</a></li>
             {{/equal}}
             <!--Навигационная панель студента-->

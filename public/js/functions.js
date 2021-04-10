@@ -30,3 +30,34 @@ export function clear(element){
         $(this).val("");
     });
 }
+export function dateNormalise(val,format){
+    let date=new Date(val);
+    let formation=format.split('');
+    let result="";
+    for(let i=0;i<formation.length;i++){
+        switch(formation[i]){
+            case("Y"):
+                result+= date.getFullYear();
+                break;
+            case("M"):
+                result+=date.getMonth()<10?"0"+date.getMonth():date.getMonth();
+                break;
+            case("D"):
+                result+=date.getDay()<10?"0"+date.getDay():date.getDay();
+                break;
+            case("h"):
+                result+= date.getHours();
+                break;
+            case("m"):
+                result+= date.getMinutes();
+                break;
+            case("s"):
+                result+= date.getSeconds();
+                break;
+            default:
+                result+=formation[i];
+                break;
+        }
+    }
+    return result;
+}

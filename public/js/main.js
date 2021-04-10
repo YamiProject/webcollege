@@ -1,5 +1,40 @@
 import * as functions from "./functions.js";
 $(document).ready(function(){
+    //profile
+    //options
+    $("#default-options-button").on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+            type:"POST",
+            url:"/options",
+            data:{
+                change:'default'
+            },
+            success: function(){
+                window.location.reload();
+            }
+        });
+    });
+    $("#save-options-button").on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+            type:"POST",
+            url:"/options",
+            data:{
+                change:'new',
+                h_size:functions.escapeHTML($("#opt-h-size").val()),
+                h_color:functions.escapeHTML($("#opt-h-color").val()),
+                font_size:functions.escapeHTML($("#opt-font-size").val()),
+                font_color:functions.escapeHTML($("#opt-font-color").val()),
+                theme_id:functions.escapeHTML($("#opt-theme").val()),
+                logo_d:$("#opt-logo-d").prop("checked"),
+                app_name_d:$("#opt-app-name-d").prop("checked"),
+            },
+            success: function(){
+                window.location.reload();
+            }
+        });
+    });
     //error
     $("#error-back-main").on('click', function(){
         window.location.href="/";
