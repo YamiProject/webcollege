@@ -2,6 +2,7 @@ import * as functions from "./functions.js";
 $(document).ready(function(){
     //profile
     //options
+    //Возвращение опций по умолчанию
     $("#default-options-button").on('click', function(e){
         e.preventDefault();
         $.ajax({
@@ -15,6 +16,7 @@ $(document).ready(function(){
             }
         });
     });
+    //Сохранение опций после изменения
     $("#save-options-button").on('click', function(e){
         e.preventDefault();
         $.ajax({
@@ -36,9 +38,11 @@ $(document).ready(function(){
         });
     });
     //error
+    //Возвращение на главную страницу
     $("#error-back-main").on('click', function(){
         window.location.href="/";
     });
+    //Возвращение на предыдущую страницу
     $("#error-back,.back-button").on('click', function(){
         history.back();
     });
@@ -54,7 +58,7 @@ $(document).ready(function(){
                     user_password:functions.escapeHTML($("#user-password").val())
                 },
                 success: function(answer){
-                    if(answer=="Succsess"){
+                    if(answer=="Success"){
                         window.location.reload();
                     }
                     else{
@@ -65,6 +69,7 @@ $(document).ready(function(){
         }
     })
     //Стилизация меню
+    //Анимация кнопок меню навигации
     $("#navbar a").hover(function(){
         $(this).animate({paddingTop:"-=10px"},200);
     },function(){
@@ -74,7 +79,7 @@ $(document).ready(function(){
     $("input,textarea,select").on('click', function(){
         $(this).removeClass("border-danger");
     });
-    //sidebar
+    //sidebar (открытие и закрытие)
     $(".sidebar-close-button").on('click',function(e){
         e.preventDefault();
         if($(".sidebar-close-button").hasClass("sidebar-close-action")){
@@ -105,10 +110,7 @@ $(document).ready(function(){
             });
         }
     });
-    $(".sidebar-open-action").on('click',function(){
-        
-    });
-    //sideform
+    //sideform (открытые и закрытие)
     $(".open-form-button").on('click',function(){
         $(".open-form-button").prop("disabled",true);
         $(".close-sideform").prop("disabled",false);

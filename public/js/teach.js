@@ -1,6 +1,7 @@
 import * as functions from "./functions.js";
 $(document).ready(function(){
     //main_Page
+    //Ссылки
     $("#t-mg-link").on('click', function(){
         window.location.href="/t/mygroup";
     });
@@ -8,7 +9,7 @@ $(document).ready(function(){
         window.location.href="/t/newattendance";
     });
     $("#t-ep-link").on('click', function(){
-        window.location.href="/t/mygroup/newevent";
+        window.location.href="/t/mygroup/events";
     });
     $("#t-r-link").on('click', function(){
         window.location.href="/t/newreport";
@@ -17,18 +18,23 @@ $(document).ready(function(){
         window.location.href="/t/announcements";
     });
     //announcements
+    //Публикация объявлений
     $("#t-anouncement-form-sumbit").on('click', async function(e){
         e.preventDefault();
         if(functions.filledCheck($(this),[':input:text','textarea','select'])==true){
+            let formData=new FormData();
+            $.each($("#t-anouncement-form-file")[0].files, function(i, file) {
+                formData.append('file', file);
+            });
+            formData.append("head",functions.escapeHTML($("#t-anouncement-form-head").val()));
+            formData.append("type",functions.escapeHTML($("#t-anouncement-form-type").val()),);
+            formData.append("text",functions.escapeHTML($("#t-anouncement-form-text").val()));
             await $.ajax({
                 type:"POST",
                 url:"/t/announcements",
-                data:{
-                    head:functions.escapeHTML($("#t-anouncement-form-head").val()),
-                    type:functions.escapeHTML($("#t-anouncement-form-type").val()),
-                    file:functions.escapeHTML($("#t-anouncement-form-file").val()),
-                    text:functions.escapeHTML($("#t-anouncement-form-text").val())
-                },
+                data: formData,
+                contentType: false,
+                processData: false,
                 success: async function(){
                     if($(".t-announcement-page").html().indexOf(`<h2 class="display-4 pt-5">Нет объявлений!</h2>`)>0){
                         await $(".t-announcement-block").html("");
@@ -58,30 +64,34 @@ $(document).ready(function(){
                     $(".t-announcement-block .d-none").fadeOut().delay(1111).removeClass("d-none").fadeIn();
                 }
             });
-            functions.clear($(this));
+            //functions.clear($(this));
         }
     });
     //mygroup
+    //Получение быстрого доступа к данным студента группы
     $("#с-my-group-fast-form").on('click',function(){
         window.location.href=`/t/student/${$("#t-my-group-fast-form-student").val()}/${$("#с-my-group-fast-form-type").val()}`;
     });
+    //Перехо на страницу студента
     $(".t-student-block").on('click', function(){
         window.location.href=`/t/student/${$(this).attr("id")}`;
     });
     //student
-    $(".t-student-sections>div[id^=st-doc-link]").on('click', function(){
+    //Ссылки
+    $(".t-student-sections>div[id^=t-st-dot-link]").on('click', function(){
         window.location.href=`/t/student/${$(this).attr("id").substr(-1)}/documents`;
     });
-    $(".t-student-sections>div[id^=st-ach-link]").on('click', function(){
+    $(".t-student-sections>div[id^=t-st-ach-link]").on('click', function(){
         window.location.href=`/t/student/${$(this).attr("id").substr(-1)}/achievements`;
     });
-    $(".t-student-sections>div[id^=st-ae-link]").on('click', function(){
+    $(".t-student-sections>div[id^=t-st-ae-link]").on('click', function(){
         window.location.href=`/t/student/${$(this).attr("id").substr(-1)}/additionaleducation`;
     });
-    $(".t-student-sections>div[id^=st-abs-link]").on('click', function(){
-        window.location.href=`/t/student/${$(this).attr("id").substr(-1)}/attendance`;
+    $(".t-student-sections>div[id^=t-st-abs-link]").on('click', function(){
+        window.location.href=`/t/student/${$(this).attr("id").substr(-1)}/absenteeismes`;
     });
     //newreport
+    //Отправка докладной
     $("#t-report-form-submit").on('click',function(e){
         e.preventDefault();
         if(functions.filledCheck($(this),['select','textarea'])==true){

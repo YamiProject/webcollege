@@ -1,3 +1,4 @@
+//Форматирование специальных символов
 export function escapeHTML(string){
     try{
         return string.replace(/&/g, "&amp;")
@@ -11,6 +12,7 @@ export function escapeHTML(string){
         return "";
     }
 };
+//Проверка на аполнение полей
 export function filledCheck(element,fields){
     var check=true;
     let selector="";
@@ -25,11 +27,13 @@ export function filledCheck(element,fields){
     });
     return check;
 }
+//Отчистка полей
 export function clear(element){
     $(`#${$(element).closest("form").attr("id")} input, #${$(element).closest("form").attr("id")} textarea`).each(function(){
         $(this).val("");
     });
 }
+//Форматирование даты на уровне приложения 
 export function dateNormalise(val,format){
     let date=new Date(val);
     let formation=format.split('');

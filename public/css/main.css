@@ -50,6 +50,9 @@ th,td{
     cursor: pointer;
     transition: all .2s ease-in-out;
 }
+.stylise-block-static{
+    border-radius: 2;
+}
 .stylise-block:hover{
     transform: scale(1.05); 
 }
