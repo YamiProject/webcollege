@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="author" content="Kostin Vladislav"/>
+    <meta name="description" content="Страница содержит портфолио студента из группы куратора."/>
+    <title>Портфолио: {{title}}</title>
+    {{>linkscripts}}
+    {{>styles}}
+</head>
+<body>
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            {{>sidebar}}
+            <div class="row h-100 main {{#equal sidebar_d 0}}main-full-screen{{else}}main-n-full-screen{{/equal}}">
+                {{>applogo}}
+                <div class="row justify-content-center col-12 mx-0 px-0 application">
+                    {{>header}}
+                    <div class="col-12 justify-content-start align-items-start align-content-start row mx-0 px-0 app-window t-achevements">
+                        <div class="mx-0 block-to-slide">
+                            <div class="col-12 row justify-content-between h-of pb-5">
+                                {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">Достижения: {{student_name}}</h1>
+                            </div>
+                            <div class="col-12 row justify-content-center t-achevements-block">
+                                <div class="col-10 row justify-content-xl-start justify-content-center">
+                                    <div class="m-3 p-2 row justify-content-center t-st-achevements-open-form-block open-form-block">
+                                        <button class="btn open-form-button open-form-button-selector col-12">+</button>
+                                    </div>
+                                    {{#each achievements}}
+                                    <div class="row m-3 p-2 justify-content-center align-items-center achievement-object stylise-block-static">
+                                        <img src="{{achievement_scan}}" alt="scan-{{achievement_id}}">
+                                        <p class="col-12 text-center">{{achievement_name}}</p>
+                                        <a class="col-12 text-center stylise-block-static" href="{{achievement_scan}}" download>Скачать</a>
+                                    </div>
+                                    {{else}}
+                                        <div class="col-8 row align-items-center align-content-center">
+                                            <h2 class="text-center">Достижения отсутствуют</h2>
+                                        </div>
+                                    {{/each}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{>sideform}}
+                </div>
+            </div>
+        </div>
+    </div>      
+</body>
+</html>

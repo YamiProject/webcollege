@@ -77,7 +77,7 @@ $(document).ready(function(){
     });
     //Обнуление состояния ошибки
     $("input,textarea,select").on('click', function(){
-        $(this).removeClass("border-danger");
+        $(this).removeClass("border-danger text-danger");
     });
     //sidebar (открытие и закрытие)
     $(".sidebar-close-button").on('click',function(e){
@@ -112,14 +112,14 @@ $(document).ready(function(){
     });
     //sideform (открытые и закрытие)
     $(".open-form-button").on('click',function(){
-        $(".open-form-button").prop("disabled",true);
+        $(".open-form-button").prop("disabled",true).removeClass("open-form-button-selector");
         $(".close-sideform").prop("disabled",false);
         $("#side-form").animate({width:"+=25%"});
         $(".block-to-slide").animate({width:"-=25%"});
         $(".h-of h1").toggleClass("d-none");
     });
     $(".close-sideform").on('click',function(){
-        $(".open-form-button").prop("disabled",false);
+        $(".open-form-button").prop("disabled",false).addClass("open-form-button-selector");
         $(".close-sideform").prop("disabled",true);
         $("#side-form").animate({width:"-=25%"});
         $(".block-to-slide").animate({width:"+=25%"});

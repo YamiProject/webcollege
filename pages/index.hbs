@@ -7,21 +7,21 @@
     <meta name="description" content="Index-страница приложения, предназначенная для авторизации зарегистрированных в системе пользователей"/>
     <title>Добро пожаловать!</title>
     {{>linkscripts}}
-    <script src="./js/welcome_page_slider.js"></script>
     {{>styles}}
 </head>
-<body>
-    <img class="row align-content-center justify-content-center m-0 p-0" id="welcome-page-background">         
-    </img>
-    <div class="container-fluid h-100" id="welcome-page_container">
-        <div class="col-12 row justify-content-end align-content-center m-0 p-0" id="welcome-page">
-            <div class="col-6 row justify-content-center align-content-center" id="welcome-page-form">
+<body id="welcome-page-body">
+    <div class="container-fluid h-100 m-0 p-0" id="welcome-page-container">
+        <div class="col-12 row justify-content-center align-content-center align-items-center m-0 p-0" id="welcome-page">
+            <div id="welcome-page-logo-block">
+                <span>WebCollege</span>
+            </div>
+            <div class="col-12 row mx-0 px-0 justify-content-center align-content-center" id="welcome-page-form">
                 <form class="col-6" id="login-form">
-                    <label for="login">Логин</label>
+                    <label for="login" class="text-center">Логин</label>
                     <input type="text" class="form-control" id="user-login">
                     <label for="password">Пароль</label>
                     <input type="password" class="form-control" id="user-password">
-                    <button id="login-form-submit">Войти</button>
+                    <button class="btn col-12" id="login-form-submit">Войти</button>
                 </form>
             </div>
         </div>

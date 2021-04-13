@@ -26,6 +26,25 @@
                         </div>
                     </form>
                 {{/equal}}
+                {{#equal form 't-achievements'}}
+                    <div class="px-3 mb-n2">
+                        <h3 class="text-center">Добавить</h3>
+                    </div>
+                    <form class="row w-100 justify-content-center h-100 align-items-center align-content-center mx-0 px-3" id="t-achievements-form">
+                        <div class="w-100 row justify-content-center align-content-center align-items-center" id="t-achievements-form-img-block">
+                            <img id="t-achievements-form-img"></img>
+                        </div>
+                        <div class="w-100">
+                            <input type="text" class="form-control" placeholder="Название..." id="t-achievements-form-name">
+                        </div>
+                        <div class="w-100">
+                            <input type="file" class="form-control-file" id="t-achievements-form-file" onchange="document.getElementById('t-achievements-form-img').src = window.URL.createObjectURL(this.files[0])">
+                        </div>
+                        <div class="w-100">
+                            <button class="btn w-100 t-achievements-form-button">+</button>
+                        </div>
+                    </form>
+                {{/equal}}
             </div>
         </div>
     </div>

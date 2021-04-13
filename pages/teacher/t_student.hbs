@@ -23,13 +23,22 @@
                         </div>
                         <div class="col-12 row align-content-center justify-content-center m-0 p-0 student-profile">
                             <div class="col-xl-4 col-12 order-0 row justify-content-xl-end justify-content-center">
-                                <div class="col-10 t-student-info">
-                                    <div class="col-12">
+                                <div class="col-10 t-student-info row justify-content-center align-content-center stylise-block-static">
+                                    <div class="col-12 row m-0 justify-content-center pb-3">
                                         <img src="{{#imgnotnull student.student_photo student.student_sex}}{{/imgnotnull}}" alt="">
                                     </div>
                                     <div class="col-12">
-                                        <p>{{student_name}}</p>
+                                        <span>Имя: {{student_name}}</span><br>
+                                        <span>Телефон: {{student.student_number}}</span>
                                     </div>
+                                    {{#each parents}}
+                                        <div class="col-12 t-student-parent-block">
+                                            <span>Роль: {{parent_role}}</span><br>
+                                            <span>Имя: {{parent_sec_name}} {{parent_name}} {{parent_mid_name}}</span><br>
+                                            <span>Телефон: {{parent_number}}</span>
+                                        </div>
+                                    {{else}}
+                                    {{/each}}
                                 </div>
                             </div>
                             <div class="col-xl-8 order-1 row justify-content-center align-content-center t-student-sections">

@@ -51,7 +51,7 @@ th,td{
     transition: all .2s ease-in-out;
 }
 .stylise-block-static{
-    border-radius: 2;
+    border-radius: 4px;
 }
 .stylise-block:hover{
     transform: scale(1.05); 
@@ -62,36 +62,45 @@ th,td{
 ::-webkit-scrollbar-thumb{
     border-radius: 3px;
 }
+/*index*/
+#welcome-page-body{
+    background: linear-gradient(#8ad2f37e, #07106ee5) no-repeat;
+}
+#welcome-page-container>div{
+    height: 100vh !important;
+}
+#welcome-page-logo-block span{
+    text-shadow: 5px 5px 20px rgb(255, 255, 255);
+    text-shadow: 1px 1px 5px blueviolet;
+    color: white;
+    font-family: Harlow Solid;
+    font-size: 90pt;
+}
+#welcome-page-form input, #welcome-page-form button{
+    height: 100px;
+    font-size: 36pt;
+}
+#login-form label{
+    font-size: 20pt;
+    color: white;
+}
+#login-form input:last-of-type{
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+#login-form-submit{
+    border-radius: 0 0 40px 40px !important;
+    background-color: rgba(16, 12, 68, 0.514);
+    color: white;
+}
+#login-form-submit:hover{
+    border-bottom-left-radius: 40px !important;
+    border-bottom-right-radius: 40px !important;
+    background-color: rgba(64, 57, 155, 0.801);
+    color: rgba(16, 12, 68, 0.514);
+}
 /*Computer-version*/
 @media screen and (min-width:768px){
-    /*index*/
-    #welcome-page{
-        min-height: 100vh;
-    }
-    #welcome-page-background{
-        min-height: 100vh;
-        min-width: 100vw;
-        background: url("/img/other/wp1.jpg") no-repeat;
-        background-size: cover;
-        background-position-y: center;
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: -1;
-    }
-    #welcome-page_container{
-        background-color: rgba(39, 16, 68, 0.815);
-    }
-    #welcome-page img{
-        width: 150px;
-        height: 150px;
-    }
-    #welcome-page-form{
-        height: 500px;
-        background-color: rgb(20, 16, 68);
-        border-radius: 40px 0 0 40px;
-        box-shadow: rgb(23, 11, 65) -2px 5px 10px;
-    }
     /*Common*/
     .block-app-logo{
         position: fixed;
@@ -145,6 +154,9 @@ th,td{
     }
     .block-app-logo-full-screen{
         left: 43%;
+    }
+    .open-form-button{
+        font-size: 30pt;
     }
     /*Header*/
     #header{
@@ -414,6 +426,11 @@ th,td{
     .t-announcement-text p::first-letter{
         margin-left: 40px;
     }
+    .t-announcement-download{
+        border-radius: 10px;
+        margin-top: 5px;
+        padding: 10px;
+    }
     .t-announcement-form{
         position: fixed;
         bottom: 0;
@@ -446,9 +463,6 @@ th,td{
         border: 1px solid rgba(0, 0, 0, 0.178);
     }
     /*t_student*/
-    .t-student-profile,.student-profile>div:nth-child(2){
-        min-height: 600px;
-    }
     .t-student-info{
         border-radius: 20px;
     }
@@ -458,6 +472,52 @@ th,td{
     .t-student-sections h2{
         font-weight: 500;
         font-size: 22pt;
+    }
+    .student-profile img{
+        width: 150px;
+        height: 150px;
+        margin-top: 10px;
+    }
+    .t-student-parent-block{
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+    .t-student-parent-block:last-of-type{
+        margin-bottom: 50px;
+    }
+    /*t_student_achievements*/
+    .t-st-achevements-open-form-block{
+        height: 350px;
+        border-radius: 40px !important;
+    }
+    .t-achevements-block{
+        display: flex;
+        flex: row wrap;
+    }
+    .t-achevements-block>div>div{
+        width: 250px;
+    }
+    .achievement-object img{
+        width: 200px;
+        height: 300px;
+        border-radius: 4px;
+    }
+    #t-achievements-form-img-block{
+        height: 500px !important;
+        padding: 5px;
+        border-radius: 20px 20px 0 0;
+        background-color: blueviolet;
+        overflow-x: hidden;
+    }
+    #t-achievements-form-img-block>img{
+        height: 480px;
+        width: 70%;
+        border-radius: 10px;
+    }
+    .t-achievements-form-button{
+        border-radius: 0 0 10px 10px !important;
+        outline: none;
+        color: white;
     }
 }
 /*Tablet (several tags)*/

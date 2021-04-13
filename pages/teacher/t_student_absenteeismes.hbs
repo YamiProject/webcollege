@@ -18,7 +18,34 @@
                 <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
                     <div class="col-12 justify-content-center align-items-center row mx-0 px-0 app-window t-attendance">
-                        
+                        <div class="col-12 row justify-content-between h-of pb-5">
+                            {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">ДО/ДПО: {{student_name}}</h1>
+                        </div>
+                        <div class="col-12 row justify-content-center t-additional-education-block">
+                            <div class="col-10 row justify-content-start">
+                                {{#each ae}}
+                                    <div class="col-4 stylise-block-static">
+                                        <div class="col-12">
+                                            <h3>Наименование: {{ae_name}}</h3>
+                                        </div>
+                                        <div class="col-6">
+                                            <p>Дата начала: {{#datenormalise ae_beg_date "DMY"}}{{/datenormalise}}</p>
+                                        </div>
+                                        <div class="col-6">
+                                            <p>Дата окончания: {{#datenormalise ae_end_date "DMY"}}{{/datenormalise}}</p>
+                                        </div>
+                                        <div class="col-12">
+                                            <p>Преподаватель: {{teacher_sur_name}} {{teacher_name}} {{teacher_mid_name}}</p>
+                                        </div>
+                                    </div>
+                                {{else}}
+                                    <div class="col-10">
+                                        <h2 class="text-center">ДО/ДПО отсутствуют</h2>
+                                    </div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>

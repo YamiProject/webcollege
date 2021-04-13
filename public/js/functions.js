@@ -21,7 +21,7 @@ export function filledCheck(element,fields){
     });
     $(selector.substring(0,selector.length-1)).each(function(){
         if(escapeHTML($(this).val())==""){
-            $(this).addClass("border-danger");
+            $(this).addClass("border-danger text-danger");
             check=false;
         }
     });
