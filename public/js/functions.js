@@ -23,6 +23,7 @@ export function filledCheck(element,fields){
         if(escapeHTML($(this).val())==""){
             $(this).addClass("border-danger text-danger");
             check=false;
+
         }
     });
     return check;

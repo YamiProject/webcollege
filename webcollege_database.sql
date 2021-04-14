@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Апр 10 2021 г., 22:38
+-- Время создания: Апр 14 2021 г., 21:19
 -- Версия сервера: 10.3.22-MariaDB
 -- Версия PHP: 7.1.33
 
@@ -36,12 +36,18 @@ CREATE TABLE `absenteeismes` (
   `absenteeismes_file` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
 --
--- Дамп данных таблицы `absenteeismes`
+-- Структура таблицы `achievements`
 --
 
-INSERT INTO `absenteeismes` (`absenteeismes_id`, `attendance_id`, `student_id`, `absenteeismes_date`, `absenteeismes_type`, `absenteeismes_file`) VALUES
-(1, 1, 1, '2021-04-05', 'Н', NULL);
+CREATE TABLE `achievements` (
+  `achievement_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `achievement_name` varchar(300) NOT NULL,
+  `achievement_scan` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -52,10 +58,28 @@ INSERT INTO `absenteeismes` (`absenteeismes_id`, `attendance_id`, `student_id`, 
 CREATE TABLE `additional_educations` (
   `ae_id` int(11) NOT NULL,
   `ae_name` varchar(300) NOT NULL,
-  `ae_lecturer_id` int(11) NOT NULL,
+  `ae_lecturer_id` int(11) DEFAULT NULL,
   `ae_beg_date` date NOT NULL,
   `ae_end_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `admins`
+--
+
+CREATE TABLE `admins` (
+  `admin_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `admins`
+--
+
+INSERT INTO `admins` (`admin_id`, `user_id`) VALUES
+(1, 2);
 
 -- --------------------------------------------------------
 
@@ -78,10 +102,7 @@ CREATE TABLE `announcements` (
 --
 
 INSERT INTO `announcements` (`announcement_id`, `group_id`, `announcement_data`, `announcement_header`, `announcement_type`, `announcement_file`, `announcement_text`) VALUES
-(26, 1, '2021-04-07 12:23:32', '2e1e1e12', 2, NULL, 'wadawdadadw'),
-(27, 1, '2021-04-07 12:24:19', 'fafaf', 2, NULL, 'fafaf'),
-(28, 1, '2021-04-07 12:24:47', 'dsad1213', 2, NULL, '213'),
-(29, 1, '2021-04-10 22:25:17', '21313', 1, NULL, '12313');
+(1, 1, '2021-04-14 20:53:43', '21323', 2, '/files/1/announcements_files/aaa.jpg', 'fawfwf');
 
 -- --------------------------------------------------------
 
@@ -116,13 +137,6 @@ CREATE TABLE `attendance` (
   `attendance_date` date NOT NULL,
   `attendance_present` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Дамп данных таблицы `attendance`
---
-
-INSERT INTO `attendance` (`attendance_id`, `group_id`, `attendance_date`, `attendance_present`) VALUES
-(1, 1, '2021-04-05', 1);
 
 -- --------------------------------------------------------
 
@@ -208,8 +222,7 @@ CREATE TABLE `events` (
   `group_id` int(11) NOT NULL,
   `event_type_id` int(11) NOT NULL,
   `event_description` text NOT NULL,
-  `event_date` date NOT NULL,
-  `event_archive` text NOT NULL
+  `event_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -221,6 +234,26 @@ CREATE TABLE `events` (
 CREATE TABLE `event_types` (
   `event_type_id` int(11) NOT NULL,
   `event_type_name` varchar(300) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `event_types`
+--
+
+INSERT INTO `event_types` (`event_type_id`, `event_type_name`) VALUES
+(1, 'Выездное мероприятие'),
+(2, 'Родительское собрание');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `gallery`
+--
+
+CREATE TABLE `gallery` (
+  `gallery_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `gallery_img` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -244,7 +277,7 @@ CREATE TABLE `groups` (
 --
 
 INSERT INTO `groups` (`group_id`, `teacher_id`, `head_id`, `department_id`, `spetiality_id`, `group_beg_education_date`, `group_end_education_date`) VALUES
-(1, 1, 4, 1, 1, '2021-03-04', '2022-05-31');
+(1, 1, 1, 1, 1, '2020-09-01', '2023-05-31');
 
 -- --------------------------------------------------------
 
@@ -254,37 +287,15 @@ INSERT INTO `groups` (`group_id`, `teacher_id`, `head_id`, `department_id`, `spe
 
 CREATE TABLE `heads` (
   `head_id` int(11) NOT NULL,
-  `head_login` varchar(300) NOT NULL,
-  `head_password` varchar(300) NOT NULL,
-  `head_sur_name` varchar(200) NOT NULL,
-  `head_name` varchar(200) NOT NULL,
-  `head_mid_name` varchar(200) DEFAULT NULL,
-  `head_number` varchar(13) NOT NULL,
-  `head_birth_date` date NOT NULL,
-  `head_sex` enum('М','Ж') NOT NULL,
-  `head_photo` text NOT NULL
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп данных таблицы `heads`
 --
 
-INSERT INTO `heads` (`head_id`, `head_login`, `head_password`, `head_sur_name`, `head_name`, `head_mid_name`, `head_number`, `head_birth_date`, `head_sex`, `head_photo`) VALUES
-(4, '$maksi', '1111', 'Максимова', 'Татьяна', 'Викторовна', '22222222222', '2021-03-10', 'Ж', '');
-
---
--- Триггеры `heads`
---
-DELIMITER $$
-CREATE TRIGGER `new_user_tutor` BEFORE INSERT ON `heads` FOR EACH ROW INSERT IGNORE INTO  users 
-VALUES(null,new.tutor_login,'Тьютор')
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `update_user_tutor` BEFORE UPDATE ON `heads` FOR EACH ROW UPDATE users SET user_login=NEW.tutor_login
-WHERE user_login=OLD.tutor_login
-$$
-DELIMITER ;
+INSERT INTO `heads` (`head_id`, `user_id`) VALUES
+(1, 3);
 
 -- --------------------------------------------------------
 
@@ -333,10 +344,10 @@ CREATE TABLE `options` (
 --
 
 INSERT INTO `options` (`option_id`, `h_size`, `h_color`, `font_size`, `font_color`, `theme_id`, `logo_d`, `app_name_d`) VALUES
-(6, 42, '#212529', 16, '#212529', 1, 1, 1),
-(7, 42, '#212529', 16, '#212529', 1, 1, 1),
-(8, 42, '#212529', 16, '#212529', 1, 1, 1),
-(15, 42, '#212529', 16, '#212529', 1, 1, 1);
+(1, 42, '#212529', 16, '#212529', 1, 1, 1),
+(2, 42, '#212529', 16, '#212529', 1, 1, 1),
+(3, 42, '#212529', 16, '#212529', 1, 1, 1),
+(4, 42, '#212529', 16, '#212529', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -375,18 +386,6 @@ CREATE TABLE `passports` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `portfolio`
---
-
-CREATE TABLE `portfolio` (
-  `portfolio_id` int(11) NOT NULL,
-  `student_id` int(11) NOT NULL,
-  `portfolio_scan` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- Структура таблицы `reports`
 --
 
@@ -397,18 +396,6 @@ CREATE TABLE `reports` (
   `report_reasone` text NOT NULL,
   `report_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Дамп данных таблицы `reports`
---
-
-INSERT INTO `reports` (`report_id`, `creator_id`, `group_id`, `report_reasone`, `report_date`) VALUES
-(2, 1, 1, 'fafaf', '2021-03-27'),
-(3, 1, 1, 'афафаф', '2021-03-27'),
-(4, 1, 1, 'faff', '2021-03-27'),
-(5, 1, 1, 'fasfaf', '2021-03-27'),
-(6, 1, 1, 'fafaf', '2021-03-27'),
-(7, 1, 1, 'fafaf', '2021-03-27');
 
 -- --------------------------------------------------------
 
@@ -456,41 +443,18 @@ INSERT INTO `spetiality_professions` (`spetiality_profession_id`, `spetiality_fu
 
 CREATE TABLE `students` (
   `student_id` int(11) NOT NULL,
-  `student_login` varchar(300) NOT NULL,
-  `student_password` varchar(300) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `group_id` int(11) DEFAULT NULL,
-  `student_sur_name` varchar(200) NOT NULL,
-  `student_name` varchar(200) NOT NULL,
-  `student_mid_name` varchar(200) DEFAULT NULL,
-  `student_number` varchar(13) NOT NULL,
-  `student_birth_date` date NOT NULL,
-  `student_sex` enum('М','Ж','Не определено','') NOT NULL,
-  `student_disabled` tinyint(1) NOT NULL,
-  `student_photo` text NOT NULL,
-  `student_headman` tinyint(1) NOT NULL
+  `student_disabled` tinyint(1) DEFAULT NULL,
+  `student_headman` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп данных таблицы `students`
 --
 
-INSERT INTO `students` (`student_id`, `student_login`, `student_password`, `group_id`, `student_sur_name`, `student_name`, `student_mid_name`, `student_number`, `student_birth_date`, `student_sex`, `student_disabled`, `student_photo`, `student_headman`) VALUES
-(1, 'admin', '1234', 1, 'Костин', 'Владислав', 'Константинович', '1111111111', '2021-03-16', 'М', 1, '', 1),
-(2, 'aaa', 'a12', 1, 'Абдулберов', 'Тимур', 'Рубенович', '88888888888', '2020-09-27', 'М', 1, '', 0);
-
---
--- Триггеры `students`
---
-DELIMITER $$
-CREATE TRIGGER `new_user_student` BEFORE INSERT ON `students` FOR EACH ROW INSERT IGNORE INTO  users 
-VALUES(null,new.student_login,'Студент')
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `update_user_student` BEFORE UPDATE ON `students` FOR EACH ROW UPDATE users SET user_login=NEW.student_login
-WHERE user_login=OLD.student_login
-$$
-DELIMITER ;
+INSERT INTO `students` (`student_id`, `user_id`, `group_id`, `student_disabled`, `student_headman`) VALUES
+(1, 4, 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -500,37 +464,17 @@ DELIMITER ;
 
 CREATE TABLE `teachers` (
   `teacher_id` int(11) NOT NULL,
-  `teacher_login` varchar(300) NOT NULL,
-  `teacher_password` varchar(300) NOT NULL,
-  `teacher_sur_name` varchar(200) NOT NULL,
-  `teacher_name` varchar(200) NOT NULL,
-  `teacher_mid_name` varchar(200) DEFAULT NULL,
-  `teacher_number` varchar(13) NOT NULL,
-  `teacher_birth_date` date NOT NULL,
-  `teacher_sex` enum('М','Ж') NOT NULL,
-  `teacher_photo` text NOT NULL
+  `user_id` int(11) NOT NULL,
+  `teacher_exp` int(2) DEFAULT NULL,
+  `teacher_spetiality` varchar(300) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп данных таблицы `teachers`
 --
 
-INSERT INTO `teachers` (`teacher_id`, `teacher_login`, `teacher_password`, `teacher_sur_name`, `teacher_name`, `teacher_mid_name`, `teacher_number`, `teacher_birth_date`, `teacher_sex`, `teacher_photo`) VALUES
-(1, '@kiselova12', '123', 'Киселёва', 'Светлана', 'Владимировна', '1111111111', '2021-03-11', 'Ж', '');
-
---
--- Триггеры `teachers`
---
-DELIMITER $$
-CREATE TRIGGER `new_user_courator` BEFORE INSERT ON `teachers` FOR EACH ROW INSERT IGNORE INTO  users 
-VALUES(null,new.courator_login,'Куратор')
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `update_user_courator` BEFORE UPDATE ON `teachers` FOR EACH ROW UPDATE users SET user_login=NEW.courator_login
-WHERE user_login=OLD.courator_login
-$$
-DELIMITER ;
+INSERT INTO `teachers` (`teacher_id`, `user_id`, `teacher_exp`, `teacher_spetiality`) VALUES
+(1, 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -559,30 +503,47 @@ INSERT INTO `themes` (`theme_id`, `theme_name`) VALUES
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL,
   `user_login` varchar(300) NOT NULL,
-  `user_role` enum('Студент','Куратор','Тьютор','') NOT NULL
+  `user_password` varchar(300) NOT NULL,
+  `user_role` enum('Студент','Преподаватель','ЗавОтделением','Администратор') NOT NULL,
+  `user_sur_name` varchar(300) NOT NULL,
+  `user_name` varchar(300) NOT NULL,
+  `user_mid_name` varchar(300) DEFAULT NULL,
+  `user_birthdate` date NOT NULL,
+  `user_sex` enum('М','Ж') NOT NULL,
+  `user_number` varchar(13) NOT NULL,
+  `user_photo` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп данных таблицы `users`
 --
 
-INSERT INTO `users` (`user_id`, `user_login`, `user_role`) VALUES
-(6, 'admin', 'Студент'),
-(7, '$maksi', 'Тьютор'),
-(8, '@kiselova12', 'Куратор'),
-(15, 'aaa', 'Студент');
+INSERT INTO `users` (`user_id`, `user_login`, `user_password`, `user_role`, `user_sur_name`, `user_name`, `user_mid_name`, `user_birthdate`, `user_sex`, `user_number`, `user_photo`) VALUES
+(1, 'Kiselova123', '123', 'Преподаватель', 'Киселёва', 'Светлана', 'Владимировна', '2021-04-01', 'Ж', '11111111111', NULL),
+(2, 'admin', 'admin', 'Администратор', 'Костин', 'Владислав', 'Константинович', '2021-04-02', 'М', '22222222222', NULL),
+(3, 'mAkSI', '111', 'ЗавОтделением', 'Максимова', 'Татьяна', 'Викторовна', '2021-04-04', 'Ж', '33333333333', NULL),
+(4, 'KOSTIN', '1123', 'Студент', 'Костин', 'Владислав', 'Константинович', '2021-04-01', 'М', '44444444444', NULL);
 
 --
 -- Триггеры `users`
 --
 DELIMITER $$
-CREATE TRIGGER `new_user_options` AFTER INSERT ON `users` FOR EACH ROW INSERT IGNORE INTO options
-  VALUES (NEW.user_id,42,'#212529',16,'#212529',1,1,1,1)
+CREATE TRIGGER `new_user_insert` AFTER INSERT ON `users` FOR EACH ROW BEGIN
+	IF NEW.user_role LIKE 'Студент' THEN
+    	INSERT INTO students VALUES(NULL,NEW.user_id,null,null,null);
+    ELSEIF NEW.user_role LIKE 'Преподаватель' THEN
+    	INSERT INTO teachers VALUES(NULL,NEW.user_id,null,null);
+    ELSEIF NEW.user_role LIKE 'ЗавОтделением' THEN
+    	INSERT INTO heads VALUES(null,NEW.user_id);
+    ELSEIF NEW.user_role LIKE 'Администратор' THEN
+    	INSERT INTO heads VALUES(null,NEW.user_id);
+    END IF;
+END
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `update_users_options` AFTER UPDATE ON `users` FOR EACH ROW UPDATE options SET option_id=NEW.user_id
-WHERE option_id=OLD.user_id
+CREATE TRIGGER `new_user_options` AFTER INSERT ON `users` FOR EACH ROW INSERT INTO options VALUES(NEW.user_id,
+42,'#212529',16,'#212529',1,1,1)
 $$
 DELIMITER ;
 
@@ -599,11 +560,25 @@ ALTER TABLE `absenteeismes`
   ADD KEY `attendance_id` (`attendance_id`);
 
 --
+-- Индексы таблицы `achievements`
+--
+ALTER TABLE `achievements`
+  ADD PRIMARY KEY (`achievement_id`),
+  ADD KEY `student_id` (`student_id`);
+
+--
 -- Индексы таблицы `additional_educations`
 --
 ALTER TABLE `additional_educations`
   ADD PRIMARY KEY (`ae_id`),
   ADD KEY `ae_lecturer_id` (`ae_lecturer_id`);
+
+--
+-- Индексы таблицы `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`admin_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Индексы таблицы `announcements`
@@ -680,6 +655,13 @@ ALTER TABLE `event_types`
   ADD PRIMARY KEY (`event_type_id`);
 
 --
+-- Индексы таблицы `gallery`
+--
+ALTER TABLE `gallery`
+  ADD PRIMARY KEY (`gallery_id`),
+  ADD KEY `group_id` (`group_id`);
+
+--
 -- Индексы таблицы `groups`
 --
 ALTER TABLE `groups`
@@ -693,8 +675,8 @@ ALTER TABLE `groups`
 -- Индексы таблицы `heads`
 --
 ALTER TABLE `heads`
-  ADD PRIMARY KEY (`head_id`,`head_login`),
-  ADD KEY `tutor_login` (`head_login`);
+  ADD PRIMARY KEY (`head_id`) USING BTREE,
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Индексы таблицы `individual_works`
@@ -735,13 +717,6 @@ ALTER TABLE `passports`
   ADD KEY `id_student` (`student_id`);
 
 --
--- Индексы таблицы `portfolio`
---
-ALTER TABLE `portfolio`
-  ADD PRIMARY KEY (`portfolio_id`),
-  ADD KEY `student_id` (`student_id`);
-
---
 -- Индексы таблицы `reports`
 --
 ALTER TABLE `reports`
@@ -766,16 +741,16 @@ ALTER TABLE `spetiality_professions`
 -- Индексы таблицы `students`
 --
 ALTER TABLE `students`
-  ADD PRIMARY KEY (`student_id`,`student_login`),
+  ADD PRIMARY KEY (`student_id`),
   ADD KEY `group_id` (`group_id`) USING BTREE,
-  ADD KEY `students_ibfk_2` (`student_login`);
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Индексы таблицы `teachers`
 --
 ALTER TABLE `teachers`
-  ADD PRIMARY KEY (`teacher_id`,`teacher_login`),
-  ADD KEY `courator_login` (`teacher_login`);
+  ADD PRIMARY KEY (`teacher_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Индексы таблицы `themes`
@@ -798,7 +773,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `absenteeismes`
 --
 ALTER TABLE `absenteeismes`
-  MODIFY `absenteeismes_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `absenteeismes_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT для таблицы `achievements`
+--
+ALTER TABLE `achievements`
+  MODIFY `achievement_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `additional_educations`
@@ -807,10 +788,16 @@ ALTER TABLE `additional_educations`
   MODIFY `ae_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT для таблицы `admins`
+--
+ALTER TABLE `admins`
+  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT для таблицы `announcements`
 --
 ALTER TABLE `announcements`
-  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT для таблицы `announcement_types`
@@ -822,7 +809,7 @@ ALTER TABLE `announcement_types`
 -- AUTO_INCREMENT для таблицы `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `courses`
@@ -834,7 +821,7 @@ ALTER TABLE `courses`
 -- AUTO_INCREMENT для таблицы `deductions`
 --
 ALTER TABLE `deductions`
-  MODIFY `deduction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `deduction_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `departments`
@@ -864,7 +851,13 @@ ALTER TABLE `events`
 -- AUTO_INCREMENT для таблицы `event_types`
 --
 ALTER TABLE `event_types`
-  MODIFY `event_type_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `event_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT для таблицы `gallery`
+--
+ALTER TABLE `gallery`
+  MODIFY `gallery_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `groups`
@@ -876,7 +869,7 @@ ALTER TABLE `groups`
 -- AUTO_INCREMENT для таблицы `heads`
 --
 ALTER TABLE `heads`
-  MODIFY `head_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `head_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT для таблицы `individual_works`
@@ -894,25 +887,19 @@ ALTER TABLE `individual_work_types`
 -- AUTO_INCREMENT для таблицы `parents`
 --
 ALTER TABLE `parents`
-  MODIFY `parent_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `parent_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `passports`
 --
 ALTER TABLE `passports`
-  MODIFY `passport_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT для таблицы `portfolio`
---
-ALTER TABLE `portfolio`
-  MODIFY `portfolio_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `passport_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `spetialities`
@@ -930,7 +917,7 @@ ALTER TABLE `spetiality_professions`
 -- AUTO_INCREMENT для таблицы `students`
 --
 ALTER TABLE `students`
-  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT для таблицы `teachers`
@@ -948,7 +935,7 @@ ALTER TABLE `themes`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
@@ -962,10 +949,22 @@ ALTER TABLE `absenteeismes`
   ADD CONSTRAINT `absenteeismes_ibfk_2` FOREIGN KEY (`attendance_id`) REFERENCES `attendance` (`attendance_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
+-- Ограничения внешнего ключа таблицы `achievements`
+--
+ALTER TABLE `achievements`
+  ADD CONSTRAINT `achievements_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
 -- Ограничения внешнего ключа таблицы `additional_educations`
 --
 ALTER TABLE `additional_educations`
-  ADD CONSTRAINT `additional_educations_ibfk_1` FOREIGN KEY (`ae_lecturer_id`) REFERENCES `teachers` (`teacher_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `additional_educations_ibfk_1` FOREIGN KEY (`ae_lecturer_id`) REFERENCES `teachers` (`teacher_id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+--
+-- Ограничения внешнего ключа таблицы `admins`
+--
+ALTER TABLE `admins`
+  ADD CONSTRAINT `admins_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Ограничения внешнего ключа таблицы `announcements`
@@ -1014,6 +1013,12 @@ ALTER TABLE `events`
   ADD CONSTRAINT `events_ibfk_2` FOREIGN KEY (`event_type_id`) REFERENCES `event_types` (`event_type_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
+-- Ограничения внешнего ключа таблицы `gallery`
+--
+ALTER TABLE `gallery`
+  ADD CONSTRAINT `gallery_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Ограничения внешнего ключа таблицы `groups`
 --
 ALTER TABLE `groups`
@@ -1026,7 +1031,7 @@ ALTER TABLE `groups`
 -- Ограничения внешнего ключа таблицы `heads`
 --
 ALTER TABLE `heads`
-  ADD CONSTRAINT `heads_ibfk_1` FOREIGN KEY (`head_login`) REFERENCES `users` (`user_login`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `heads_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `individual_works`
@@ -1039,7 +1044,8 @@ ALTER TABLE `individual_works`
 -- Ограничения внешнего ключа таблицы `options`
 --
 ALTER TABLE `options`
-  ADD CONSTRAINT `options_ibfk_1` FOREIGN KEY (`option_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `options_ibfk_1` FOREIGN KEY (`option_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `options_ibfk_2` FOREIGN KEY (`theme_id`) REFERENCES `themes` (`theme_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `parents`
@@ -1052,12 +1058,6 @@ ALTER TABLE `parents`
 --
 ALTER TABLE `passports`
   ADD CONSTRAINT `passports_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Ограничения внешнего ключа таблицы `portfolio`
---
-ALTER TABLE `portfolio`
-  ADD CONSTRAINT `portfolio_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `reports`
@@ -1076,14 +1076,14 @@ ALTER TABLE `spetialities`
 -- Ограничения внешнего ключа таблицы `students`
 --
 ALTER TABLE `students`
-  ADD CONSTRAINT `students_ibfk_2` FOREIGN KEY (`student_login`) REFERENCES `users` (`user_login`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `students_ibfk_3` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `students_ibfk_3` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `students_ibfk_4` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `teachers`
 --
 ALTER TABLE `teachers`
-  ADD CONSTRAINT `teachers_ibfk_1` FOREIGN KEY (`teacher_login`) REFERENCES `users` (`user_login`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `teachers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

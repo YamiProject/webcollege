@@ -14,9 +14,50 @@
         <div class="row h-100">
             {{>sidebar}}
             <div class="row h-100 main {{#equal sidebar_d 0}}main-full-screen{{else}}main-n-full-screen{{/equal}}">
-                <div class="row justify-content-center col-12 mx-0 px-0 profile-page application">
+                <div class="row justify-content-center align-content-start align-items-start col-12 mx-0 px-0 profile-page application">
                     <div class="col-12 h-of">
                         <h1 class="display-4 col-12 text-right">Профиль</h1>
+                    </div>
+                    <div class="col-12 row justify-content-center">
+                        <form class="col-xl-8 col-12 row justify-content-center">
+                            <div class="col-12 row justify-content-center">
+                                <div class="col-12 row justify-content-center">
+                                    <h2 class="h-section text-center col-xl-3 col-12">Аватар</h2>
+                                </div>
+                                <div class="col-6">
+                                    <img src="" alt="">
+                                </div>
+                                <div class="col-6">
+                                    <input type="file" name="" id="">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="col-12 row justify-content-center">
+                                    <div class="col-6">
+                                        <label for="">Имя</label>
+                                        <input type="text" id="" class="form-control" disabled>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="">Фамилия</label>
+                                        <input type="text" id="" class="form-control" disabled>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="">Дата рождения</label>
+                                        <input type="text" id="" class="form-control" disabled>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="">Пол</label>
+                                        <select type="text" id="" class="form-control" disabled>
+                                            <option value="М">М</option>
+                                            <option value="Ж">Ж</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="btn col-xl-6 col-12">Изменить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

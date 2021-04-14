@@ -519,6 +519,24 @@ th,td{
         outline: none;
         color: white;
     }
+    /*t_st_absenteeismes*/
+    .t-st-absentismeses-form label{
+        font-size: 12pt !important;
+    }
+    /*t_mygroupgallery*/
+    .t-my-group-gallery-block{
+        display: flex;
+        flex: row wrap;
+        justify-content: flex-start;
+    }
+    .t-my-group-gallery-block>div{
+        height: 250px !important;
+        width: 250px;
+    }
+    .t-my-group-gallery-block button{
+        height: 100%;
+        width: 100%;
+    }
 }
 /*Tablet (several tags)*/
 @media screen and (max-width:1200px){

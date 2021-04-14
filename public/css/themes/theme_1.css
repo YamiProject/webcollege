@@ -186,6 +186,14 @@ a{
         background-color: rgba(16, 12, 68, 0.514);
         color: white;
     }
+    /*.t_gallery*/
+    #t-gallery-form-file{
+        color: white;
+    }
+    .t-gallery-form-button{
+        background-color: rgba(16, 12, 68, 0.514);
+        color: white;
+    }
 }
 @media screen and (max-width:1200px){
     .t-announcement-info>div{

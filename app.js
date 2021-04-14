@@ -44,6 +44,7 @@ function connect_db_promise(){
     })};
 //Шаблонизатор Handlebars
 const hbs=require('hbs');
+const { copySync } = require('fs-extra');
 app.set('view engine','hbs');
 hbs.registerPartials('./pages/templates');
 //HandleBars хелперы
@@ -167,9 +168,10 @@ class ServerUser{
     }
     async fileUpload(path,files,file_name){
         await this.dirExist(path);
-        var uploadPath=files.file.path;
-        var savePath=__dirname+path+"/"+file_name;
-        var rawData=fs.readFileSync(uploadPath);
+        let uploadPath=files.file.path;
+        let savePath=await this.fileExist(__dirname+path+"/"+file_name);
+        console.log(savePath);
+        let rawData=fs.readFileSync(uploadPath);
         fs.writeFileSync(savePath,rawData,function(err){
             if(err) console.log(err);
         })
@@ -185,14 +187,24 @@ class ServerUser{
             }
         }
     }
+    async fileExist(savePath){
+        let checkPath=savePath.split(".");
+        let path=savePath;
+        let count=1;
+        while(fs.existsSync(path)){
+            path=checkPath[0]+`(${count}).`+checkPath[1];
+            count++;
+        }
+        return path;
+    }
     async createSelectQuery(query){
-        var connect=await connect_db_promise();
-        var [rows,fields]=await connect.query(query);
+        let connect=await connect_db_promise();
+        let [rows,fields]=await connect.query(query);
         connect.end()
         return rows;
     }
     async createIUDQuery(query){
-        var connect=await connect_db_promise();
+        let connect=await connect_db_promise();
         await connect.query(query);
         connect.end()
         return("Success");
@@ -252,7 +264,7 @@ app.use(async(req,res,next) =>{
     let createRole='t';
     switch(createRole){
         case "t":
-            await serverUser.setUser(1,8,"teacher","t",'Киселёва','Светлана', 'Владимировна','/img/profile_avatars/c_1.png');
+            await serverUser.setUser(1,1,"teacher","t",'Киселёва','Светлана', 'Владимировна','/img/profile_avatars/c_1.png');
             await serverUser.setUserGroup(1);
             await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * \
             FROM options \
@@ -290,128 +302,87 @@ app.route('/welcomepage').get((req,res)=>{
     let connect = connect_db();
     let login = req.body.user_login;
     let password = req.body.user_password;
-    switch(login.slice(0,1)){
-        case "@":
-            connect.query(`SELECT teacher_id,user_id,teacher_sur_name,teacher_name,teacher_mid_name,teacher_photo,teacher_login \ 
-            FROM teachers INNER JOIN users ON teacher_login=user_login \
-            WHERE user_login LIKE '${login}' AND user_password LIKE '${password}'`, async(err,data)=>{
-                if(err) throw err;
-                if(data[0]){
+    connect.query(`SELECT user_id,user_role,user_sur_name,user_name,user_mid_name,user_photo,teacher_id,head_id,student_id,admin_id \ 
+    FROM users a LEFT JOIN teachers b ON a.user_id=b.user_id \
+    LEFT JOIN students c ON a.user_id=c.user_id \
+    LEFT JOIN heads d ON a.user_id=d.user_id \
+    LEFT JOIN admins e ON a.user_id=e._user_id \
+    WHERE user_login LIKE '${login}' AND user_password LIKE '${password} LIMIT 1'`, async(err,data)=>{
+        if(err) throw err;
+        if(data[0]){
+            let group;
+            switch(data[0].user_role){
+                case "Администратор":
+                    await serverUser.setUser(data[0].admin_id,
+                        data[0].user_id,
+                        "admin",
+                        "a",
+                        data[0].user_sur_name,
+                        data[0].user_name,
+                        data[0].user_mid_name,
+                        data[0].user_photo);
+                    req.session.user=`@admin/${data[0].admin_id}`;
+                    break;
+                case "Преподаватель":
                     await serverUser.setUser(data[0].teacher_id,
                         data[0].user_id,
                         "teacher",
                         "t",
-                        data[0].teacher_sur_name,
-                        data[0].teacher_name,
-                        data[0].teacher_mid_name,
-                        data[0].teacher_photo);
+                        data[0].user_sur_name,
+                        data[0].user_name,
+                        data[0].user_mid_name,
+                        data[0].user_photo);
                     req.session.user=`@teacher/${data[0].teacher_id}`;
-                    let group = await serverUser.createSelectQuery(`SELECT group_id \
+                    group=await serverUser.createSelectQuery(`SELECT group_id \
                     FROM groups a INNER JOIN teachers b ON a.teacher_id=b.teacher_id \
                     WHERE a.teacher_id=${serverUser.getUserState()[0]} AND group_end_education_date>NOW() ORDER BY group_id DESC LIMIT 1`);
                     await serverUser.setUserGroup(group[0].group_id);
                     delete group_id;
-                    await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * \ 
-                    FROM options
-                    WHERE option_id=${data[0].user_id}`));
-                    res.cookie('sidebar',1);
-                    connect.end();
-                    res.end("Success");
-                }
-                else{
-                    connect.end();
-                    res.end("nExist");
-                }
-            });
-            break;
-        case "$":
-            connect.query(`SELECT head_id,user_id,head_sur_name,head_name,head_mid_name,head_photo,head_login \ 
-            FROM heads INNER JOIN users ON head_login=user_login \
-            WHERE user_login LIKE '${login}' AND user_password LIKE '${password}'`, async(err,data)=>{
-                if(err) throw err;
-                if(data[0]){
-                    serverUser.setUser(data[0].head_id,
-                        data[0].user_id,
-                        "head",
-                        "h",
-                        data[0].head_sur_name,
-                        data[0].head_name,
-                        data[0].head_mid_name,
-                        data[0].head_photo);
-                    req.session.user=`$head/${data[0].head_id}`;
-                    await serverUser.setUserGroup(await serverUser.createSelectQuery(`SELECT group_id \
-                    FROM groups a INNER JOIN heads b ON a.head_id=b.head_id \
-                    WHERE a.head_id=${serverUser.getUserState()[0]} AND group_end_education_date>NOW()`));
-                    await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * \ 
-                    FROM options
-                    WHERE option_id=${data[0].user_id}`));
-                    res.cookie('sidebar',1);
-                    connect.end();
-                    res.end("Success");
-                }
-                else{
-                    connect.end();
-                    res.end("nExist");
-                }
-            });
-            break;
-        case "*":
-            connect.query(`SELECT teacher_id,user_id,teacher_sur_name,teacher_name,teacher_mid_name,teacher_photo,teacher_login \ 
-            FROM teachers INNER JOIN users ON teacher_login=user_login \
-            WHERE user_login LIKE '${login}' AND user_password LIKE '${password}'`, async(err,data)=>{
-                if(err) throw err;
-                if(data[0]){
-                    await serverUser.setUser(data[0].teacher_id,
-                        data[0].user_id,
-                        "admin",
-                        "a",
-                        null,
-                        null,
-                        null,
-                        null);
-                    req.session.user=`@admin/${data[0].user_id}`;
-                    await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * \ 
-                    FROM options
-                    WHERE option_id=${data[0].user_id}`));
-                    res.cookie('sidebar',1);
-                    connect.end();
-                    res.end("Success");
-                }
-                else{
-                    connect.end();
-                    res.end("nExist");
-                }
-        });
-            break;
-        default:
-            connect.query(`SELECT student_id,user_id,student_sur_name,student_name,student_mid_name,student_photo,group_id,student_login \ 
-            FROM students INNER JOIN users ON student_login=user_login \
-            WHERE student_login LIKE '${login}' AND student_password LIKE '${password}'`, async(err,data)=>{
-                if(err) throw err;
-                if(data[0]){
+                    break;
+                case "Студент":
                     await serverUser.setUser(data[0].student_id,
                         data[0].user_id,
                         "student",
                         "s",
-                        data[0].student_sur_name,
-                        data[0].student_name,
-                        data[0].student_mid_name,
-                        data[0].student_photo);
-                    req.session.user=`#student/${data[0]}`;
-                    await serverUser.setUserGroup(data[0].group_id);
-                    await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * \ 
-                    FROM options
-                    WHERE option_id=${data[0].user_id}`));
-                    connect.end();
-                    res.end("Success");
-                }
-                else{
-                    connect.end();
-                    res.end("nExist");
-                }
-            });
-            break;
-    }
+                        data[0].user_sur_name,
+                        data[0].user_name,
+                        data[0].user_mid_name,
+                        data[0].user_photo);
+                    req.session.user=`@student/${data[0].teacher_id}`;
+                    group=await serverUser.createSelectQuery(`SELECT group_id \
+                    FROM groups a INNER JOIN students b ON a.student_id=b.student_id \
+                    WHERE a.student_id=${serverUser.getUserState()[0]} AND group_end_education_date>NOW() ORDER BY group_id DESC LIMIT 1`);
+                    await serverUser.setUserGroup(group[0].group_id);
+                    delete group_id;
+                    break;
+                case "ЗавОтеделением":
+                    await serverUser.setUser(data[0].head_id,
+                        data[0].user_id,
+                        "head",
+                        "h",
+                        data[0].user_sur_name,
+                        data[0].user_name,
+                        data[0].user_mid_name,
+                        data[0].user_photo);
+                    req.session.user=`@head/${data[0].teacher_id}`;
+                    group=await serverUser.createSelectQuery(`SELECT group_id \
+                    FROM groups a INNER JOIN heads b ON a.head_id=b.head_id \
+                    WHERE a.head_id=${serverUser.getUserState()[0]} AND group_end_education_date>NOW() ORDER BY group_id DESC LIMIT 1`);
+                    await serverUser.setUserGroup(group[0].group_id);
+                    delete group_id;
+                    break;
+            }
+            await serverUser.setUserOptions(await serverUser.createSelectQuery(`SELECT * \ 
+            FROM options \
+            WHERE option_id=${data[0].user_id}`));
+            connect.end();
+            res.end("Success");
+        }
+        else{
+            connect.end();
+            res.end("nExist");
+        }
+    });
 });
 //Общие страницы
 //Главная страница веб-приложения(+)
@@ -523,7 +494,7 @@ app.route("/t/announcements").get(isAuthenticated,interfaceSplitter,async(req,re
         announcement_type:announcement[1]
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
-    var form = new formidable.IncomingForm();
+    let form = new formidable.IncomingForm();
     form.parse(req,async(err, fields, files)=>{
         let file_path=null;
         if(files.file){
@@ -537,10 +508,10 @@ app.route("/t/announcements").get(isAuthenticated,interfaceSplitter,async(req,re
 });
 //Страница группы(+)
 app.get("/t/mygroup",isAuthenticated,interfaceSplitter,async(req,res)=>{
-    let group=await serverUser.createSelectQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
-    FROM students \
-    WHERE group_id=${serverUser.getUserGroup()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
-    ORDER BY student_sur_name;\ 
+    let group=await serverUser.createSelectQuery(`SELECT student_id,user_sur_name,user_name,user_mid_name,user_photo,student_headman,user_sex \
+    FROM students a INNER JOIN users b ON a.user_id=b.user_id \
+    WHERE group_id=${serverUser.getUserGroup()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=a.student_id) \
+    ORDER BY user_sur_name;\ 
     SELECT * \
     FROM spetialities a INNER JOIN groups b ON a.spetiality_id=b.spetiality_id \
     INNER JOIN spetiality_professions c ON a.spetiality_profession_id=c.spetiality_profession_id \
@@ -548,10 +519,10 @@ app.get("/t/mygroup",isAuthenticated,interfaceSplitter,async(req,res)=>{
     SELECT q1.all, q2.educated, SUM(q1.all-q2.educated) 'deducted'
     FROM (SELECT COUNT(a.student_id) 'all' \ 
             FROM students a \ 
-            WHERE a.group_id=1) q1,
+            WHERE a.group_id=${serverUser.getUserGroup()}) q1,
         (SELECT COUNT(b.student_id) 'educated' \
             FROM students b \ 
-            WHERE b.group_id=1 AND NOT EXISTS(SELECT c.student_id \
+            WHERE b.group_id=${serverUser.getUserGroup()} AND NOT EXISTS(SELECT c.student_id \
                                             FROM deductions c \
                                             WHERE b.student_id=c.student_id)) q2`);
     res.render("t_mygroup",{
@@ -579,16 +550,16 @@ app.get("/t/student/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(r
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
         sidebar_d:req.cookies.sidebar,
-        title:`${student[0][0].student_sur_name} ${student[0][0].student_name} ${student[0][0].student_mid_name}`,
+        title:`${student[0][0].user_sur_name} ${student[0][0].user_name} ${student[0][0].user_mid_name}`,
         student:student[0][0],
         parents:student[1],
-        student_name: `${student[0][0].student_sur_name} ${student[0][0].student_name} ${student[0][0].student_mid_name}`
+        user_name: `${student[0][0].user_sur_name} ${student[0][0].user_name} ${student[0][0].user_mid_name}`
     });
 });
 //Страница документов студента(+)
 app.get("/t/student/:id/documents",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     let studentsDocumentary=await serverUser.createSelectQuery(`SELECT * \
-    FROM students \ 
+    FROM students a INNER JOIN users b ON a.user_id=b.user_id\ 
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
     SELECT * \
     FROM passports \
@@ -602,8 +573,8 @@ app.get("/t/student/:id/documents",isAuthenticated,interfaceSplitter,isAccsessab
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
         sidebar_d:req.cookies.sidebar,
-        title:`${studentsDocumentary[0][0].student_sur_name} ${studentsDocumentary[0][0].student_name} ${studentsDocumentary[0][0].student_mid_name}`,
-        student_name:`${studentsDocumentary[0][0].student_sur_name} ${studentsDocumentary[0][0].student_name} ${studentsDocumentary[0][0].student_mid_name}`,
+        title:`${studentsDocumentary[0][0].user_sur_name} ${studentsDocumentary[0][0].user_name} ${studentsDocumentary[0][0].user_mid_name}`,
+        user_name:`${studentsDocumentary[0][0].user_sur_name} ${studentsDocumentary[0][0].user_name} ${studentsDocumentary[0][0].user_mid_name}`,
         passport:studentsDocumentary[1][0],
         documents:studentsDocumentary[2]
     });
@@ -611,7 +582,7 @@ app.get("/t/student/:id/documents",isAuthenticated,interfaceSplitter,isAccsessab
 //Страница достижений студента(+)
 app.route("/t/student/:id/achievements").get(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     let studentAchievments=await serverUser.createSelectQuery(`SELECT * \
-    FROM students \ 
+    FROM students a INNER JOIN users b ON a.user_id=b.user_id \ 
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
     SELECT * \
     FROM achievements \
@@ -623,12 +594,12 @@ app.route("/t/student/:id/achievements").get(isAuthenticated,interfaceSplitter,i
         options:serverUser.getUserOptions(),
         sidebar_d:req.cookies.sidebar,
         form: "t-achievements",
-        title:`${studentAchievments[0][0].student_sur_name} ${studentAchievments[0][0].student_name} ${studentAchievments[0][0].student_mid_name}`,
-        student_name:`${studentAchievments[0][0].student_sur_name} ${studentAchievments[0][0].student_name} ${studentAchievments[0][0].student_mid_name}`,
+        title:`${studentAchievments[0][0].user_sur_name} ${studentAchievments[0][0].user_name} ${studentAchievments[0][0].user_mid_name}`,
+        user_name:`${studentAchievments[0][0].user_sur_name} ${studentAchievments[0][0].user_name} ${studentAchievments[0][0].user_mid_name}`,
         achievements:studentAchievments[1]
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
-    var form = new formidable.IncomingForm();
+    let form = new formidable.IncomingForm();
     form.parse(req,async(err, fields, files)=>{
         let file_name=files.file.name;
         let file_path=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/achievements`,files,file_name);
@@ -640,7 +611,7 @@ app.route("/t/student/:id/achievements").get(isAuthenticated,interfaceSplitter,i
 //Страница ДО/ДПО студента(+)
 app.get("/t/student/:id/additionaleducation",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     let studentAdditionEducation=await serverUser.createSelectQuery(`SELECT * \
-    FROM students \ 
+    FROM students a INNER JOIN users b ON a.user_id=b.user_id \ 
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
     SELECT * \
     FROM additional_educations a INNER JOIN courses b ON a.ae_id=b.ae_id \
@@ -653,15 +624,15 @@ app.get("/t/student/:id/additionaleducation",isAuthenticated,interfaceSplitter,i
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
         sidebar_d:req.cookies.sidebar,
-        title:`${studentAdditionEducation[0][0].student_sur_name} ${studentAdditionEducation[0][0].student_name} ${studentAdditionEducation[0][0].student_mid_name}`,
+        title:`${studentAdditionEducation[0][0].user_sur_name} ${studentAdditionEducation[0][0].user_name} ${studentAdditionEducation[0][0].user_mid_name}`,
         student:studentAdditionEducation[0][0],
         ae:studentAdditionEducation[1]
     });
 });
-//Страница посещаемости студента(-)
+//Страница посещаемости студента(+)
 app.route("/t/student/:id/absenteeismes").get(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     let studentAbsenteeismes=await serverUser.createSelectQuery(`SELECT * \
-    FROM students \ 
+    FROM students a INNER JOIN users b ON a.user_id=b.user_id \ 
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')}; \
     SELECT * \
     FROM absenteeismes \ 
@@ -672,11 +643,18 @@ app.route("/t/student/:id/absenteeismes").get(isAuthenticated,interfaceSplitter,
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
         sidebar_d:req.cookies.sidebar,
-        title:`${studentAbsenteeismes[0][0].student_sur_name} ${studentAbsenteeismes[0][0].student_name} ${studentAbsenteeismes[0][0].student_mid_name}`,
+        title:`${studentAbsenteeismes[0][0].user_sur_name} ${studentAbsenteeismes[0][0].user_name} ${studentAbsenteeismes[0][0].user_mid_name}`,
         absentismeses: studentAbsenteeismes[1]
     });
 }).post(isAuthenticated,interfaceSplitter,isAccsessable,urlencodedParser,async(req,res)=>{
-    result.end();
+    let form=new formidable.IncomingForm();
+    form.parse(req,async(err,fields,files)=>{
+        let file_name=files.file.name;
+        let file_path=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/absentismeses`,files,file_name);
+        let result=await serverUser.createIUDQuery(`UPDATE absenteeismes SET absenteeismes_file='${file_path}' \
+        WHERE absenteeismes_id=${fields.id}`);
+        res.end();
+    });
 });
 //Страница мероприятий(-)
 app.route("/t/mygroup/events").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
@@ -726,10 +704,10 @@ app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
 });
 //Страница посещаемости(-)
 app.get("/t/mygroup/attendance",isAuthenticated,interfaceSplitter,async(req,res)=>{
-    let studentList=await serverUser.createSelectQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
-    FROM students \
-    WHERE group_id=${serverUser.getUserGroup()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
-    ORDER BY student_sur_name`);
+    let studentList=await serverUser.createSelectQuery(`SELECT student_id, user_sur_name,user_name,user_mid_name,user_photo,student_headman,user_sex \
+    FROM students a INNER JOIN users b ON a.user_id=b.user_id  \
+    WHERE group_id=${serverUser.getUserGroup()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=a.student_id) \
+    ORDER BY user_sur_name`);
     res.render("t_mygroupattendance",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
@@ -740,10 +718,10 @@ app.get("/t/mygroup/attendance",isAuthenticated,interfaceSplitter,async(req,res)
 });
 //Страница создания списка посещаемости(-)
 app.route("/t/newattendance").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
-    let studentList=await serverUser.createSelectQuery(`SELECT student_id, student_sur_name,student_name,student_mid_name,student_photo,student_headman,student_sex \
-    FROM students \
-    WHERE group_id=${serverUser.getUserGroup()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=students.student_id) \
-    ORDER BY student_sur_name`);
+    let studentList=await serverUser.createSelectQuery(`SELECT student_id, user_sur_name,user_name,user_mid_name,user_photo,student_headman,user_sex \
+    FROM students a INNER JOIN users b ON a.user_id=b.user_id \
+    WHERE group_id=${serverUser.getUserGroup()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=a.student_id) \
+    ORDER BY user_sur_name`);
     res.render("t_newattendance",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
@@ -755,14 +733,16 @@ app.route("/t/newattendance").get(isAuthenticated,interfaceSplitter,async(req,re
 });
 //Страница-галерея(-)
 app.route("/t/mygroup/gallery").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
-    let gallery=await serverUser.createSelectQuery(`SELECT event_archive \
-    FROM events a INNER JOIN groups b ON a.group_id=b.group_id`);
+    let gallery=await serverUser.createSelectQuery(`SELECT gallery_img \
+    FROM gallery \
+    WHERE group_id=${serverUser.getUserGroup()}`);
     res.render("t_mygroupgallery",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
         sidebar_d:req.cookies.sidebar,
-        gallery:gallery
+        gallery:gallery,
+        form:"t-gallery"
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
 

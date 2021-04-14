@@ -130,12 +130,12 @@ $(document).ready(function(){
     $(".t-achievements-form-button").on('click',async function(e){
         e.preventDefault();
         if(functions.filledCheck($(this),[':input:text',':input:file'])==true){
+            let url=window.location.href.match(/\/t\/student\/\d\/achievements/i);
             let formData=new FormData();
             $.each($("#t-achievements-form-file")[0].files,function(i,file){
                 formData.append('file', file);
             });
             formData.append("name",functions.escapeHTML($("#t-achievements-form-name").val()));
-            let url=window.location.href.match(/\/t\/student\/\d\/achievements/i);
             await $.ajax({
                 type:"POST",
                 url:url,
@@ -146,10 +146,31 @@ $(document).ready(function(){
                     window.location.reload();
                 }
             });
-            functions.clear($(this));
         }
     });
-    //Отправка достижений
+    //st-absentismeses
+    $("#t-st-absentismeses-form-button").on('click',function(e){
+        e.preventDefault();
+        if(functions.filledCheck($(this),["input:file"])==true){
+            let url=window.location.href.match(/\/t\/student\/\d\/absenteeismes/i);
+            let formData=new FormData();
+            $.each($("#t-st-absentismeses-form-file")[0].files,function(i,file){
+                formData.append('file',file);
+            });
+            formData.append("id",$(this).closest("form").attr("id").match(/\d+/));
+            $.ajax({
+                type:"POST",
+                url:url,
+                data:formData,
+                contentType:false,
+                processData:false,
+                success: function(){
+                    window.location.reload();
+                }
+            })
+        }
+    });
+    //Отправка объяснитльной
     //newreport
     //Отправка докладной
     $("#t-report-form-submit").on('click',function(e){
@@ -177,5 +198,9 @@ $(document).ready(function(){
                 }
             });
         }
+    });
+    //t_gallery
+    $("#t-gallery-form-button").on('click',function(){
+        
     });
 });
