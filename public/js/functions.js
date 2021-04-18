@@ -20,10 +20,10 @@ export function filledCheck(element,fields){
         selector+=`#${$(element).closest("form").attr("id")} ${val},`;
     });
     $(selector.substring(0,selector.length-1)).each(function(){
-        if(escapeHTML($(this).val())==""){
+        if(escapeHTML($(this).val())==""||escapeHTML($(this).val())==null){
+            alert($(this).val());
             $(this).addClass("border-danger text-danger");
             check=false;
-
         }
     });
     return check;

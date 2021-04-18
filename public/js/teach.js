@@ -23,7 +23,7 @@ $(document).ready(function(){
         e.preventDefault();
         if(functions.filledCheck($(this),[':input:text','textarea','select'])==true){
             let formData=new FormData();
-            $.each($("#t-anouncement-form-file")[0].files,function(i,file){
+            await $.each($("#t-anouncement-form-file")[0].files,function(i,file){
                 formData.append('file', file);
             });
             formData.append("head",functions.escapeHTML($("#t-anouncement-form-head").val()));
@@ -132,7 +132,7 @@ $(document).ready(function(){
         if(functions.filledCheck($(this),[':input:text',':input:file'])==true){
             let url=window.location.href.match(/\/t\/student\/\d\/achievements/i);
             let formData=new FormData();
-            $.each($("#t-achievements-form-file")[0].files,function(i,file){
+            await $.each($("#t-achievements-form-file")[0].files,function(i,file){
                 formData.append('file', file);
             });
             formData.append("name",functions.escapeHTML($("#t-achievements-form-name").val()));
@@ -149,12 +149,13 @@ $(document).ready(function(){
         }
     });
     //st-absentismeses
-    $("#t-st-absentismeses-form-button").on('click',function(e){
+    //Отправка объяснитльной
+    $("#t-st-absentismeses-form-button").on('click',async function(e){
         e.preventDefault();
         if(functions.filledCheck($(this),["input:file"])==true){
             let url=window.location.href.match(/\/t\/student\/\d\/absenteeismes/i);
             let formData=new FormData();
-            $.each($("#t-st-absentismeses-form-file")[0].files,function(i,file){
+            await $.each($("#t-st-absentismeses-form-file")[0].files,function(i,file){
                 formData.append('file',file);
             });
             formData.append("id",$(this).closest("form").attr("id").match(/\d+/));
@@ -170,7 +171,57 @@ $(document).ready(function(){
             })
         }
     });
-    //Отправка объяснитльной
+    //attendance
+    $("#t-my-group-na-link").on('click',function(){
+        window.location.href="/t/newattendance";
+    });
+    //newattendance
+    //Включение доступа загрузки файлов
+    $("#t-new-attendance-form select").on('change',function(){
+        if($(this).val()=="Н"||$(this).val()=="З"){
+            $(`#t-new-attendance-form-file-${$(this).attr("id").replace(/t-new-attendance-form-select-/i,'')}`).prop("disabled",false);
+        }
+        else{
+            $(`#t-new-attendance-form-file-${$(this).attr("id").replace(/t-new-attendance-form-select-/i,'')}`).prop("disabled",true);
+        }
+    })
+    //Отправка посещаемости
+    $("#t-new-attendance-form-button").on('click',async function(e){
+        e.preventDefault();
+        if(functions.filledCheck($(this),["input[type='date']"])==true){
+            let formData=new FormData();
+            formData.append("date",await functions.dateNormalise($("#t-new-attendance-form-date").val(),"Y-M-D"));
+            let id;
+            let abs_array=[];
+            await $.each($("#t-new-attendance-form select"),async function(){
+                if($(this).val()!==""&&$(this).val()!==null){
+                    id=$(this).attr("id").replace(/t-new-attendance-form-select-/,'');
+                    formData.append(id,$(this).val());
+                    abs_array.push(id);
+                }
+            });
+            await $.each($("#t-new-attendance-form input:file"),function(){
+                id=$(this).attr("id").replace(/t-new-attendance-form-file-/,'');
+                if(abs_array.includes(id)){
+                    $.each($(this)[0].files,function(i,file){
+                        if(file!==""&&file!=='null'&&typeof file!=='undefined'){
+                            formData.append(id,file);
+                        }
+                    });
+                }
+            });
+            $.ajax({
+                type:"POST",
+                url:"/t/newattendance",
+                data:formData,
+                contentType:false,
+                processData:false,
+                success: function(){
+                    window.location.reload();
+                }
+            });
+        }
+    });
     //newreport
     //Отправка докладной
     $("#t-report-form-submit").on('click',function(e){

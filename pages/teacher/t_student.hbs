@@ -19,16 +19,16 @@
                     {{>header}}
                     <div class="col-12 justify-content-center align-content-start row mx-0 px-0 app-window t-student">
                         <div class="col-12 row justify-content-between h-of">
-                            {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">{{student_name}}</h1>
+                            {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">{{user_name}}</h1>
                         </div>
                         <div class="col-12 row align-content-center justify-content-center m-0 p-0 student-profile">
-                            <div class="col-xl-4 col-12 order-0 row justify-content-xl-end justify-content-center">
-                                <div class="col-10 t-student-info row justify-content-center align-content-center stylise-block-static">
+                            <div class="col-xl-4 col-12 order-0 row justify-content-xl-end justify-content-center align-content-center">
+                                <div class="col-10 t-student-info row justify-content-center align-content-center stylise-block-static py-3">
                                     <div class="col-12 row m-0 justify-content-center pb-3">
                                         <img src="{{#imgnotnull student.student_photo student.student_sex}}{{/imgnotnull}}" alt="">
                                     </div>
                                     <div class="col-12">
-                                        <span>Имя: {{student_name}}</span><br>
+                                        <span>Имя: {{user_name}}</span><br>
                                         <span>Телефон: {{student.student_number}}</span>
                                     </div>
                                     {{#each parents}}
