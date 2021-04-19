@@ -755,7 +755,12 @@ app.route("/t/mygroup/individualwork").get(isAuthenticated,interfaceSplitter,asy
         sidebar_d:req.cookies.sidebar,
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
+    try{
 
+    }
+    catch{
+
+    }
 });
 //Страница с формой создания новой докладной на группу/студента(+-)
 app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
@@ -890,7 +895,7 @@ app.route("/t/mygroup/gallery").get(isAuthenticated,interfaceSplitter,async(req,
 
     }
     catch{
-        
+
     }
 });
 //Страницы заведующей отделением
@@ -912,6 +917,7 @@ app.get("/h/group/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(req
         sidebar_d:req.cookies.sidebar,
     });
 });
+//Страница посещаемости группы
 app.get("/h/group/:id/attendance",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     res.render("h_groupattendance",{
         username:serverUser.getUserFullName(), 
@@ -939,10 +945,82 @@ app.get("/s/portfolio",isAuthenticated,interfaceSplitter,async(req,res)=>{
     });
 });
 //Страницы администратора
-app.route("/createNewStudent").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+//Список пользователей
+app.route("/a/usersList").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+
+}).post(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    try{
+
+    }
+    catch{
+        res.end("Error");
+    }
+});
+//Страница для создания нового пользователя
+app.route("/a/createNewUser").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+
+}).post(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    try{
+
+    }
+    catch{
+        res.end("Error");
+    }
+});
+//Страница с информацией о пользователе
+app.get('/a/userInfo/:id',isAuthenticated,interfaceSplitter,async(req,res)=>{
 
 });
+//Страница изменения пользователя
+app.route("/a/changeUser/:id").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+
+}).post(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    try{
+
+    }
+    catch{
+        res.end("Error");
+    }
+});
+//Страница со списком существующих групп
+app.route("/a/groupsList").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+
+}).post(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    try{
+
+    }
+    catch{
+        res.end("Error");
+    }
+});
+//Страница для создания новой группы
+app.route("/a/createNewGroup").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+
+}).post(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    try{
+
+    }
+    catch{
+        res.end("Error");
+    }
+});
+//Страница с информацией о группе
+app.get('/a/userInfo/:id',isAuthenticated,interfaceSplitter,async(req,res)=>{
+
+});
+//Страница изменения группы
+app.route("/a/changeGroup/:id").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+
+}).post(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    try{
+
+    }
+    catch{
+        res.end("Error");
+    }
+});
 //Дополнительные POST-запросы
+//Cookie-parse для sidebar-меню
 app.post('/cookies',isAuthenticated,urlencodedParser,(req,res)=>{
     switch(req.body.action){
         case "s_off":
@@ -961,6 +1039,7 @@ app.get("/logout",(req,res)=>{
     res.redirect("/");
 })
 //Обработка ошибок
+//Ошибка доступа
 app.get("/accsesserror",(req,res)=>{
     res.render("error", {
         title:"Ошибка доступа",
@@ -968,6 +1047,7 @@ app.get("/accsesserror",(req,res)=>{
         options:serverUser.getUserOptions()
     });
 });
+//Ошибка 404 - страница не существует
 app.use((req, res)=>{
     res.status(404).render('error',{
         title:"Ошибка 404",
@@ -975,6 +1055,7 @@ app.use((req, res)=>{
         options:serverUser.getUserOptions()
     });
 });
+//Ошибка 500 - произошла непредвиенная ошибка в работе приложения
 app.use((error, req, res, next)=>{
     res.status(500).render("error",{
         title:"Ошибка 500",
