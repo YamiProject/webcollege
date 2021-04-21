@@ -19,41 +19,51 @@
                         <h1 class="display-4 col-12 text-right">Профиль</h1>
                     </div>
                     <div class="col-12 row justify-content-center">
-                        <form class="col-xl-8 col-12 row justify-content-center">
+                        <form class="col-xl-8 col-12 row justify-content-center" id="profile-form">
                             <div class="col-12 row justify-content-center">
                                 <div class="col-12 row justify-content-center">
                                     <h2 class="h-section text-center col-xl-3 col-12">Аватар</h2>
                                 </div>
-                                <div class="col-6">
-                                    <img src="" alt="">
+                                <div class="col-12 row justify-content-center">
+                                    <img src="{{#imgnotnull userData.user_photo userData.user_sex}}{{/imgnotnull}}" alt="profile-avatar" id="t-profile-img">
                                 </div>
-                                <div class="col-6">
-                                    <input type="file" name="" id="">
+                                <div class="col-12 row justify-content-center">
+                                    <input type="file" id="profile-form-img" disabled onchange="document.getElementById('t-profile-img').src = window.URL.createObjectURL(this.files[0])">
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="col-12 row justify-content-center">
-                                    <div class="col-6">
-                                        <label for="">Имя</label>
-                                        <input type="text" id="" class="form-control" disabled>
-                                    </div>
-                                    <div class="col-6">
+                                    <div class="col-12">
                                         <label for="">Фамилия</label>
-                                        <input type="text" id="" class="form-control" disabled>
+                                        <input type="text" id="profile-form-sur-name" class="form-control" value="{{userData.user_sur_name}}" disabled>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="">Имя</label>
+                                        <input type="text" id="profile-form-name" class="form-control" value="{{userData.user_name}}" disabled>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="">Отчество</label>
+                                        <input type="text" id="profile-form-mid-name" class="form-control" value="{{userData.user_mid_name}}" disabled>
                                     </div>
                                     <div class="col-6">
                                         <label for="">Дата рождения</label>
-                                        <input type="text" id="" class="form-control" disabled>
+                                        <input type="date" id="profile-form-birthdate" class="form-control" value="{{#datenormalise userData.user_birthdate "Y-M-D"}}{{/datenormalise}}" disabled>
                                     </div>
                                     <div class="col-6">
                                         <label for="">Пол</label>
-                                        <select type="text" id="" class="form-control" disabled>
-                                            <option value="М">М</option>
-                                            <option value="Ж">Ж</option>
+                                        <select type="text" id="profile-form-sex" class="form-control" disabled>
+                                            <option value="М" {{#equal userData.user_sex 'M'}}selected{{/equal}}>М</option>
+                                            <option value="Ж" {{#equal userData.user_sex 'Ж'}}selected{{/equal}}>Ж</option>
                                         </select>
                                     </div>
                                     <div class="col-12">
-                                        <button class="btn col-xl-6 col-12">Изменить</button>
+                                        <label for="">Почтовый адрес</label>
+                                        <input type="email" id="profile-form-email" class="form-control" value="{{userData.user_email}}" disabled>
+                                    </div>
+                                    <div class="col-12 row justify-content-between py-5">
+                                        <button class="btn col-12 stylise-block" id="profile-form-change-button">Изменить</button>
+                                        <button class="btn col-xl-5 col-12 stylise-block" id="profile-form-abort-button" hidden>Отменить</button>
+                                        <button class="btn col-xl-5 col-12 stylise-block" id="profile-form-save-button" hidden>Сохранить</button>
                                     </div>
                                 </div>
                             </div>

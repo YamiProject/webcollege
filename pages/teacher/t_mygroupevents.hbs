@@ -17,21 +17,47 @@
                 {{>applogo}}
                 <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
-                    <div class="col-12 justify-content-center align-items-start row mx-0 px-0 app-window t-my-group-events">
-                        <div class="col-12 h-of">
-                            <h1 class="col-12 text-right">Мероприятия</h1>
-                            
-                        </div>
-                        <div class="col-xl-3 col-10 my-4 mx-3  mainfeed">
-                            <div class="col-12"></div>
-                        </div>
-                        <div class="col-xl-3 col-10 my-4 mx-3  mainmygroup">
-                            <div class="col-12"></div>
-                        </div>
-                        <div class="col-xl-3 col-10 my-4 mx-3  mainevents">
-                            <div class="col-12"></div>
+                    <div class="m-0 block-to-slide">
+                        <div class="col-12 row justify-content-center align-items-start align-content-start row mx-0 px-0 app-window t-my-group-events">
+                            <div class="col-12 h-of">
+                                <h1 class="col-12 text-right">Мероприятия</h1>   
+                            </div>
+                            <div class="col-12 row justify-content-center align-content-start">
+                                <div class="col-10 row justify-content-center">
+                                    <div class="col-12 stylise-block-static py-4 mb-4">
+                                        <h2 class="col-12 text-center">Фильтрация</h2>
+                                        <form class="col-12 row justify-content-center" id="t-form-filter">
+                                            <div class="col-4 row align-content-center align-items-center justify-content-center">
+                                                <input type="checkbox" class="form-check" id="t-form-filter-pr" checked> <label class="form-check-label" for="">Родительские собрания</label>
+                                            </div>
+                                            <div class="col-4 row align-content-center align-items-center justify-content-center">
+                                                <input type="checkbox" class="form-check" id="t-form-filter-oe" checked> <label class="form-check-label" for="">Выездные мероприятия</label>
+                                            </div>
+                                            <div class="col-4 row align-content-center align-items-center justify-content-center">
+                                                <input type="checkbox" class="form-check" id="t-form-filter-sut" checked> <label class="form-check-label" for="">Субботники</label>
+                                            </div>
+                                            <div class="col-6 row align-content-center align-items-center justify-content-center">
+                                                <input type="checkbox" class="form-check" id="t-form-filter-fut" checked> <label class="form-check-label" for="">Предстоящие</label>
+                                            </div>
+                                            <div class="col-6 row align-content-center align-items-center justify-content-center">
+                                                <input type="checkbox" class="form-check" id="t-form-filter-pas" checked> <label class="form-check-label" for="">Прошедшее</label>
+                                            </div>
+                                            <div class="col-6 row align-content-center align-items-center justify-content-center">
+                                               <button class="btn stylise-block col-8">Применить</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    {{#each events}}
+                                    {{else}}
+                                    <div class="col-12">
+                                        <h2 class="text-center">Мероприятия отсутствуют</h2>
+                                    </div>
+                                    {{/each}}
+                                </div>
+                            </div>     
                         </div>
                     </div>
+                    {{>sideform}}
                 </div>
             </div>
         </div>

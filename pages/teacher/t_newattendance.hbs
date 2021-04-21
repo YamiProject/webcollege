@@ -18,33 +18,34 @@
                 <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
                     <div class="col-12 justify-content-center align-items-start align-content-start row m-0 p-0 app-window new-attendance-page">
-                        <div class="col-12 h-of">
-                            <h1 class=" col-12 text-right">Отсутствующие</h1>
-                            
+                        <div class="col-12 h-of row">
+                            {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">Отсутствующие</h1> 
                         </div>
                         <div class="col-12 row m-0 justify-content-center">
                             <form class="col-12 row ml-1 justify-content-center" id="t-new-attendance-form">
                                 <div class="col-12 row justify-content-center m-0">
-                                    <div class="col-10">
+                                    <div class="col-10 py-3">
                                         <label for="t-new-attendance-form">Дата:</label>
-                                        <input type="date" value="2000-04-04" class="form-control" id="t-new-attendance-form-date">
+                                        <input type="date" class="form-control" id="t-new-attendance-form-date">
                                     </div>
                                 </div>
-                                <div class="col-10">
+                                <div class="col-10 row justify-content-center">
                                     {{#each studentList}}
-                                        <div class="col-2  bg-primary rounded">
+                                        <div class="col-xl-3 col-12 m-4 p-4 stylise-block-static overflow-hidden">
                                             <img src="{{#imgnotnull user_photo user_sex}}{{/imgnotnull}}" alt="">
                                             <span>{{user_sur_name}} {{user_name}}</span>
                                             <select class="col-12 text-center form-control" id="t-new-attendance-form-select-{{student_id}}">
-                                                <option value=""></option>
-                                                <option value="Н" selected>Н</option>
+                                                <option value="" selected></option>
+                                                <option value="Н">Н</option>
                                                 <option value="З">З</option>
                                             </select>
                                             <input type="file" id="t-new-attendance-form-file-{{student_id}}" accept=".png,.jpg" disabled>
                                         </div>
                                     {{/each}}
                                 </div>
-                                <button class="btn btn-primary col-12" id="t-new-attendance-form-button">Отправить</button>
+                                <div class="col-12 mt-5 justify-content-center row align-content-end align-items-end pt-5">
+                                    <button class="btn stylise-block col-10" id="t-new-attendance-form-button">Отправить</button>
+                                </div>
                             </form>
                         </div>
                     </div>

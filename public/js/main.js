@@ -37,6 +37,47 @@ $(document).ready(function(){
             }
         });
     });
+    //profile
+    //Сделать доступными поля для ввода
+    $("#profile-form-change-button").on('click',function(e){
+        e.preventDefault();
+        $("#profile-form-change-button").prop('hidden',true);
+        $("#profile-form-abort-button").prop('hidden',false);
+        $("#profile-form-save-button").prop('hidden',false);
+        let selector=$(this).closest('form').attr('id');
+        $("#"+selector+" input,#"+selector+" select").prop('disabled',false);
+    });
+    //Отмена изменений
+    $("#profile-form-abort-button").on('click',function(){
+        window.location.reload;
+    });
+    //Сохранить изменения
+    $("#profile-form-save-button").on('click',async function(e){
+        e.preventDefault();
+        let formData=new FormData();
+        if(functions.filledCheck(this,['input:text'])==true){
+            await $.each($("#profile-form-img")[0].files,async function(i,file){
+                formData.append('file',file);
+            });
+            formData.append('user_name',functions.escapeHTML($("#profile-form-name").val()));
+            formData.append('user_sur_name',functions.escapeHTML($("#profile-form-sur-name").val()));
+            formData.append('user_mid_name',functions.escapeHTML($("#profile-form-mid-name").val()));
+            formData.append('user_birthdate',functions.escapeHTML($("#profile-form-birthdate").val()));
+            formData.append('user_sex',functions.escapeHTML($("#profile-form-sex").val()));
+            formData.append('user_email',functions.escapeHTML($("#profile-form-email").val()));
+            $.ajax({
+                type:"POST",
+                url:"/profile",
+                data:formData,
+                contentType:false,
+                processData:false,
+                success: function(){
+                    window.location.reload();
+                }
+            });
+        }
+
+    });
     //error
     //Возвращение на главную страницу
     $("#error-back-main").on('click', function(){
@@ -70,9 +111,11 @@ $(document).ready(function(){
     })
     //Стилизация меню
     //Анимация кнопок меню навигации
-    $("#navbar a").hover(function(){
+    $("#navbar a").hover(function(e){
+        e.preventDefault();
         $(this).animate({paddingTop:"-=10px"},200);
-    },function(){
+    },function(e){
+        e.preventDefault();
         $(this).animate({paddingTop:"+=10px"},200);
     });
     //Обнуление состояния ошибки

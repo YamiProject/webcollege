@@ -190,7 +190,7 @@ a{
     #t-gallery-form-file{
         color: white;
     }
-    .t-gallery-form-button{
+    #t-gallery-form-button{
         background-color: rgba(16, 12, 68, 0.514);
         color: white;
     }

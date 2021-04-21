@@ -86,7 +86,7 @@
                             {{#each studentsList}}
                                 <div class="col-xl-5 col-12 m-3 t-student-block row align-items-center justify-content-start stylise-block" id="{{student_id}}">
                                     <div class="col-5">
-                                        <img src="https://avatarko.ru/img/kartinka/33/multfilm_lyagushka_32117.jpg" alt="">
+                                        <img src="{{#imgnotnull user_photo user_sex}}{{/imgnotnull}}" alt="">
                                     </div>
                                     <div class="col-7">
                                         <p>{{user_sur_name}} {{user_name}} {{user_mid_name}}</p>

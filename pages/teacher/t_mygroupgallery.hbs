@@ -25,13 +25,13 @@
                             <div class="col-12 row justify-content-center">
                                 <div class="col-9 row justify-content-start">
                                     <div class="col-12 row justify-content-start align-items-start align-content-start t-my-group-gallery-block">
-                                        <div>
+                                        <div class="p-2 row m-2">
                                             <button class="btn open-form-button open-form-button-selector col-12">+</button>
                                         </div>
                                         {{#each gallery}}
-                                        <div>
-                                            
-                                        </div>
+                                            <div class="p-2 m-2 stylise-block-static row justify-content-center align-content-center">
+                                                <img src="{{gallery_img}}" alt="IMG_{{gallery_id}}"/>
+                                            </div>
                                         {{else}}
                                             <div class="row m-0 align-content-center justify-content-center">
                                                 <h2 class="text-center">Галерея пуста</h2>

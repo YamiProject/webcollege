@@ -222,6 +222,10 @@ $(document).ready(function(){
             });
         }
     });
+    //event
+    //Фильтрация
+    
+    //individual work
     //newreport
     //Отправка докладной
     $("#t-report-form-submit").on('click',function(e){
@@ -231,8 +235,8 @@ $(document).ready(function(){
                 type:"POST",
                 url:"/t/newreport",
                 data:{
-                    group_id:functions.escapeHTML($("#report-form-group-select").val()),
-                    text:functions.escapeHTML($("#report-form-text").val())
+                    group_id:functions.escapeHTML($("#t-report-form-group-select").val()),
+                    text:functions.escapeHTML($("#t-report-form-text").val())
                 },
                 success: function(){
                     $("#new-report-block").hide()
@@ -240,9 +244,9 @@ $(document).ready(function(){
                         <div class="col-12>
                             <h2>Докладная отправлена!</h2>
                         </div>
-                        <div>
-                            <button>Составить новую</button>
-                            <button>Вернутся на главную страницу</button>
+                        <div class="col-12 row justify-content-around">
+                            <button class="btn stylise-block col-5" onclick="window.location.reload()">Составить новую</button>
+                            <button class="btn stylise-block col-5" onclick="window.location.href='/'">Вернутся на главную страницу</button>
                         </div>`)
                     .delay(1000)
                     .fadeIn();
@@ -251,7 +255,22 @@ $(document).ready(function(){
         }
     });
     //t_gallery
-    $("#t-gallery-form-button").on('click',function(){
-        
+    $("#t-gallery-form-button").on('click',async function(){
+        if(functions.filledCheck($(this),['input'])==true){
+            let formData=new FormData();
+            await $.each($('#t-gallery-form-file')[0].files,function(i,file){
+                formData.append(file.name,file);
+            });
+            $.ajax({
+                type:"POST",
+                url:'/t/mygroup/gallery',
+                data:formData,
+                contentType:false,
+                processData:false,
+                success:function(){
+                    window.location.reload();
+                }
+            });
+        }
     });
 });

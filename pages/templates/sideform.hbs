@@ -45,16 +45,29 @@
                         </div>
                     </form>
                 {{/equal}}
+                {{#equal form 't-events'}}
+                    <div class="px-3">
+                        <h3 class="text-center">Запланировать мероприятие</h3>
+                    </div>
+                    <form class="row w-100 justify-content-center h-100 align-items-center align-content-center mx-0 px-3" id="t-event-form">
+                        <div class="w-100 row justify-content-center">
+                        
+                        </div>
+                        <div class="w-100 row align-content-center justify-content-center">
+                            
+                        </div>
+                    </form>
+                {{/equal}}
                 {{#equal form 't-gallery'}}
                     <div class="px-3 mb-n2">
                         <h3 class="text-center">Загрузить</h3>
                     </div>
                     <form class="row w-100 justify-content-center align-items-start align-content-start mx-0 px-3" id="t-gallery-form">
                         <div class="w-100">
-                            <input type="file" class="form-control-file" id="t-gallery-form-file" multiple>
+                            <input type="file" class="form-control-file" id="t-gallery-form-file" multiple accept=".png,.jpg">
                         </div>
                         <div class="w-100">
-                            <button class="btn w-100 t-gallery-form-button">+</button>
+                            <button class="btn w-100" id="t-gallery-form-button">+</button>
                         </div>
                     </form>
                 {{/equal}}

@@ -18,25 +18,26 @@
                 <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
                     <div class="col-12 justify-content-center align-items-start align-content-start row m-0 p-0 app-window new-report-page">
-                        <div class="col-12 h-of">
-                            <h1 class=" col-12 text-right">Докладная</h1>       
+                        <div class="col-12 h-of row">
+                            {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">Докладная</h1>       
                         </div>
                         <div class="col-12 row" id="new-report-block">
-                            <form action="" class="col-12 row" id="report-form">
-                                <div>
-                                <label for="">Выберите группу</label>
-                                <select id="report-form-group-select">
+                            <form class="col-12 row justify-content-center" id="report-form">
+                                <div class="col-10 row justify-content-start">
+                                    <label for="report-form-group-select">Выберите группу</label>
+                                    <select class="form-control" id="report-form-group-select">
                                         <option value="" disabled selected></option>
                                         {{#each group_list}}
                                             <option value="{{group_id}}">{{spetiality_abbreviated}}</option>
                                         {{/each}}
                                     </select>
                                 </div>
-                                <div class="col-10">
-                                    <textarea id="report-form-text"></textarea>
+                                <div class="col-10 mt-2 row justify-content-start">
+                                    <label for="report-form-group-select">Напишите заявление</label>
+                                    <textarea class="form-control" id="t-report-form-text"></textarea>
                                 </div>
-                                <div class="col-10">
-                                    <button id="report-form-submit">Отправить</button>
+                                <div class="col-10 mt-2">
+                                    <button class="btn stylise-block col-12" id="t-report-form-submit">Отправить</button>
                                 </div>
                             </form>
                         </div>
