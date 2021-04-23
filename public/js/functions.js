@@ -20,8 +20,7 @@ export function filledCheck(element,fields){
         selector+=`#${$(element).closest("form").attr("id")} ${val},`;
     });
     $(selector.substring(0,selector.length-1)).each(function(){
-        if(escapeHTML($(this).val())==""||escapeHTML($(this).val())==null){
-            alert($(this).val());
+        if(escapeHTML($(this).val())==""||escapeHTML($(this).val())==null||escapeHTML($(this).val())=='null'){
             $(this).addClass("border-danger text-danger");
             check=false;
         }
@@ -45,19 +44,19 @@ export function dateNormalise(val,format){
                 result+= date.getFullYear();
                 break;
             case("M"):
-                result+=date.getMonth()<10?"0"+date.getMonth():date.getMonth();
+                result+=date.getMonth()+1<10?"0"+(date.getMonth()+1):date.getMonth()+1;
                 break;
             case("D"):
-                result+=date.getDay()<10?"0"+date.getDay():date.getDay();
+                result+=date.getUTCDate()+1<10?"0"+(date.getUTCDate()+1):date.getUTCDate()+1;
                 break;
             case("h"):
-                result+= date.getHours();
+                result+= date.getHours()+1<10?"0"+(date.getHours()+1):date.getHours()+1;
                 break;
             case("m"):
-                result+= date.getMinutes();
+                result+= date.getMinutes()+1<10?"0"+(date.getMinutes()+1):date.getMinutes()+1;
                 break;
             case("s"):
-                result+= date.getSeconds();
+                result+= date.getSeconds()+1<10?"0"+(date.getSeconds()+1):date.getSeconds()+1;
                 break;
             default:
                 result+=formation[i];

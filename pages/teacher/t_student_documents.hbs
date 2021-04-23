@@ -21,57 +21,55 @@
                         <div class="col-12 row justify-content-between h-of pb-5">
                             {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">Документы: {{student_name}}</h1>
                         </div>
-                        <div class="col-12 row justify-content-center align-items-center">
-                            <div class="col-xl-4 col-12 stylise-block-static">
+                        <div class="col-12 row justify-content-center align-items-start">
+                            <div class="col-xl-4 col-12 stylise-block-static row justify-content-center">
                                 <div class="col-11 p-4 row justify-content-center">
                                     <div class="col-12">
                                         <h2 class="text-center">Паспорт</h2>
                                         <hr>
                                     </div>
-                                    {{#undefine passport}}
-                                        <div class="col-xl-6 col-12">
-                                            <span>Серия: {{../passport.passport_series}}</span>
+                                    <form class="row col-12 m-0 p-0" id="t-st-pas-form">
+                                        <div class="col-xl-6 col-12 p-1">
+                                            <input class="form-control" maxlength="4" type="text" value="{{passport.passport_series}}" placeholder="Серия..." id="t-st-pas-form-sir"/>
                                         </div>
-                                        <div class="col-xl-6 col-12">
-                                            <span>Номер: {{../passport.passport_number}}</span>
+                                        <div class="col-xl-6 col-12 p-1">
+                                            <input class="form-control" maxlength="6" type="text" value="{{passport.passport_number}}" placeholder="Номер..." id="t-st-pas-form-num"/>
                                         </div>
-                                        <div class="col-12">
-                                            <span>Выдан: {{../passport.passport_issued_by}}</span>
+                                        <div class="col-12 p-1">
+                                            <input class="form-control" type="text" value="{{passport.passport_issued_by}}" placeholder="Кем выдан..." id="t-st-pas-form-by"/>
                                         </div>
-                                        <div class="col-12">
-                                            <span>Дата выдачи: {{#datenormalise ../passport.passport_data_of_issue "D.M.Y"}}{{/datenormalise}}</span>
+                                        <div class="col-12 p-1">
+                                            <input class="form-control" type="date" value="{{#datenormalise passport.passport_data_of_issue "D.M.Y"}}{{/datenormalise}}" placeholder="Дата выдачи:" id="t-st-pas-form-date"/>
                                         </div>
-                                        <div class="col-12">
-                                            <span>Место проживания: {{../passport.passport_address}}</span>
+                                        <div class="col-12 p-1">
+                                            <input class="form-control" type="text" value="{{passport.passport_address}}" placeholder="Место проживания..." id="t-st-pas-form-lp"/>
                                         </div>
-                                    {{else}}
-                                        <div class="col-12">
-                                            <h2 class="text-center">Данные отсутствуют!</h2>
+                                        <div class="col-12 p-1">
+                                            <input class="form-control-file" type="file" id="t-st-pas-form-scan" accept=".png,.jpg"/>
                                         </div>
+                                        <div class="col-12 p-1">
+                                            <button class="btn stylise-block col-12 t-st-pas-form-save-button">Сохранить</button>
+                                        </div>
+                                    </form>
+                                    {{#undefine passport.passport_scan}}
+                                        {{#notnull ../passport.passport_scan}}
+                                        <div class="col-12 p-1 row justify-content-end">
+                                            <a href="{{../passport.passport_scan}}" class="text-center py-2 px-5 stylise-block" download>Скан</a>
+                                        </div>
+                                        {{/notnull}}
                                     {{/undefine}}
                                 </div>
                             </div>
-                            <div class="col-xl-7 col-12 mt-xl-0 mt-4  row justify-content-center">
-                                {{#each documents}}
-                                    <div class="col-xl-10 col-12 stylise-block-static">
-                                        <div class="col-12">
-                                            <h2 class="text-center">{{document_name}}</h2>
-                                            <hr>    
-                                        </div>
-                                        <div class="col-12">
-                                            <p class="col-12 text-center">Номер: {{document_number}}</p>
-                                        </div>
-                                        {{#notnull document_scan}}
-                                        <div class="col-12">
-                                            <img src="{{document_scan}}" alt="{{document_name}}-SCAN">
-                                        </div>
-                                        {{/notnull}}
-                                    </div>
-                                {{else}}
-                                    <div class="col-12">
-                                        <h2 class="text-center">Документы отствуют!</h2>
-                                    </div>
-                                {{/each}}
+                            <div class="col-xl-7 col-12 mt-xl-0 mt-4 row justify-content-center align-items-start align-content-start">
+                                <div class="col-10 stylise-block-static">
+                                    ddd
+                                </div>
+                                <div class="col-10 stylise-block-static">
+                                    ddd
+                                </div>
+                                <div class="col-10 stylise-block-static">
+                                    ddd
+                                </div>
                             </div>
                         </div>
                     </div>

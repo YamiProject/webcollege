@@ -561,8 +561,35 @@ th,td{
         height: 500px;
     }
     /*t-new-attendance*/
+    .t-na-st-block{
+        height: 50px;
+    }
+    .t-na-st-block img{
+        height: 80px;
+    }
     #t-new-attendance-form-button{
         height: 100px;
+    }
+    /*t-absensemes*/
+    .t-abs-student-block{
+        height: 160px;
+    }
+    .t-abs-student-block:hover{
+        transform: scale(1.05); 
+    }
+    .t-abs-student-block img{
+        border-radius: 150px;
+        height: 120px;
+        width: 120px;
+    }
+    /*t-events*/
+    #t-event-form-textarea{
+        height: 350px;
+    }
+    .t-event-form-button{
+        border-radius: 0 0 10px 10px !important;
+        outline: none;
+        color: white;
     }
     /*t-new-reaport*/
     #t-report-form-text{

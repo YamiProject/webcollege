@@ -126,6 +126,43 @@ $(document).ready(function(){
     $("#t-achievements-form-file").on('change',function(e){
         $("#t-achievements-form-img").css("background",`url('${URL.createObjectURL(e.target.files[0])}')`);
     });
+    //documents
+    $("#t-st-pas-form-sir, #t-st-pas-form-num").on('keypress keyup keydown',function(){
+        if($(this).val().search(/\D/gi)>=0){
+            $(this).val($(this).val().slice(0,-1));
+        }
+    });
+    //Добавление пасспортных данных
+    $(".t-st-pas-form-save-button").on('click',function(e){
+        e.preventDefault();
+        if(functions.filledCheck($(this),['input:text','input[type="date"]'])==true&&
+        $("#t-st-pas-form-sir").val().length==4&&
+        $("#t-st-pas-form-num").val().length==6){
+            let url=window.location.href.match(/\/t\/student\/\d\/documents/i);
+            let formData=new FormData();
+            formData.append('siries',$("#t-st-pas-form-sir").val());
+            formData.append('number',$("#t-st-pas-form-num").val());
+            formData.append('by',$("#t-st-pas-form-by").val());
+            formData.append('date',$("#t-st-pas-form-date").val());
+            formData.append('lp',$("#t-st-pas-form-lp").val());
+            formData.append('document','passport');
+            if($("#t-st-pas-form-scan").val()!==''){
+                $.each($("#t-st-pas-form-scan")[0].files,function(i,file){
+                    formData.append('scan',file);
+                });
+            }
+            $.ajax({
+                type:"POST",
+                url:url,
+                data:formData,
+                processData:false,
+                contentType:false,
+                success:function(){
+                    window.location.reload();
+                }
+            });
+        }
+    });
     //Добавление
     $(".t-achievements-form-button").on('click',async function(e){
         e.preventDefault();
@@ -174,6 +211,13 @@ $(document).ready(function(){
     //attendance
     $("#t-my-group-na-link").on('click',function(){
         window.location.href="/t/newattendance";
+    });
+    $("#t-attendance-list>div[id^=att-]").on('click',function(){
+        window.location.href=`/t/mygroup/attendance/${$(this).attr("id").replace("att-",'')}`;
+    });
+    //attendance-info
+    $(".t-abs-student-block").on('click',function(){
+        window.location.href=`/t/student/${$(this).attr("id")}/absenteeismes`;
     });
     //newattendance
     //Включение доступа загрузки файлов
@@ -224,14 +268,64 @@ $(document).ready(function(){
     });
     //event
     //Фильтрация
-    
+    $(".t-event-filter-button").on('click',function(e){
+        e.preventDefault();
+        if($("#t-form-filter-pr").prop("checked")==true){
+            $(".t-event-type-pr").prop("hidden",false);
+        }
+        else{
+            $(".t-event-type-pr").prop("hidden",true);
+        }
+        if($("#t-form-filter-oe").prop("checked")==true){
+            $(".t-event-type-oe").prop("hidden",false);
+        }
+        else{
+            $(".t-event-type-oe").prop("hidden",true);
+        }
+        if($("#t-form-filter-sut").prop("checked")==true){
+            $(".t-event-type-sut").prop("hidden",false);
+        }
+        else{
+            $(".t-event-type-sut").prop("hidden",true);
+        }
+        if($("#t-form-filter-fut").prop("checked")==true){
+            $(".t-event-type-fut").prop("hidden",false);
+        }
+        else{
+            $(".t-event-type-fut").prop("hidden",true);
+        }
+        if($("#t-form-filter-pas").prop("checked")==true){
+            $(".t-event-type-pas").prop("hidden",false);
+        }
+        else{
+            $(".t-event-type-pas").prop("hidden",true);
+        }
+    });
+    //Создание нового мероприятия
+    $(".t-event-form-button").on('click',async function(e){
+        e.preventDefault();
+        if(functions.filledCheck($(this),['select','input','textarea'])==true){
+            await $.ajax({
+                type:"POST",
+                url:"/t/mygroup/events",
+                data:{
+                    event_type:functions.escapeHTML($("#t-event-form-select").val()),
+                    event_discr:functions.escapeHTML($("#t-event-form-textarea").val()),
+                    event_date:functions.escapeHTML($("#t-event-form-date").val())
+                },
+                success: function(){
+                    window.location.reload();
+                }
+            });
+        }
+    });
     //individual work
     //newreport
     //Отправка докладной
-    $("#t-report-form-submit").on('click',function(e){
+    $("#t-report-form-submit").on('click',async function(e){
         e.preventDefault();
         if(functions.filledCheck($(this),['select','textarea'])==true){
-            $.ajax({
+            await $.ajax({
                 type:"POST",
                 url:"/t/newreport",
                 data:{

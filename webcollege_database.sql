@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Апр 14 2021 г., 21:19
+-- Время создания: Апр 23 2021 г., 20:18
 -- Версия сервера: 10.3.22-MariaDB
 -- Версия PHP: 7.1.33
 
@@ -31,10 +31,17 @@ CREATE TABLE `absenteeismes` (
   `absenteeismes_id` int(11) NOT NULL,
   `attendance_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
-  `absenteeismes_date` date NOT NULL,
   `absenteeismes_type` enum('Н','З') NOT NULL,
   `absenteeismes_file` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `absenteeismes`
+--
+
+INSERT INTO `absenteeismes` (`absenteeismes_id`, `attendance_id`, `student_id`, `absenteeismes_type`, `absenteeismes_file`) VALUES
+(7, 8, 1, 'Н', NULL),
+(8, 8, 2, 'З', '/files/1/2/absentismeses/abs_2000-03-02.png');
 
 -- --------------------------------------------------------
 
@@ -48,6 +55,14 @@ CREATE TABLE `achievements` (
   `achievement_name` varchar(300) NOT NULL,
   `achievement_scan` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `achievements`
+--
+
+INSERT INTO `achievements` (`achievement_id`, `student_id`, `achievement_name`, `achievement_scan`) VALUES
+(1, 1, 'e21e1', '/files/1/1/achievements/QR.png'),
+(2, 2, '133', '/files/1/2/achievements/Morse.jpg');
 
 -- --------------------------------------------------------
 
@@ -102,7 +117,8 @@ CREATE TABLE `announcements` (
 --
 
 INSERT INTO `announcements` (`announcement_id`, `group_id`, `announcement_data`, `announcement_header`, `announcement_type`, `announcement_file`, `announcement_text`) VALUES
-(1, 1, '2021-04-14 20:53:43', '21323', 2, '/files/1/announcements_files/aaa.jpg', 'fawfwf');
+(1, 1, '2021-04-14 20:53:43', '21323', 2, '/files/1/announcements_files/aaa.jpg', 'fawfwf'),
+(2, 1, '2021-04-20 12:07:37', 'dwdwd', 2, '/files/1/announcements_files/QR2.png', 'wdwdwd');
 
 -- --------------------------------------------------------
 
@@ -137,6 +153,13 @@ CREATE TABLE `attendance` (
   `attendance_date` date NOT NULL,
   `attendance_present` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `attendance`
+--
+
+INSERT INTO `attendance` (`attendance_id`, `group_id`, `attendance_date`, `attendance_present`) VALUES
+(8, 1, '2000-03-02', 0);
 
 -- --------------------------------------------------------
 
@@ -225,6 +248,13 @@ CREATE TABLE `events` (
   `event_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `events`
+--
+
+INSERT INTO `events` (`event_id`, `group_id`, `event_type_id`, `event_description`, `event_date`) VALUES
+(1, 1, 2, 'fawfawf', '2021-04-23');
+
 -- --------------------------------------------------------
 
 --
@@ -255,6 +285,14 @@ CREATE TABLE `gallery` (
   `group_id` int(11) NOT NULL,
   `gallery_img` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `gallery`
+--
+
+INSERT INTO `gallery` (`gallery_id`, `group_id`, `gallery_img`) VALUES
+(1, 1, '/files/1/img/Untitled-1.png'),
+(2, 1, '/files/1/img/А4 ввод ключа.png');
 
 -- --------------------------------------------------------
 
@@ -344,10 +382,12 @@ CREATE TABLE `options` (
 --
 
 INSERT INTO `options` (`option_id`, `h_size`, `h_color`, `font_size`, `font_color`, `theme_id`, `logo_d`, `app_name_d`) VALUES
-(1, 42, '#212529', 16, '#212529', 1, 1, 1),
+(1, 42, '#212529', 16, '#212529', 1, 0, 0),
 (2, 42, '#212529', 16, '#212529', 1, 1, 1),
 (3, 42, '#212529', 16, '#212529', 1, 1, 1),
-(4, 42, '#212529', 16, '#212529', 1, 1, 1);
+(4, 42, '#212529', 16, '#212529', 1, 1, 1),
+(5, 42, '#212529', 16, '#212529', 1, 1, 1),
+(6, 42, '#212529', 16, '#212529', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -382,6 +422,13 @@ CREATE TABLE `passports` (
   `passport_issued_by` varchar(250) NOT NULL,
   `passport_scan` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `passports`
+--
+
+INSERT INTO `passports` (`passport_id`, `student_id`, `passport_series`, `passport_number`, `passport_data_of_issue`, `passport_address`, `passport_issued_by`, `passport_scan`) VALUES
+(1, 1, 1231, 123123, '2021-04-22', '12313313', 'dwadwawd', '/files/1/1/documents/passport-scan.png');
 
 -- --------------------------------------------------------
 
@@ -454,7 +501,9 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`student_id`, `user_id`, `group_id`, `student_disabled`, `student_headman`) VALUES
-(1, 4, 1, NULL, NULL);
+(1, 4, 1, NULL, NULL),
+(2, 5, 1, NULL, NULL),
+(3, 6, 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -511,6 +560,7 @@ CREATE TABLE `users` (
   `user_birthdate` date NOT NULL,
   `user_sex` enum('М','Ж') NOT NULL,
   `user_number` varchar(13) NOT NULL,
+  `user_email` varchar(300) NOT NULL,
   `user_photo` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -518,11 +568,13 @@ CREATE TABLE `users` (
 -- Дамп данных таблицы `users`
 --
 
-INSERT INTO `users` (`user_id`, `user_login`, `user_password`, `user_role`, `user_sur_name`, `user_name`, `user_mid_name`, `user_birthdate`, `user_sex`, `user_number`, `user_photo`) VALUES
-(1, 'Kiselova123', '123', 'Преподаватель', 'Киселёва', 'Светлана', 'Владимировна', '2021-04-01', 'Ж', '11111111111', NULL),
-(2, 'admin', 'admin', 'Администратор', 'Костин', 'Владислав', 'Константинович', '2021-04-02', 'М', '22222222222', NULL),
-(3, 'mAkSI', '111', 'ЗавОтделением', 'Максимова', 'Татьяна', 'Викторовна', '2021-04-04', 'Ж', '33333333333', NULL),
-(4, 'KOSTIN', '1123', 'Студент', 'Костин', 'Владислав', 'Константинович', '2021-04-01', 'М', '44444444444', NULL);
+INSERT INTO `users` (`user_id`, `user_login`, `user_password`, `user_role`, `user_sur_name`, `user_name`, `user_mid_name`, `user_birthdate`, `user_sex`, `user_number`, `user_email`, `user_photo`) VALUES
+(1, 'Kiselova123', '123', 'Преподаватель', 'Киселёва', 'Светлана', 'Владимировна', '2021-01-31', 'Ж', '11111111111', 'aa@mail.ru', '/img/users/1_1.png'),
+(2, 'admin', 'admin', 'Администратор', 'Костин', 'Владислав', 'Константинович', '2021-02-04', 'М', '22222222222', 'bb@mail.ru', 'null'),
+(3, 'mAkSI', '111', 'ЗавОтделением', 'Максимова', 'Татьяна', 'Викторовна', '2021-02-04', 'Ж', '33333333333', 'cc@mail.ru', 'null'),
+(4, 'KOSTIN', '1123', 'Студент', 'Костин', 'Владислав', 'Константинович', '2021-02-04', 'М', '44444444444', 'dd@mail.ru', 'null'),
+(5, 'sec_student', '11112', 'Студент', 'Абдулберов', 'Тимур', 'Рушанович', '2021-02-04', 'М', '88888888888', 'ee@mail.ru', 'null'),
+(6, 'Natali', '222', 'Студент', 'Тихомирова', 'Наталья', NULL, '2021-04-01', 'Ж', '21111111111', '', NULL);
 
 --
 -- Триггеры `users`
@@ -536,7 +588,8 @@ CREATE TRIGGER `new_user_insert` AFTER INSERT ON `users` FOR EACH ROW BEGIN
     ELSEIF NEW.user_role LIKE 'ЗавОтделением' THEN
     	INSERT INTO heads VALUES(null,NEW.user_id);
     ELSEIF NEW.user_role LIKE 'Администратор' THEN
-    	INSERT INTO heads VALUES(null,NEW.user_id);
+    	INSERT INTO admins 
+        VALUES(null,NEW.user_id);
     END IF;
 END
 $$
@@ -773,13 +826,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `absenteeismes`
 --
 ALTER TABLE `absenteeismes`
-  MODIFY `absenteeismes_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `absenteeismes_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT для таблицы `achievements`
 --
 ALTER TABLE `achievements`
-  MODIFY `achievement_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `achievement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `additional_educations`
@@ -797,7 +850,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT для таблицы `announcements`
 --
 ALTER TABLE `announcements`
-  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `announcement_types`
@@ -809,7 +862,7 @@ ALTER TABLE `announcement_types`
 -- AUTO_INCREMENT для таблицы `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT для таблицы `courses`
@@ -845,7 +898,7 @@ ALTER TABLE `duty_schedule`
 -- AUTO_INCREMENT для таблицы `events`
 --
 ALTER TABLE `events`
-  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT для таблицы `event_types`
@@ -857,7 +910,7 @@ ALTER TABLE `event_types`
 -- AUTO_INCREMENT для таблицы `gallery`
 --
 ALTER TABLE `gallery`
-  MODIFY `gallery_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `gallery_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `groups`
@@ -893,7 +946,7 @@ ALTER TABLE `parents`
 -- AUTO_INCREMENT для таблицы `passports`
 --
 ALTER TABLE `passports`
-  MODIFY `passport_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `passport_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT для таблицы `reports`
@@ -917,7 +970,7 @@ ALTER TABLE `spetiality_professions`
 -- AUTO_INCREMENT для таблицы `students`
 --
 ALTER TABLE `students`
-  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT для таблицы `teachers`
@@ -935,7 +988,7 @@ ALTER TABLE `themes`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
@@ -1031,7 +1084,7 @@ ALTER TABLE `groups`
 -- Ограничения внешнего ключа таблицы `heads`
 --
 ALTER TABLE `heads`
-  ADD CONSTRAINT `heads_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `heads_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `individual_works`
@@ -1077,13 +1130,13 @@ ALTER TABLE `spetialities`
 --
 ALTER TABLE `students`
   ADD CONSTRAINT `students_ibfk_3` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `students_ibfk_4` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `students_ibfk_4` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `teachers`
 --
 ALTER TABLE `teachers`
-  ADD CONSTRAINT `teachers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `teachers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

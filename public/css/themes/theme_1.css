@@ -186,7 +186,15 @@ a{
         background-color: rgba(16, 12, 68, 0.514);
         color: white;
     }
-    /*.t_gallery*/
+    /*t_event*/
+    #t-event-form label{
+        color:white !important;
+    }
+    .t-event-form-button{
+        background-color: rgba(42, 34, 153, 0.514) !important;
+        color: white;
+    }
+    /*t_gallery*/
     #t-gallery-form-file{
         color: white;
     }

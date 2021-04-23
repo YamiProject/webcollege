@@ -29,17 +29,20 @@
                                         <input type="date" class="form-control" id="t-new-attendance-form-date">
                                     </div>
                                 </div>
-                                <div class="col-10 row justify-content-center">
+                                <div class="col-xl-10 col-12 row justify-content-center">
                                     {{#each studentList}}
-                                        <div class="col-xl-3 col-12 m-4 p-4 stylise-block-static overflow-hidden">
-                                            <img src="{{#imgnotnull user_photo user_sex}}{{/imgnotnull}}" alt="">
-                                            <span>{{user_sur_name}} {{user_name}}</span>
-                                            <select class="col-12 text-center form-control" id="t-new-attendance-form-select-{{student_id}}">
-                                                <option value="" selected></option>
-                                                <option value="Н">Н</option>
-                                                <option value="З">З</option>
-                                            </select>
-                                            <input type="file" id="t-new-attendance-form-file-{{student_id}}" accept=".png,.jpg" disabled>
+                                        <div class="col-xl-12 justify-content-between row align-items-center align-content-center col-12 m-1 p-4 stylise-block-static overflow-hidden t-na-st-block">
+                                            <div class="col-4">
+                                                <span>{{user_sur_name}} {{user_name}}</span>
+                                            </div>
+                                            <div class="col-7 row align-content-center align-items-center justify-content-end">
+                                                <select class="col-xl-2 col-6 text-center form-control" id="t-new-attendance-form-select-{{student_id}}">
+                                                    <option value="" selected></option>
+                                                    <option value="Н">Н</option>
+                                                    <option value="З">З</option>
+                                                </select>
+                                                <input type="file" class="col-6" id="t-new-attendance-form-file-{{student_id}}" accept=".png,.jpg" disabled>
+                                            </div>
                                         </div>
                                     {{/each}}
                                 </div>

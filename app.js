@@ -61,11 +61,11 @@ hbs.registerHelper('undefine',(val,options)=>{
 });
 //HandleBars проверка на наличие изображения
 hbs.registerHelper('imgnotnull',(val,sex)=>{
-    console.log(val,sex);
     return val==null||val==""||val=="null"?sex=="М"?"/img/icons/male.png":"/img/icons/girl.png":val;
 });
 //HandleBars проверка на наличие данных в переменной
 hbs.registerHelper('notnull',(val,options)=>{
+    console.log(val);
     return val!==null&&val!=='null'&&val!==""?options.fn(this):options.inverse(this);
 });
 //HandleBars форматирование даты на уровне шаблонизатора
@@ -79,19 +79,19 @@ hbs.registerHelper('datenormalise',(val,format)=>{
                 result+= date.getFullYear();
                 break;
             case("M"):
-                result+=date.getMonth()<10?"0"+date.getMonth():date.getMonth();
+                result+=date.getMonth()+1<10?"0"+(date.getMonth()+1):date.getMonth()+1;
                 break;
             case("D"):
-                result+=date.getDay()<10?"0"+date.getDay():date.getDay();
+                result+=date.getUTCDate()+1<10?"0"+(date.getUTCDate()+1):date.getUTCDate()+1;
                 break;
             case("h"):
-                result+= date.getHours();
+                result+= date.getHours()+1<10?"0"+(date.getHours()+1):date.getHours()+1;
                 break;
             case("m"):
-                result+= date.getMinutes();
+                result+= date.getMinutes()+1<10?"0"+(date.getMinutes()+1):date.getMinutes()+1;
                 break;
             case("s"):
-                result+= date.getSeconds();
+                result+= date.getSeconds()+1<10?"0"+(date.getSeconds()+1):date.getSeconds()+1;
                 break;
             default:
                 result+=formation[i];
@@ -174,10 +174,16 @@ class ServerUser{
     getUserOptions(){
         return this.user_options;
     }
-    async fileUpload(path,files,file_name){
-        await this.dirExist(path);;
+    async fileUpload(path,files,file_name,ex_action){
+        await this.dirExist(path);
         let uploadPath=files.path;
-        let savePath=await this.fileExist(__dirname+path+"/"+file_name);
+        let savePath;
+        if(ex_action=='rn'){
+            savePath=await this.fileExist(__dirname+path+"/"+file_name);
+        }
+        else{
+            savePath=__dirname+path+"/"+file_name;
+        }
         let rawData=fs.readFileSync(uploadPath);
         fs.writeFileSync(savePath,rawData,function(err){
             if(err){
@@ -250,10 +256,15 @@ async function isAccsessable(req,res,next){
         case "t":
             if(accsessData[1]=='student'){
                 result=await serverUser.createSelectQuery(`SELECT group_id \ 
-                    FROM students \ 
-                    WHERE student_id=${accsessData[2]} AND NOT EXISTS (SELECT student_id \ 
-                                                                        FROM deductions \
-                                                                        WHERE deductions.student_id=students.student_id) LIMIT 1`);
+                FROM students \ 
+                WHERE student_id=${accsessData[2]} AND group_id=${serverUser.getUserGroup()} AND NOT EXISTS (SELECT student_id \ 
+                                                                    FROM deductions \
+                                                                    WHERE deductions.student_id=students.student_id) LIMIT 1`);
+            }
+            if(accsessData[2]=="attendance"){
+                result=await serverUser.createSelectQuery(`SELECT attendance_id
+                FROM attendance
+                WHERE attendance_id=${accsessData[3]} AND group_id=${serverUser.getUserGroup()}`);
             }
             break;
         case "h":
@@ -400,7 +411,8 @@ app.route('/welcomepage').get((req,res)=>{
             }
         });
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -420,7 +432,6 @@ app.route("/profile").get(isAuthenticated,async(req,res)=>{
     let userData=await serverUser.createSelectQuery(`SELECT *
     FROM users
     WHERE user_id=${serverUser.getUserState()[0]} LIMIT 1;`);
-    console.log(userData);
     res.render("profile",{
         title:serverUser.getUserFullName(),
         username:serverUser.getUserFullName(), 
@@ -435,8 +446,8 @@ app.route("/profile").get(isAuthenticated,async(req,res)=>{
         let form=formidable.IncomingForm();
         form.parse(req,async(err,fields,files)=>{
             let savePath='null';
-            if(files.name){
-                savePath=await serverUser.fileUpload(`/public/img/users`,files.file,`${serverUser.getUserState()[0]}_${serverUser.getUserState()[1]}.png`,'');
+            if(files.file){
+                savePath=await serverUser.fileUpload(`/public/img/users`,files.file,`${serverUser.getUserState()[0]}_${serverUser.getUserState()[1]}.png`,'rw');
             }
             let result=await serverUser.createIUDQuery(`UPDATE users SET
                 user_sur_name='${fields.user_sur_name}',
@@ -452,7 +463,8 @@ app.route("/profile").get(isAuthenticated,async(req,res)=>{
             res.end(result);
         });
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -514,7 +526,8 @@ app.route("/options").get(isAuthenticated,async(req,res)=>{
                 res.end("Hacking attempt");
             }  
         }
-        catch{
+        catch(err){
+        console.log(err);
             res.end("Unexpected error");
         }
     }
@@ -548,7 +561,7 @@ app.route("/t/announcements").get(isAuthenticated,interfaceSplitter,async(req,re
             let file_path=null;
             if(files.file){
             let file_name=files.file.name;
-            file_path=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/announcements_files`,files.file,file_name);
+            file_path=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/announcements_files`,files.file,file_name,'rn');
             }
             let result=await serverUser.createIUDQuery(`INSERT INTO announcements
             VALUE(
@@ -563,7 +576,8 @@ app.route("/t/announcements").get(isAuthenticated,interfaceSplitter,async(req,re
             res.end(file_path);
         });
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -620,7 +634,7 @@ app.get("/t/student/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(r
     });
 });
 //Страница документов студента(+)
-app.get("/t/student/:id/documents",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
+app.route("/t/student/:id/documents").get(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     let studentsDocumentary=await serverUser.createSelectQuery(`SELECT *
     FROM students a INNER JOIN users b ON a.user_id=b.user_id
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
@@ -631,6 +645,7 @@ app.get("/t/student/:id/documents",isAuthenticated,interfaceSplitter,isAccsessab
     FROM documents
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')}
     ORDER BY document_name DESC;`);
+    console.log(studentsDocumentary[1][0]);
     res.render("t_student_documents",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
@@ -638,10 +653,41 @@ app.get("/t/student/:id/documents",isAuthenticated,interfaceSplitter,isAccsessab
         user_photo:[serverUser.getUserData()[3],serverUser.getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
         title:`${studentsDocumentary[0][0].user_sur_name} ${studentsDocumentary[0][0].user_name} ${studentsDocumentary[0][0].user_mid_name}`,
-        user_name:`${studentsDocumentary[0][0].user_sur_name} ${studentsDocumentary[0][0].user_name} ${studentsDocumentary[0][0].user_mid_name}`,
+        student_name:`${studentsDocumentary[0][0].user_sur_name} ${studentsDocumentary[0][0].user_name} ${studentsDocumentary[0][0].user_mid_name}`,
         passport:studentsDocumentary[1][0],
         documents:studentsDocumentary[2]
     });
+}).post(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
+    try{
+        let form=new formidable.IncomingForm();
+        form.parse(req,async(err,fields,files)=>{
+            console.log(fields);
+            if(fields.document=="passport"){
+                let savePath='null';
+                if(files.scan){
+                    savePath=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/documents`,files.scan,'passport-scan.png','rw');
+                }
+                let result=await serverUser.createIUDQuery(`INSERT INTO passports
+                VALUES(
+                    null,
+                    ${JSON.stringify(req.params.id)},
+                    ${fields.siries},
+                    ${fields.number},
+                    '${fields.date}',
+                    '${fields.lp}',
+                    '${fields.by}',
+                    '${savePath}'
+                );`)
+            }  
+            else{
+                
+            }
+        });
+    }
+    catch(err){
+        console.log(err);
+        res.end("Error");
+    }
 });
 //Страница достижений студента(+)
 app.route("/t/student/:id/achievements").get(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
@@ -659,7 +705,7 @@ app.route("/t/student/:id/achievements").get(isAuthenticated,interfaceSplitter,i
         sidebar_d:req.cookies.sidebar,
         form: "t-achievements",
         title:`${studentAchievments[0][0].user_sur_name} ${studentAchievments[0][0].user_name} ${studentAchievments[0][0].user_mid_name}`,
-        user_name:`${studentAchievments[0][0].user_sur_name} ${studentAchievments[0][0].user_name} ${studentAchievments[0][0].user_mid_name}`,
+        student_name:`${studentAchievments[0][0].user_sur_name} ${studentAchievments[0][0].user_name} ${studentAchievments[0][0].user_mid_name}`,
         achievements:studentAchievments[1]
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
@@ -667,7 +713,7 @@ app.route("/t/student/:id/achievements").get(isAuthenticated,interfaceSplitter,i
         let form = new formidable.IncomingForm();
         form.parse(req,async(err, fields, files)=>{
             let file_name=files.file.name;
-            let file_path=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/achievements`,files.file,file_name);
+            let file_path=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/achievements`,files.file,file_name,'rn');
             let result=await serverUser.createIUDQuery(`INSERT INTO achievements
             VALUE(
                 null,
@@ -678,7 +724,8 @@ app.route("/t/student/:id/achievements").get(isAuthenticated,interfaceSplitter,i
             res.end(file_path);
         });
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -699,7 +746,7 @@ app.get("/t/student/:id/additionaleducation",isAuthenticated,interfaceSplitter,i
         user_photo:[serverUser.getUserData()[3],serverUser.getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
         title:`${studentAdditionEducation[0][0].user_sur_name} ${studentAdditionEducation[0][0].user_name} ${studentAdditionEducation[0][0].user_mid_name}`,
-        student:studentAdditionEducation[0][0],
+        student_name:`${studentAdditionEducation[0][0].user_sur_name} ${studentAdditionEducation[0][0].user_name} ${studentAdditionEducation[0][0].user_mid_name}`,
         ae:studentAdditionEducation[1]
     });
 });
@@ -718,6 +765,7 @@ app.route("/t/student/:id/absenteeismes").get(isAuthenticated,interfaceSplitter,
         user_photo:[serverUser.getUserData()[3],serverUser.getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
         title:`${studentAbsenteeismes[0][0].user_sur_name} ${studentAbsenteeismes[0][0].user_name} ${studentAbsenteeismes[0][0].user_mid_name}`,
+        student_name:`${studentAbsenteeismes[0][0].user_sur_name} ${studentAbsenteeismes[0][0].user_name} ${studentAbsenteeismes[0][0].user_mid_name}`,
         absentismeses: studentAbsenteeismes[1]
     });
 }).post(isAuthenticated,interfaceSplitter,isAccsessable,urlencodedParser,async(req,res)=>{
@@ -725,13 +773,14 @@ app.route("/t/student/:id/absenteeismes").get(isAuthenticated,interfaceSplitter,
         let form=new formidable.IncomingForm();
         form.parse(req,async(err,fields,files)=>{
             let file_name=files.file.name;
-            let file_path=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/absentismeses`,files.file,file_name);
+            let file_path=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/absentismeses`,files.file,file_name,'rn');
             let result=await serverUser.createIUDQuery(`UPDATE absenteeismes SET absenteeismes_file='${file_path}'
             WHERE absenteeismes_id=${fields.id}`);
             res.end('');
         });
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -739,9 +788,11 @@ app.route("/t/student/:id/absenteeismes").get(isAuthenticated,interfaceSplitter,
 app.route("/t/mygroup/events").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
     let groupEvents=await serverUser.createSelectQuery(`SELECT *
     FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id
-    WHERE a.group_id=${serverUser.getUserGroup()};
+    WHERE a.group_id=${serverUser.getUserGroup()}
+    ORDER BY event_date;
     SELECT *
-    FROM event_types`)
+    FROM event_types`);
+    console.log(groupEvents[0]);
     res.render("t_mygroupevents",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
@@ -749,7 +800,7 @@ app.route("/t/mygroup/events").get(isAuthenticated,interfaceSplitter,async(req,r
         user_photo:[serverUser.getUserData()[3],serverUser.getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
         events:groupEvents[0],
-        enet_types:groupEvents[1],
+        event_types:groupEvents[1],
         form:'t-events'
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
@@ -759,13 +810,14 @@ app.route("/t/mygroup/events").get(isAuthenticated,interfaceSplitter,async(req,r
             null,
             ${serverUser.getUserGroup()},
             ${req.body.event_type},
-            ${req.body.event_discr},
-            ${req.body.event_date}
+            '${req.body.event_discr}',
+            '${req.body.event_date}'
         );`);
         res.end(result);
     }
-    catch{
-        res.end("Error");
+    catch(err){
+        console.log(err);
+       res.end("Error");
     }
 });
 //Страница индвидуальной работы(+)
@@ -789,7 +841,8 @@ app.route("/t/mygroup/individualwork").get(isAuthenticated,interfaceSplitter,asy
         );`);
         res.end('');
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end('Error');
     }
 });
@@ -818,11 +871,12 @@ app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
         );`);
         res.end(result);
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
-//Страница посещаемости(-)
+//Страница посещаемости(+)
 app.get("/t/mygroup/attendance",isAuthenticated,interfaceSplitter,async(req,res)=>{
     let attendanceInfo=await serverUser.createSelectQuery(`SELECT * 
     FROM attendance
@@ -834,6 +888,38 @@ app.get("/t/mygroup/attendance",isAuthenticated,interfaceSplitter,async(req,res)
         user_photo:[serverUser.getUserData()[3],serverUser.getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
         at_list:attendanceInfo
+    });
+});
+//Страница посещаемости(+)
+app.get("/t/mygroup/attendance/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
+    let url_id=req.url.replace(/\D+/gi,'');
+    let attendanceInfo=await serverUser.createSelectQuery(`SELECT * 
+    FROM attendance
+    WHERE attendance_id=${url_id};
+    SELECT DISTINCT user_name,user_sur_name,user_mid_name,user_sex,user_photo,student_id,attendance_id
+    FROM users a INNER JOIN students b ON a.user_id=b.user_id
+    INNER JOIN groups c ON b.group_id=c.group_id
+    INNER JOIN attendance d ON c.group_id=d.group_id
+    WHERE d.attendance_id=${url_id} AND b.student_id NOT IN(SELECT student_id 
+                                                    FROM absenteeismes 
+                                                    WHERE attendance_id=${url_id});
+    SELECT DISTINCT user_name,user_sur_name,user_mid_name,user_sex,user_photo,student_id,attendance_id
+    FROM users a INNER JOIN students b ON a.user_id=b.user_id
+    INNER JOIN groups c ON b.group_id=c.group_id
+    INNER JOIN attendance d ON c.group_id=d.group_id
+    WHERE d.attendance_id=${url_id} AND b.student_id IN(SELECT student_id 
+                                                    FROM absenteeismes 
+                                                    WHERE attendance_id=${url_id});`);
+    res.render("t_mygroupattendance_info",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[2],
+        options:serverUser.getUserOptions(),
+        user_photo:[serverUser.getUserData()[3],serverUser.getUserData()[4]],
+        sidebar_d:req.cookies.sidebar,
+        attendance:attendanceInfo,
+        att_date:attendanceInfo[0][0].attendance_date,
+        present:attendanceInfo[1],
+        absented:attendanceInfo[2]
     });
 });
 //Страница создания списка посещаемости(+)
@@ -891,7 +977,7 @@ app.route("/t/newattendance").get(isAuthenticated,interfaceSplitter,async(req,re
                 }
                 let savePath;
                 for(const [file_id,file_val] of Object.entries(files)){
-                    savePath=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${file_id}/absentismeses`,file_val,`abs_${fields.date}.${file_val.type.split("/")[1]}`);
+                    savePath=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${file_id}/absentismeses`,file_val,`abs_${fields.date}.${file_val.type.split("/")[1]}`,'rn');
                     let result=await serverUser.createIUDQuery(`UPDATE absenteeismes SET absenteeismes_file='${savePath}'
                     WHERE student_id=${file_id}`);
                 }
@@ -902,7 +988,8 @@ app.route("/t/newattendance").get(isAuthenticated,interfaceSplitter,async(req,re
             }
         });
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -925,7 +1012,7 @@ app.route("/t/mygroup/gallery").get(isAuthenticated,interfaceSplitter,async(req,
         let form=formidable.IncomingForm();
         form.parse(req,async(err,fileds,files)=>{
             for(const [file_name,file_val] of Object.entries(files)){
-                let savePath=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/img`,file_val,file_name);
+                let savePath=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/img`,file_val,file_name,'rn');
                 let result=await serverUser.createIUDQuery(`INSERT INTO gallery 
                 VALUES(
                     null,
@@ -936,7 +1023,8 @@ app.route("/t/mygroup/gallery").get(isAuthenticated,interfaceSplitter,async(req,
             res.end('')
         });
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -1000,7 +1088,8 @@ app.route("/a/usersList").get(isAuthenticated,interfaceSplitter,async(req,res)=>
     try{
 
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -1013,7 +1102,8 @@ app.route("/a/createNewUser").get(isAuthenticated,interfaceSplitter,async(req,re
     try{
 
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -1032,7 +1122,8 @@ app.route("/a/changeUser/:id").get(isAuthenticated,interfaceSplitter,async(req,r
     try{
 
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -1045,7 +1136,8 @@ app.route("/a/groupsList").get(isAuthenticated,interfaceSplitter,async(req,res)=
     try{
 
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -1058,7 +1150,8 @@ app.route("/a/createNewGroup").get(isAuthenticated,interfaceSplitter,async(req,r
     try{
 
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });
@@ -1077,7 +1170,8 @@ app.route("/a/changeGroup/:id").get(isAuthenticated,interfaceSplitter,async(req,
     try{
 
     }
-    catch{
+    catch(err){
+        console.log(err);
         res.end("Error");
     }
 });

@@ -22,12 +22,12 @@
                             <h1 class="text-right col-12">Посещаемость</h1> 
                         </div>
                         <div class="col-12 row justify-content-center pb-5">
-                            <div class="col-9 row align-content-start">
+                            <div class="col-9 row align-content-start" id="t-attendance-list">
                                 <div class="col-12">
                                     <h2 class="text-center h-section">Отчёты</h2>
                                 </div>
                                 {{#each at_list}}
-                                    <div class="col-xl-4 col-12 row m-2 p-4 stylise-block-static">
+                                    <div class="col-xl-4 col-10 row m-2 p-4 stylise-block" id="att-{{attendance_id}}">
                                         <div class="col-12">
                                             <h2>Дата: {{#datenormalise attendance_date "D-M-Y"}}{{/datenormalise}}</h2>
                                         </div>

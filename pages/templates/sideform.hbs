@@ -51,10 +51,24 @@
                     </div>
                     <form class="row w-100 justify-content-center h-100 align-items-center align-content-center mx-0 px-3" id="t-event-form">
                         <div class="w-100 row justify-content-center">
-                        
+                            <label for="t-event-form-select">Тип мероприятия</label>
+                            <select class="form-control" id="t-event-form-select">
+                                <option value="" disabled selected></option>
+                                {{#each ../event_types}}
+                                    <option value="{{event_type_id}}">{{event_type_name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="w-100 row justify-content-center">
+                            <label class="text-light" for="t-event-form-date">Дата проведения</label>
+                            <input type="date" class="form-control" id="t-event-form-date">
                         </div>
                         <div class="w-100 row align-content-center justify-content-center">
-                            
+                            <label for="t-event-form-textarea">Информация</label>
+                            <textarea class="form-control" id="t-event-form-textarea"></textarea>
+                        </div>
+                        <div class="w-100">
+                            <button class="btn w-100 t-event-form-button">+</button>
                         </div>
                     </form>
                 {{/equal}}
