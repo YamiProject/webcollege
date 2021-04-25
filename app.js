@@ -65,7 +65,6 @@ hbs.registerHelper('imgnotnull',(val,sex)=>{
 });
 //HandleBars проверка на наличие данных в переменной
 hbs.registerHelper('notnull',(val,options)=>{
-    console.log(val);
     return val!==null&&val!=='null'&&val!==""?options.fn(this):options.inverse(this);
 });
 //HandleBars форматирование даты на уровне шаблонизатора
@@ -645,7 +644,6 @@ app.route("/t/student/:id/documents").get(isAuthenticated,interfaceSplitter,isAc
     FROM documents
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')}
     ORDER BY document_name DESC;`);
-    console.log(studentsDocumentary[1][0]);
     res.render("t_student_documents",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
@@ -661,27 +659,97 @@ app.route("/t/student/:id/documents").get(isAuthenticated,interfaceSplitter,isAc
     try{
         let form=new formidable.IncomingForm();
         form.parse(req,async(err,fields,files)=>{
-            console.log(fields);
-            if(fields.document=="passport"){
-                let savePath='null';
-                if(files.scan){
-                    savePath=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/documents`,files.scan,'passport-scan.png','rw');
+            let savePath='null';
+            let result;
+            let file_exist;
+            for(const [field_name,field_val] of Object.entries(fields)){
+                switch(field_name){
+                    case "СНИЛС":
+                        console.log(files[field_name+"_scan"]);
+                        if(files[field_name+"_scan"]){
+                            savePath=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/documents`,files[field_name+"_scan"],'SNILS-scan.png','rw');
+                        }
+                        else{
+                            file_exist=await serverUser.createSelectQuery(`SELECT document_scan 
+                            FROM documents 
+                            WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'СНИЛС' AND document_scan IS NOT NULL`);
+                            if(file_exist[0]){
+                                savePath=file_exist[0].document_scan;
+                            }
+                            else{
+                                savePath='null';
+                            }
+                        }
+                        result=await serverUser.createIUDQuery(`UPDATE documents SET
+                        document_number='${field_val}',
+                        document_scan='${savePath}'
+                        WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'СНИЛС';`);
+                        break;
+                    case "ИНН":
+                        if(files[field_name+"_scan"]){
+                            savePath=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/documents`,files[field_name+"_scan"],'INN-scan.png','rw');
+                        }
+                        else{
+                            file_exist=await serverUser.createSelectQuery(`SELECT document_scan 
+                            FROM documents 
+                            WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'ИНН' AND document_scan IS NOT NULL;`);
+                            if(file_exist[0]){
+                                savePath=file_exist[0].document_scan;
+                            }
+                            else{
+                                savePath='null';
+                            }
+                        }
+                        result=await serverUser.createIUDQuery(`UPDATE documents SET
+                        document_number='${field_val}',
+                        document_scan='${savePath}'
+                        WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'ИНН';`);
+                        break;
+                    case "ПОЛИС":
+                        if(files[field_name+"_scan"]){
+                            savePath=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/documents`,files[field_name+"_scan"],'POLIS-scan.png','rw');
+                        }
+                        else{
+                            file_exist=await serverUser.createSelectQuery(`SELECT document_scan 
+                            FROM documents 
+                            WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'ПОЛИС' AND document_scan IS NOT NULL;`);
+                            if(file_exist[0]){
+                                savePath=file_exist[0].document_scan;
+                            }
+                            else{
+                                savePath='null';
+                            }
+                        }
+                        result=await serverUser.createIUDQuery(`UPDATE documents SET
+                        document_number='${field_val}',
+                        document_scan='${savePath}'
+                        WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'ПОЛИС';`);
+                        break;
                 }
-                let result=await serverUser.createIUDQuery(`INSERT INTO passports
-                VALUES(
-                    null,
-                    ${JSON.stringify(req.params.id)},
-                    ${fields.siries},
-                    ${fields.number},
-                    '${fields.date}',
-                    '${fields.lp}',
-                    '${fields.by}',
-                    '${savePath}'
-                );`)
-            }  
-            else{
-                
             }
+            if(files.passport_scan){
+                savePath=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/documents`,files.passport_scan,'passport-scan.png','rw');
+            }
+            else{
+                file_exist=await serverUser.createSelectQuery(`SELECT passport_scan 
+                FROM passports 
+                WHERE student_id=${JSON.stringify(req.params.id)} AND passport_scan IS NOT NULL;`);
+                if(file_exist[0]){
+                    savePath=file_exist[0].passport_scan;
+                }
+                else{
+                    savePath='null';
+                }
+            }
+            result=await serverUser.createIUDQuery(`UPDATE passports SET
+            passport_series=${fields.passport_sir},
+            passport_number=${fields.passport_num},
+            passport_data_of_issue='${fields.passport_date}',
+            passport_address='${fields.passport_lp}',
+            passport_issued_by='${fields.passport_by}',
+            passport_scan='${savePath}'
+            WHERE student_id=${JSON.stringify(req.params.id)};`);
+            res.end("Succsess");
         });
     }
     catch(err){
@@ -820,7 +888,7 @@ app.route("/t/mygroup/events").get(isAuthenticated,interfaceSplitter,async(req,r
        res.end("Error");
     }
 });
-//Страница индвидуальной работы(+)
+//Страница индвидуальной работы(-)
 app.route("/t/mygroup/individualwork").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
     res.render("t_mygroupindividualwork",{
         username:serverUser.getUserFullName(), 
@@ -1167,6 +1235,15 @@ app.route("/a/changeGroup/:id").get(isAuthenticated,interfaceSplitter,async(req,
         
     });
 }).post(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    try{
+
+    }
+    catch(err){
+        console.log(err);
+        res.end("Error");
+    }
+});
+app.post("/queryResult",isAuthenticated,interfaceSplitter,async(req,res)=>{
     try{
 
     }

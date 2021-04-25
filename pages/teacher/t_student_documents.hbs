@@ -22,55 +22,56 @@
                             {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">Документы: {{student_name}}</h1>
                         </div>
                         <div class="col-12 row justify-content-center align-items-start">
-                            <div class="col-xl-4 col-12 stylise-block-static row justify-content-center">
-                                <div class="col-11 p-4 row justify-content-center">
-                                    <div class="col-12">
-                                        <h2 class="text-center">Паспорт</h2>
-                                        <hr>
-                                    </div>
-                                    <form class="row col-12 m-0 p-0" id="t-st-pas-form">
-                                        <div class="col-xl-6 col-12 p-1">
-                                            <input class="form-control" maxlength="4" type="text" value="{{passport.passport_series}}" placeholder="Серия..." id="t-st-pas-form-sir"/>
+                            <form class="row col-12 justify-content-center m-0 p-0" id="t-st-docs-form">
+                                <div class="col-xl-4 col-12 stylise-block-static row justify-content-center">
+                                        <div class="col-11 p-4 row justify-content-center" id="t-st-pas-data-block">
+                                            <div class="col-12">
+                                                <h2 class="text-center">Паспорт</h2>
+                                                <hr>
+                                            </div>
+                                            <div class="col-xl-6 col-12 p-1">
+                                                <input class="form-control" maxlength="4" type="text" value="{{passport.passport_series}}" placeholder="Серия..." id="t-st-pas-form-sir"/>
+                                            </div>
+                                            <div class="col-xl-6 col-12 p-1">
+                                                <input class="form-control" maxlength="6" type="text" value="{{passport.passport_number}}" placeholder="Номер..." id="t-st-pas-form-num"/>
+                                            </div>
+                                            <div class="col-12 p-1">
+                                                <input class="form-control" type="text" value="{{passport.passport_issued_by}}" placeholder="Кем выдан..." id="t-st-pas-form-by"/>
+                                            </div>
+                                            <div class="col-12 p-1">
+                                                <input class="form-control" type="date" value="{{#datenormalise passport.passport_data_of_issue "Y-M-D"}}{{/datenormalise}}" placeholder="Дата выдачи:" id="t-st-pas-form-date"/>
+                                            </div>
+                                            <div class="col-12 p-1">
+                                                <input class="form-control" type="text" value="{{passport.passport_address}}" placeholder="Место проживания..." id="t-st-pas-form-lp"/>
+                                            </div>
+                                            <div class="col-12 p-1">
+                                                <input class="form-control-file" type="file" id="t-st-pas-form-scan" accept=".png,.jpg"/>
+                                            </div>
+                                                {{#undefine passport.passport_scan}}
+                                                    {{#notnull ../passport.passport_scan}}
+                                                    <div class="col-12 p-1 row justify-content-end">
+                                                        <a href="{{../passport.passport_scan}}" class="text-center py-2 px-5 stylise-block" download>Скан</a>
+                                                    </div>
+                                                    {{/notnull}}
+                                                {{/undefine}}
                                         </div>
-                                        <div class="col-xl-6 col-12 p-1">
-                                            <input class="form-control" maxlength="6" type="text" value="{{passport.passport_number}}" placeholder="Номер..." id="t-st-pas-form-num"/>
-                                        </div>
-                                        <div class="col-12 p-1">
-                                            <input class="form-control" type="text" value="{{passport.passport_issued_by}}" placeholder="Кем выдан..." id="t-st-pas-form-by"/>
-                                        </div>
-                                        <div class="col-12 p-1">
-                                            <input class="form-control" type="date" value="{{#datenormalise passport.passport_data_of_issue "D.M.Y"}}{{/datenormalise}}" placeholder="Дата выдачи:" id="t-st-pas-form-date"/>
-                                        </div>
-                                        <div class="col-12 p-1">
-                                            <input class="form-control" type="text" value="{{passport.passport_address}}" placeholder="Место проживания..." id="t-st-pas-form-lp"/>
-                                        </div>
-                                        <div class="col-12 p-1">
-                                            <input class="form-control-file" type="file" id="t-st-pas-form-scan" accept=".png,.jpg"/>
-                                        </div>
-                                        <div class="col-12 p-1">
-                                            <button class="btn stylise-block col-12 t-st-pas-form-save-button">Сохранить</button>
-                                        </div>
-                                    </form>
-                                    {{#undefine passport.passport_scan}}
-                                        {{#notnull ../passport.passport_scan}}
-                                        <div class="col-12 p-1 row justify-content-end">
-                                            <a href="{{../passport.passport_scan}}" class="text-center py-2 px-5 stylise-block" download>Скан</a>
-                                        </div>
-                                        {{/notnull}}
-                                    {{/undefine}}
                                 </div>
-                            </div>
-                            <div class="col-xl-7 col-12 mt-xl-0 mt-4 row justify-content-center align-items-start align-content-start">
-                                <div class="col-10 stylise-block-static">
-                                    ddd
+                                <div class="col-xl-7 col-12 mt-xl-0 mt-4 row justify-content-end align-items-start align-content-start">
+                                    {{#each documents}}
+                                        <div class="col-10 m-2 p-2 stylise-block-static" id="t-oth-document-block">
+                                            <label for="">{{document_name}}</label>
+                                            <input type="text" class="form-control" name="{{document_name}}" value="{{document_number}}" id="t-oth-document-number" {{#equal document_name 'СНИЛС'}}maxlength="11"{{/equal}}{{#equal document_name 'ИНН'}}maxlength="10"{{/equal}}{{#equal document_name 'ПОЛИС'}}maxlength="10"{{/equal}}>
+                                            <input type="file" class="form-control-file" name="{{document_name}}" id="t-oth-document-scan" accept=".png,.jpg">
+                                            {{#notnull document_scan}}
+                                                <a href="{{document_scan}}" download>Скан</a>
+                                            {{/notnull}}
+                                        </div>
+                                    {{/each}}
                                 </div>
-                                <div class="col-10 stylise-block-static">
-                                    ddd
+                                <div class="col-12 row justify-content-center mt-5">
+                                    <button class="btn col-10 stylise-block p-4" id="t-st-doc-save">Сохранить</button>
                                 </div>
-                                <div class="col-10 stylise-block-static">
-                                    ddd
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>

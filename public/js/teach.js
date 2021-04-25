@@ -121,47 +121,98 @@ $(document).ready(function(){
     $(".t-student-sections>div[id^=t-st-abs-link]").on('click', function(){
         window.location.href=`/t/student/${$(this).attr("id").substr(-1)}/absenteeismes`;
     });
-    //achievements
-    //Превью грамоты
-    $("#t-achievements-form-file").on('change',function(e){
-        $("#t-achievements-form-img").css("background",`url('${URL.createObjectURL(e.target.files[0])}')`);
-    });
     //documents
-    $("#t-st-pas-form-sir, #t-st-pas-form-num").on('keypress keyup keydown',function(){
+    $("#t-st-pas-form-sir,#t-st-pas-form-num,#t-oth-document-number").on('keypress keyup keydown',function(){
         if($(this).val().search(/\D/gi)>=0){
             $(this).val($(this).val().slice(0,-1));
         }
     });
     //Добавление пасспортных данных
-    $(".t-st-pas-form-save-button").on('click',function(e){
+    $("#t-st-doc-save").on('click',async function(e){
         e.preventDefault();
-        if(functions.filledCheck($(this),['input:text','input[type="date"]'])==true&&
-        $("#t-st-pas-form-sir").val().length==4&&
-        $("#t-st-pas-form-num").val().length==6){
-            let url=window.location.href.match(/\/t\/student\/\d\/documents/i);
-            let formData=new FormData();
-            formData.append('siries',$("#t-st-pas-form-sir").val());
-            formData.append('number',$("#t-st-pas-form-num").val());
-            formData.append('by',$("#t-st-pas-form-by").val());
-            formData.append('date',$("#t-st-pas-form-date").val());
-            formData.append('lp',$("#t-st-pas-form-lp").val());
-            formData.append('document','passport');
-            if($("#t-st-pas-form-scan").val()!==''){
-                $.each($("#t-st-pas-form-scan")[0].files,function(i,file){
-                    formData.append('scan',file);
+        let formData=new FormData();
+        let accs=true;
+        let accs_file=[];
+        await $.each($("form #t-oth-document-number"),function(){
+            if($(this).val().trim()!==''){
+                switch($(this).attr("name")){
+                    case "СНИЛС":
+                        if($(this).val().length==11){
+                            accs_file.push($(this).attr("name"));
+                            formData.append($(this).attr("name"),$(this).val());
+                        }
+                        else{
+                            accs=false;
+                            $(this).addClass("text-danger border-danger");
+                        }
+                        break;
+                    case "ИНН":
+                        if($(this).val().length==10){
+                            accs_file.push($(this).attr("name"));
+                            formData.append($(this).attr("name"),$(this).val());
+                        }
+                        else{
+                            accs=false;
+                            $(this).addClass("text-danger border-danger");
+                        }
+                        break;
+                    case "ПОЛИС":
+                        if($(this).val().length==10){
+                            accs_file.push($(this).attr("name"));
+                            formData.append($(this).attr("name"),$(this).val());
+                        }
+                        else{
+                            accs=false;
+                            $(this).addClass("text-danger border-danger");
+                        }
+                        break;
+                }
+            }
+        });
+        await $.each($("form #t-oth-document-scan"),function(){
+            if(accs_file.includes($(this).attr("name"))){
+                let scan_name=$(this).attr("name");
+                $.each($(this)[0].files,function(i,file){
+                   formData.append(scan_name+"_scan",file); 
                 });
             }
+        });
+        let pasp=false;
+        let pasp_array={};
+        await $.each($("#t-st-pas-data-block input:text,#t-st-pas-data-block input[type='date']"),function(){
+            if($(this).val().trim()!==''){
+                pasp=true;
+                formData.append("passport_"+$(this).attr("id").replace("t-st-pas-form-",''),$(this).val());
+            }
+            else{
+                $(this).addClass("text-danger border-danger");
+                accs=false;
+            }
+        });
+        if(pasp==true){
+            await $.each($("#t-st-pas-form-scan")[0].files,function(i,file){
+                formData.append("passport_scan",file);
+            });
+        }
+        if(accs==true){
+            let url=window.location.href.match(/\/t\/student\/\d\/documents/i);
             $.ajax({
                 type:"POST",
                 url:url,
                 data:formData,
-                processData:false,
                 contentType:false,
-                success:function(){
+                processData:false,
+                success: function(){
                     window.location.reload();
                 }
             });
         }
+    });
+    //Кнопка активного изменения
+    //achievements
+    //Превью грамоты
+    $("#t-achievements-form-file").on('change',function(e){
+        $("#t-achievements-form-img").css("background",`url('${URL.createObjectURL(e.target.files[0])}')`);
     });
     //Добавление
     $(".t-achievements-form-button").on('click',async function(e){
