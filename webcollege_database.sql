@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Апр 23 2021 г., 20:18
+-- Время создания: Апр 27 2021 г., 23:07
 -- Версия сервера: 10.3.22-MariaDB
 -- Версия PHP: 7.1.33
 
@@ -118,7 +118,8 @@ CREATE TABLE `announcements` (
 
 INSERT INTO `announcements` (`announcement_id`, `group_id`, `announcement_data`, `announcement_header`, `announcement_type`, `announcement_file`, `announcement_text`) VALUES
 (1, 1, '2021-04-14 20:53:43', '21323', 2, '/files/1/announcements_files/aaa.jpg', 'fawfwf'),
-(2, 1, '2021-04-20 12:07:37', 'dwdwd', 2, '/files/1/announcements_files/QR2.png', 'wdwdwd');
+(2, 1, '2021-04-20 12:07:37', 'dwdwd', 2, '/files/1/announcements_files/QR2.png', 'wdwdwd'),
+(3, 1, '2021-04-27 19:38:35', 'aaaaaaaaaaa', 1, '/files/1/announcements_files/6e727e315d647b5987533b12104aafe1.jpg', 'aaaaaaaaaaaaaa');
 
 -- --------------------------------------------------------
 
@@ -217,9 +218,24 @@ CREATE TABLE `documents` (
   `document_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `document_name` varchar(200) NOT NULL,
-  `document_number` varchar(40) NOT NULL,
+  `document_number` varchar(40) DEFAULT NULL,
   `document_scan` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `documents`
+--
+
+INSERT INTO `documents` (`document_id`, `student_id`, `document_name`, `document_number`, `document_scan`) VALUES
+(1, 1, 'ИНН', NULL, NULL),
+(2, 1, 'СНИЛС', NULL, NULL),
+(3, 1, 'ПОЛИС', NULL, NULL),
+(4, 2, 'ИНН', NULL, NULL),
+(5, 2, 'СНИЛС', '11111111111', '/files/1/2/documents/SNILS-scan.png'),
+(6, 2, 'ПОЛИС', NULL, NULL),
+(7, 3, 'ИНН', NULL, NULL),
+(8, 3, 'СНИЛС', NULL, NULL),
+(9, 3, 'ПОЛИС', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -253,7 +269,12 @@ CREATE TABLE `events` (
 --
 
 INSERT INTO `events` (`event_id`, `group_id`, `event_type_id`, `event_description`, `event_date`) VALUES
-(1, 1, 2, 'fawfawf', '2021-04-23');
+(1, 1, 2, 'fawfawf', '2021-04-23'),
+(2, 1, 1, '13WAD', '2021-04-15'),
+(3, 1, 1, 'DWDAAD', '2021-04-07'),
+(4, 1, 2, 'DD21123', '2021-04-07'),
+(5, 1, 3, 'ввввввввввввв', '2021-04-24'),
+(6, 1, 1, 'DWDWDWDWD', '2021-05-27');
 
 -- --------------------------------------------------------
 
@@ -272,7 +293,8 @@ CREATE TABLE `event_types` (
 
 INSERT INTO `event_types` (`event_type_id`, `event_type_name`) VALUES
 (1, 'Выездное мероприятие'),
-(2, 'Родительское собрание');
+(2, 'Родительское собрание'),
+(3, 'Субботник');
 
 -- --------------------------------------------------------
 
@@ -349,6 +371,13 @@ CREATE TABLE `individual_works` (
   `iw_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `individual_works`
+--
+
+INSERT INTO `individual_works` (`iw_id`, `iw_type_id`, `student_id`, `iw_reasone`, `iw_date`) VALUES
+(1, 1, 1, 'ddddddddddddd', '2021-04-28');
+
 -- --------------------------------------------------------
 
 --
@@ -359,6 +388,15 @@ CREATE TABLE `individual_work_types` (
   `iw_type_id` int(11) NOT NULL,
   `iw_type_name` varchar(300) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `individual_work_types`
+--
+
+INSERT INTO `individual_work_types` (`iw_type_id`, `iw_type_name`) VALUES
+(1, 'Работа с социальным психологом'),
+(2, 'Жалоба'),
+(3, 'Работа с советом по профилактике');
 
 -- --------------------------------------------------------
 
@@ -415,12 +453,12 @@ CREATE TABLE `parents` (
 CREATE TABLE `passports` (
   `passport_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
-  `passport_series` int(4) NOT NULL,
-  `passport_number` int(6) NOT NULL,
-  `passport_data_of_issue` date NOT NULL,
-  `passport_address` varchar(250) NOT NULL,
-  `passport_issued_by` varchar(250) NOT NULL,
-  `passport_scan` text NOT NULL
+  `passport_series` int(4) DEFAULT NULL,
+  `passport_number` int(6) DEFAULT NULL,
+  `passport_data_of_issue` date DEFAULT NULL,
+  `passport_address` varchar(250) DEFAULT NULL,
+  `passport_issued_by` varchar(250) DEFAULT NULL,
+  `passport_scan` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -428,7 +466,9 @@ CREATE TABLE `passports` (
 --
 
 INSERT INTO `passports` (`passport_id`, `student_id`, `passport_series`, `passport_number`, `passport_data_of_issue`, `passport_address`, `passport_issued_by`, `passport_scan`) VALUES
-(1, 1, 1231, 123123, '2021-04-22', '12313313', 'dwadwawd', '/files/1/1/documents/passport-scan.png');
+(1, 1, 1231, 123123, '2021-04-22', '12313313', 'dwadwawd', '/files/1/1/documents/passport-scan.png'),
+(2, 2, 1111, 111111, '2021-03-31', '1111111111111111', '111111111111111111111111111111111111', '/files/1/2/documents/passport-scan.png'),
+(3, 3, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -438,11 +478,23 @@ INSERT INTO `passports` (`passport_id`, `student_id`, `passport_series`, `passpo
 
 CREATE TABLE `reports` (
   `report_id` int(11) NOT NULL,
-  `creator_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
-  `report_reasone` text NOT NULL,
-  `report_date` date NOT NULL
+  `report_cr_date` date NOT NULL,
+  `report_interval_date` date NOT NULL,
+  `report_type` varchar(40) NOT NULL,
+  `report_fields` text NOT NULL,
+  `report_query` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `reports`
+--
+
+INSERT INTO `reports` (`report_id`, `group_id`, `report_cr_date`, `report_interval_date`, `report_type`, `report_fields`, `report_query`) VALUES
+(1, 1, '2021-04-27', '2021-04-26', 'attendance', '#,ID,Студент,Н,З,Общее кол-во пропусков,Закрытые пропуски,Незакрытые пропуски', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',c.student_id,d.user_name,d.user_sur_name,d.user_mid_name,COUNT(case when absenteeismes_type=\'Н\' then 1 end) \'N\',COUNT(case when absenteeismes_type=\'З\' then 1 end) \'Z\',COUNT(absenteeismes_id) \'common\',COUNT(absenteeismes_file) \'closed\',COUNT(absenteeismes_id)-COUNT(absenteeismes_file) \'unclosed\'\r\nFROM attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id RIGHT JOIN students c ON b.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \r\nWHERE a.attendance_date<\'2021.04.27\' AND DATE_SUB(\'2021.04.27\',INTERVAL 1 DAY)>a.attendance_date AND c.group_id=1 AND c.student_id NOT IN (SELECT student_id FROM deductions) \r\nGROUP BY c.student_id,d.user_name,d.user_sur_name,d.user_mid_name'),
+(2, 1, '2021-04-27', '2021-04-20', 'events', '#,Наименование,Дата последнего мероприятия,Проведённые,Предстоящие,Общее количество', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',b.event_type_name,a.event_date,COUNT(CASE WHEN a.event_date<NOW() THEN 1 END) \'compl\',COUNT(CASE WHEN a.event_date>NOW() THEN 1 END) \'future\',COUNT(a.event_date) \'comm\'\r\nFROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \r\nWHERE group_id=1 AND a.event_date>DATE_SUB(\'2021.04.27\',INTERVAL 1 WEEK) \r\nGROUP BY b.event_type_name'),
+(3, 1, '2021-04-27', '2021-03-27', 'iw', '#,ID,Студент,Работа с соц. психологом,Полученные жалобы,Работа с советом по проф.', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',c.student_id,d.user_sur_name,d.user_mid_name,COUNT(CASE WHEN A.iw_reasone=\'Работа с социальным психологом\' THEN 1 END) \'psy\',COUNT(CASE WHEN A.iw_reasone=\'Жалоба\' THEN 1 END) \'rep\',COUNT(CASE WHEN A.iw_reasone=\'Работа с советом по профилактике\' THEN 1 END) \'cons\'\r\nFROM individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id RIGHT JOIN students c ON a.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \r\nWHERE (a.iw_date>DATE_SUB(\'2021.04.27\',INTERVAL 1 MONTH) OR a.iw_date IS NULL) AND c.group_id=1 AND c.student_id NOT IN (SELECT student_id FROM deductions) \r\nGROUP BY c.student_id,d.user_sur_name,d.user_mid_name'),
+(4, 1, '2021-04-27', '2020-12-27', 'attendance', '#,ID,Студент,Н,З,Общее кол-во пропусков,Закрытые пропуски,Незакрытые пропуски', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',c.student_id,d.user_name,d.user_sur_name,d.user_mid_name,COUNT(case when absenteeismes_type=\'Н\' then 1 end) \'N\',COUNT(case when absenteeismes_type=\'З\' then 1 end) \'Z\',COUNT(absenteeismes_id) \'common\',COUNT(absenteeismes_file) \'closed\',COUNT(absenteeismes_id)-COUNT(absenteeismes_file) \'unclosed\'\r\nFROM attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id RIGHT JOIN students c ON b.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \r\nWHERE a.attendance_date<\'2021.04.27\' AND DATE_SUB(\'2021.04.27\',INTERVAL 4 MONTH)>a.attendance_date AND c.group_id=1 AND c.student_id NOT IN (SELECT student_id FROM deductions) \r\nGROUP BY c.student_id,d.user_name,d.user_sur_name,d.user_mid_name');
 
 -- --------------------------------------------------------
 
@@ -493,17 +545,34 @@ CREATE TABLE `students` (
   `user_id` int(11) NOT NULL,
   `group_id` int(11) DEFAULT NULL,
   `student_disabled` tinyint(1) DEFAULT NULL,
-  `student_headman` tinyint(1) DEFAULT NULL
+  `student_headman` tinyint(1) DEFAULT NULL,
+  `date_of_enrollment` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп данных таблицы `students`
 --
 
-INSERT INTO `students` (`student_id`, `user_id`, `group_id`, `student_disabled`, `student_headman`) VALUES
-(1, 4, 1, NULL, NULL),
-(2, 5, 1, NULL, NULL),
-(3, 6, 1, NULL, NULL);
+INSERT INTO `students` (`student_id`, `user_id`, `group_id`, `student_disabled`, `student_headman`, `date_of_enrollment`) VALUES
+(1, 4, 1, NULL, NULL, '0000-00-00'),
+(2, 5, 1, NULL, NULL, '0000-00-00'),
+(3, 6, 1, NULL, NULL, '0000-00-00');
+
+--
+-- Триггеры `students`
+--
+DELIMITER $$
+CREATE TRIGGER `new_student_documents` AFTER INSERT ON `students` FOR EACH ROW INSERT INTO documents
+VALUES(null,NEW.student_id,'СНИЛС',null,null),
+(null,NEW.student_id,'ИНН',null,null),
+(null,NEW.student_id,'ПОЛИС',null,null)
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `new_student_passport` AFTER INSERT ON `students` FOR EACH ROW INSERT INTO passports
+VALUES(null,NEW.student_id,null,null,null,null,null,null)
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -765,8 +834,6 @@ ALTER TABLE `parents`
 --
 ALTER TABLE `passports`
   ADD PRIMARY KEY (`passport_id`),
-  ADD UNIQUE KEY `passport_series` (`passport_series`),
-  ADD UNIQUE KEY `passport_number` (`passport_number`),
   ADD KEY `id_student` (`student_id`);
 
 --
@@ -774,8 +841,7 @@ ALTER TABLE `passports`
 --
 ALTER TABLE `reports`
   ADD PRIMARY KEY (`report_id`),
-  ADD KEY `group_id` (`group_id`),
-  ADD KEY `creator_id` (`creator_id`);
+  ADD KEY `group_id` (`group_id`);
 
 --
 -- Индексы таблицы `spetialities`
@@ -850,7 +916,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT для таблицы `announcements`
 --
 ALTER TABLE `announcements`
-  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT для таблицы `announcement_types`
@@ -886,7 +952,7 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT для таблицы `documents`
 --
 ALTER TABLE `documents`
-  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT для таблицы `duty_schedule`
@@ -898,13 +964,13 @@ ALTER TABLE `duty_schedule`
 -- AUTO_INCREMENT для таблицы `events`
 --
 ALTER TABLE `events`
-  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT для таблицы `event_types`
 --
 ALTER TABLE `event_types`
-  MODIFY `event_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `event_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT для таблицы `gallery`
@@ -928,13 +994,13 @@ ALTER TABLE `heads`
 -- AUTO_INCREMENT для таблицы `individual_works`
 --
 ALTER TABLE `individual_works`
-  MODIFY `iw_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `iw_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT для таблицы `individual_work_types`
 --
 ALTER TABLE `individual_work_types`
-  MODIFY `iw_type_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `iw_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT для таблицы `parents`
@@ -946,13 +1012,13 @@ ALTER TABLE `parents`
 -- AUTO_INCREMENT для таблицы `passports`
 --
 ALTER TABLE `passports`
-  MODIFY `passport_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `passport_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT для таблицы `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT для таблицы `spetialities`
@@ -1116,8 +1182,7 @@ ALTER TABLE `passports`
 -- Ограничения внешнего ключа таблицы `reports`
 --
 ALTER TABLE `reports`
-  ADD CONSTRAINT `reports_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `reports_ibfk_3` FOREIGN KEY (`creator_id`) REFERENCES `teachers` (`teacher_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `reports_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `spetialities`
