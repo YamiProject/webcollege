@@ -946,12 +946,26 @@ app.route("/t/mygroup/events").get(isAuthenticated,interfaceSplitter,async(req,r
 });
 //Страница индвидуальной работы(-)
 app.route("/t/mygroup/individualwork").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    let iw=await serverUser.createSelectQuery(`SELECT * 
+    FROM individual_work_types;
+    SELECT c.student_id,user_sur_name,user_name,user_mid_name,iw_type_name,iw_reasone,iw_date
+    FROM individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id
+    LEFT JOIN students c ON a.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id
+    WHERE c.group_id=${serverUser.getUserGroup()};
+    SELECT a.student_id,user_sur_name,user_name,user_mid_name
+    FROM students a INNER JOIN users b ON a.user_id=b.user_id
+    WHERE group_id=${serverUser.getUserGroup()}`);
+    console.log(iw[1]);
     res.render("t_mygroupindividualwork",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
         user_photo:[serverUser.getUserData()[3],serverUser.getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
+        iw:iw[1],
+        iw_type:iw[0],
+        students:iw[2],
+        form:'t-iw'
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
     try{
@@ -961,7 +975,7 @@ app.route("/t/mygroup/individualwork").get(isAuthenticated,interfaceSplitter,asy
             ${req.body.iw_type},
             ${req.body.st_id},
             '${req.body.iw_reasone}',
-            NOW()
+            '${req.body.iw_date}'
         );`);
         res.end('');
     }
@@ -1302,7 +1316,7 @@ app.route("/t/newattendance").get(isAuthenticated,interfaceSplitter,async(req,re
         res.end("Error");
     }
 });
-//Страница-галерея(-)
+//Страница-галерея(+)
 app.route("/t/mygroup/gallery").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
     let gallery=await serverUser.createSelectQuery(`SELECT gallery_img
     FROM gallery

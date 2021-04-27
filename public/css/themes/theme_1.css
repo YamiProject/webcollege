@@ -194,6 +194,27 @@ a{
         background-color: rgba(42, 34, 153, 0.514) !important;
         color: white;
     }
+    .t-event-form-button{
+        color: white;
+    }
+    /*t_iw*/
+    #t-iw-form label{
+        color:white !important;
+    }
+    .t-iw-form-button{
+        background-color: rgba(144, 138, 226, 0.514) !important;
+        color: white;
+    }
+    .t-iw-form-button{
+        color: white;
+    }
+    /*t_report_info*/
+    #report-info-table td{
+        border: 1px solid black;
+    }
+    #report-info-table tr:first-of-type th{
+        border: 1px solid black;
+    }
     /*t_gallery*/
     #t-gallery-form-file{
         color: white;

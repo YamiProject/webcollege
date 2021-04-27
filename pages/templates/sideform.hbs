@@ -12,7 +12,7 @@
                     <form class="row w-100 justify-content-center h-100 align-items-center align-content-center mx-0 px-3" id="t-anouncement-form">
                         <div class="w-100 row justify-content-center">
                             <input type="text" id="t-anouncement-form-head" class="form-control m-1" placeholder="Заголовок...">
-                            <select type="text" id="t-anouncement-form-type" class="form-control m-1" placeholder="Тема">
+                            <select type="text" id="t-anouncement-form-type" class="form-control m-1" placeholder="Тема..">
                                 <option value="" hidden>Тема...</option>
                             {{#each ../announcement_type}}
                                 <option value="{{announcement_type_id}}">{{announcement_type_name}}</option>
@@ -69,6 +69,42 @@
                         </div>
                         <div class="w-100">
                             <button class="btn w-100 t-event-form-button">+</button>
+                        </div>
+                    </form>
+                {{/equal}}
+                {{#equal form 't-iw'}}
+                    <div class="px-3 mb-n2">
+                        <h3 class="text-center">Назначить</h3>
+                    </div>
+                    <form class="row w-100 justify-content-center align-items-start align-content-start mx-0 px-3" id="t-iw-form">
+                        <div class="w-100">
+                            <label for="">Выберите студента:</label>
+                            <select class="form-control" id="t-iw-form-student">
+                                <option value="" disabled selected></option>
+                                {{#each ../students}}
+                                    <option value="{{student_id}}">{{user_sur_name}} {{user_name}} {{user_mid_name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="w-100">
+                            <label for="">Выберите тип работы:</label>
+                            <select class="form-control" id="t-iw-form-type">
+                                <option value="" disabled selected></option>
+                                {{#each ../iw_type}}
+                                    <option value="{{iw_type_id}}">{{iw_type_name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="w-100">
+                            <label for="">Выберите дату проведения работы:</label>
+                            <input type="date" class="form-control" id="t-iw-form-date">
+                        </div>
+                        <div class="w-100">
+                            <label for="">Опишите причину:</label>
+                            <textarea class="form-control" id="t-iw-form-reasone" cols="30" rows="10"></textarea>
+                        </div>
+                        <div class="w-100">
+                            <button class="btn w-100 t-iw-form-button">+</button>
                         </div>
                     </form>
                 {{/equal}}

@@ -378,6 +378,26 @@ $(document).ready(function(){
         }
     });
     //individual work
+    $("#t-iw-report-link").on('click',function(){
+        window.location.href="/t/newreport";
+    });
+    $(".t-iw-form-button").on('click',function(){
+        if(functions.filledCheck($(this),['select','input','textarea'])==true){
+            $.ajax({
+                type:"POST",
+                url:"/t/mygroup/individualwork",
+                data:{
+                    iw_type:functions.escapeHTML($("#t-iw-form-type").val()),
+                    st_id:functions.escapeHTML($("#t-iw-form-student").val()),
+                    iw_reasone:functions.escapeHTML($("#t-iw-form-reasone").val()),
+                    iw_date:functions.escapeHTML($("#t-iw-form-date").val())
+                },
+                success: function(){
+                    window.location.reload();
+                }
+            });
+        }
+    });
     //report
     $("#t-reports-list div[id^=t-rep-]").on('click',function(){
         window.location.href=`/t/mygroup/report/${$(this).attr("id").replace(/\D/gi,'')}`;
