@@ -59,6 +59,9 @@ hbs.registerHelper('nequal',(val1,val2,options)=>{
 hbs.registerHelper('undefine',(val,options)=>{
     return typeof val!=='undefined'?options.fn(this):options.inverse(this);
 });
+hbs.registerHelper('have',(val1,val2,options)=>{
+    return val1.includes(val2)?options.fn(this):options.inverse(this);
+});
 //HandleBars проверка на наличие изображения
 hbs.registerHelper('imgnotnull',(val,sex)=>{
     return val==null||val==""||val=="null"?sex=="М"?"/img/icons/male.png":"/img/icons/girl.png":val;
@@ -69,28 +72,29 @@ hbs.registerHelper('notnull',(val,options)=>{
 });
 //HandleBars форматирование даты на уровне шаблонизатора
 hbs.registerHelper('datenormalise',(val,format)=>{
-    let date=new Date(val);
+    let date;
+    val!=="now"?date=new Date(val):date=new Date(); 
     let formation=format.split('');
     let result="";
     for(let i=0;i<formation.length;i++){
         switch(formation[i]){
             case("Y"):
-                result+= date.getFullYear();
+                result+=date.getFullYear();
                 break;
             case("M"):
                 result+=date.getMonth()+1<10?"0"+(date.getMonth()+1):date.getMonth()+1;
                 break;
             case("D"):
-                result+=date.getUTCDate()+1<10?"0"+(date.getUTCDate()+1):date.getUTCDate()+1;
+                result+=date.getUTCDate()<10?"0"+date.getUTCDate():date.getUTCDate();
                 break;
             case("h"):
-                result+= date.getHours()+1<10?"0"+(date.getHours()+1):date.getHours()+1;
+                result+=date.getHours()<10?"0"+date.getHours():date.getHours();
                 break;
             case("m"):
-                result+= date.getMinutes()+1<10?"0"+(date.getMinutes()+1):date.getMinutes()+1;
+                result+=date.getMinutes()<10?"0"+date.getMinutes():date.getMinutes();
                 break;
             case("s"):
-                result+= date.getSeconds()+1<10?"0"+(date.getSeconds()+1):date.getSeconds()+1;
+                result+=date.getSeconds()<10?"0"+date.getSeconds():date.getSeconds();
                 break;
             default:
                 result+=formation[i];
@@ -223,6 +227,38 @@ class ServerUser{
         connect.end()
         return("Success");
     }
+    async datenormalise(val,format){
+        let date;
+        val!=="now"?date=new Date(val):date=new Date(); 
+        let formation=format.split('');
+        let result="";
+        for(let i=0;i<formation.length;i++){
+            switch(formation[i]){
+                case("Y"):
+                    result+=date.getFullYear();
+                    break;
+                case("M"):
+                    result+=date.getMonth()+1<10?"0"+(date.getMonth()+1):date.getMonth()+1;
+                    break;
+                case("D"):
+                    result+=date.getUTCDate()<10?"0"+date.getUTCDate():date.getUTCDate();
+                    break;
+                case("h"):
+                    result+=date.getHours()<10?"0"+date.getHours():date.getHours();
+                    break;
+                case("m"):
+                    result+=date.getMinutes()<10?"0"+date.getMinutes():date.getMinutes();
+                    break;
+                case("s"):
+                    result+=date.getSeconds()<10?"0"+date.getSeconds():date.getSeconds();
+                    break;
+                default:
+                    result+=formation[i];
+                    break;
+            }
+        }
+        return result;
+    }
     clearData(){
         delete this.user_id;
         delete this.user_abs_id;
@@ -251,33 +287,43 @@ function interfaceSplitter(req,res,next){
 async function isAccsessable(req,res,next){
     let result;
     let accsessData=req.url.slice(1).split("/");
-    switch(accsessData[0]){
-        case "t":
-            if(accsessData[1]=='student'){
-                result=await serverUser.createSelectQuery(`SELECT group_id \ 
-                FROM students \ 
-                WHERE student_id=${accsessData[2]} AND group_id=${serverUser.getUserGroup()} AND NOT EXISTS (SELECT student_id \ 
-                                                                    FROM deductions \
-                                                                    WHERE deductions.student_id=students.student_id) LIMIT 1`);
-            }
-            if(accsessData[2]=="attendance"){
-                result=await serverUser.createSelectQuery(`SELECT attendance_id
-                FROM attendance
-                WHERE attendance_id=${accsessData[3]} AND group_id=${serverUser.getUserGroup()}`);
-            }
-            break;
-        case "h":
-            result=[];
-            break;
-        case "s":
-            result=[];
-            break;
-        case "a":
-            result=[];
-        default:
-            result=[];
+    try{
+        switch(accsessData[0]){
+            case "t":
+                if(accsessData[1]=='student'){
+                    result=await serverUser.createSelectQuery(`SELECT group_id \ 
+                    FROM students \ 
+                    WHERE student_id=${accsessData[2]} AND group_id=${serverUser.getUserGroup()} AND NOT EXISTS (SELECT student_id \ 
+                                                                        FROM deductions \
+                                                                        WHERE deductions.student_id=students.student_id) LIMIT 1`);
+                }
+                if(accsessData[2]=="attendance"){
+                    result=await serverUser.createSelectQuery(`SELECT attendance_id
+                    FROM attendance
+                    WHERE attendance_id=${accsessData[3]} AND group_id=${serverUser.getUserGroup()}`);
+                }
+                if(accsessData[1]=="report"){
+                    result=await serverUser.createSelectQuery(`SELECT report_id
+                    FROM reports
+                    WHERE report_id=${accsessData[2]} AND group_id=${serverUser.getUserGroup()}`);
+                }
+                break;
+            case "h":
+                result=[];
+                break;
+            case "s":
+                result=[];
+                break;
+            case "a":
+                result=[];
+            default:
+                result=[];
+        }
+        return result.length>0?next():res.redirect("/accsesserror");
     }
-    return result.length>0?next():res.redirect("/accsesserror");
+    catch{
+        res.redirect("/accsesserror");
+    }
 }
 //Конвейер обработки
 //Создание проверочной сессии
@@ -308,8 +354,20 @@ app.use(async(req,res,next)=>{
     if(req.session.user && !req.cookies.sidebar){  
         res.cookie('sidebar',1);
     }
+    if(req.url.search("/t/newreport")<0){
+        req.session.current_url=req.url;
+    }
     next();
 });
+//Выход из состояния EMPTY-POST
+app.use(async(req,res,next)=>{
+    if(req.url.toString().slice(-1)=="?"){
+        res.redirect(req.url.toString().substr(0,req.url.toString().length-1));
+    }
+    else{
+        next();
+    }
+})
 //Express 
 //Главная страница приложения(+)
 app.route('/welcomepage').get((req,res)=>{
@@ -665,7 +723,6 @@ app.route("/t/student/:id/documents").get(isAuthenticated,interfaceSplitter,isAc
             for(const [field_name,field_val] of Object.entries(fields)){
                 switch(field_name){
                     case "СНИЛС":
-                        console.log(files[field_name+"_scan"]);
                         if(files[field_name+"_scan"]){
                             savePath=await serverUser.fileUpload(`/public/files/${serverUser.getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/documents`,files[field_name+"_scan"],'SNILS-scan.png','rw');
                         }
@@ -857,10 +914,9 @@ app.route("/t/mygroup/events").get(isAuthenticated,interfaceSplitter,async(req,r
     let groupEvents=await serverUser.createSelectQuery(`SELECT *
     FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id
     WHERE a.group_id=${serverUser.getUserGroup()}
-    ORDER BY event_date;
+    ORDER BY event_id DESC;
     SELECT *
     FROM event_types`);
-    console.log(groupEvents[0]);
     res.render("t_mygroupevents",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
@@ -914,35 +970,220 @@ app.route("/t/mygroup/individualwork").get(isAuthenticated,interfaceSplitter,asy
         res.end('Error');
     }
 });
-//Страница с формой создания новой докладной на группу/студента(+)
+//Страница отчётов(+)
+app.get("/t/mygroup/reports",isAuthenticated,interfaceSplitter,async(req,res)=>{
+    let reports=await serverUser.createSelectQuery(`SELECT report_id,report_cr_date,report_interval_date,report_type,report_fields
+    FROM reports
+    WHERE group_id=${serverUser.getUserGroup()}
+    ORDER BY report_cr_date,report_id DESC`);
+    res.render("t_reports",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[2],
+        options:serverUser.getUserOptions(),
+        user_photo:[serverUser.getUserData()[3],serverUser.getUserData()[4]],
+        sidebar_d:req.cookies.sidebar,
+        reports:reports
+    });
+});
+//Страница для создания отчёта(+)
 app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
-    let data=await serverUser.createSelectQuery(`SELECT group_id,spetiality_abbreviated
-    FROM groups a INNER JOIN spetialities b ON a.spetiality_id=b.spetiality_id 
-    WHERE a.group_end_education_date>NOW();`);
+    if(!req.session.current_url){
+        req.session.current_url=req.url;
+    }
+    let report_form="";
+    if(req.session.current_url.search("/t/mygroup/attendance")>=0){
+        report_form="attendance";
+    }
+    else if(req.session.current_url.search("/t/mygroup/events")>=0){
+        report_form="events";
+    }
+    else if(req.session.current_url.search("/t/mygroup/individualwork")>=0){
+        report_form="iw";
+    }
+    req.session.current_url=req.url;
     res.render("t_newreport",{
         username:serverUser.getUserFullName(), 
         role:serverUser.getUserState()[2],
         options:serverUser.getUserOptions(),
         user_photo:[serverUser.getUserData()[3],serverUser.getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
-        group_list:data
+        report_form:report_form
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
     try{
-        let result=await serverUser.createIUDQuery(`INSERT INTO reports 
-        VALUES(
-            null,
-            ${serverUser.getUserState()[0]},
-            ${req.body.group_id},
-            '${req.body.text}',
-            NOW()
-        );`);
-        res.end(result);
+        let fields="#,";
+        let select_query_part=`SET @rank=0; SELECT @rank:=@rank+1 as 'num',`,
+        from_query_part=`FROM `,
+        where_query_part=`WHERE `,
+        groupby_query_part=`GROUP BY `;
+        let date_now=await serverUser.datenormalise("now","Y.M.D");
+        switch(req.body.type){
+            case "attendance":
+                req.body['fields[]'].forEach(el=>{
+                    switch(el){
+                        case "ID":
+                            fields+="ID,";
+                            select_query_part+=`c.student_id,`;
+                            groupby_query_part+=`c.student_id,`;
+                            break;
+                        case "Фамилия":
+                            if(fields.search("Студент")<0){
+                                fields+="Студент,";
+                            }
+                            select_query_part+=`d.user_sur_name,`;
+                            groupby_query_part+=`d.user_sur_name,`;
+                            break;
+                        case "Имя":
+                            if(fields.search("Студент")<0){
+                                fields+="Студент,";
+                            }
+                            select_query_part+=`d.user_name,`;
+                            groupby_query_part+=`d.user_name,`;
+                            break;
+                        case "Отчество":
+                            if(fields.search("Студент")<0){
+                                fields+="Студент,";
+                            }
+                            select_query_part+=`d.user_mid_name,`;
+                            groupby_query_part+=`d.user_mid_name,`;
+                            break;
+                        case "Н":
+                            fields+="Н,";
+                            select_query_part+=`COUNT(case when absenteeismes_type='Н' then 1 end) 'N',`;
+                            break;
+                        case "З":
+                            fields+="З,";
+                            select_query_part+=`COUNT(case when absenteeismes_type='З' then 1 end) 'Z',`;
+                            break;
+                        case "common":
+                            fields+="Общее кол-во пропусков,";
+                            select_query_part+=`COUNT(absenteeismes_id) 'common',`;
+                            break;
+                        case "closed":
+                            fields+="Закрытые пропуски,";
+                            select_query_part+=`COUNT(absenteeismes_file) 'closed',`;
+                            break;
+                        case "unclosed":
+                            fields+="Незакрытые пропуски,";
+                            select_query_part+=`COUNT(absenteeismes_id)-COUNT(absenteeismes_file) 'unclosed',`;
+                            break;
+                    }
+                });
+                fields=fields.substr(0,fields.length-1);
+                select_query_part=select_query_part.substr(0,select_query_part.length-1)+"\n";
+                groupby_query_part=groupby_query_part.substr(0,groupby_query_part.length-1);
+                from_query_part+=`attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id RIGHT JOIN students c ON b.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \n`;
+                where_query_part+=`a.attendance_date<'${date_now}' AND DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]})>a.attendance_date AND c.group_id=${serverUser.getUserGroup()} AND c.student_id NOT IN (SELECT student_id FROM deductions) \n`;
+                break;
+            case "events":
+                console.log(req.body);
+                select_query_part+="b.event_type_name,";
+                fields+="Наименование,";
+                req.body['fields[]'].forEach(el=>{
+                    switch(el){
+                        case "date":
+                            fields+="Дата последнего мероприятия,";
+                            select_query_part+=`a.event_date,`;
+                            break;
+                        case "compl":
+                            fields+="Проведённые,";
+                            select_query_part+=`COUNT(CASE WHEN a.event_date<NOW() THEN 1 END) 'compl',`;
+                            break;
+                        case "future":
+                            fields+="Предстоящие,";
+                            select_query_part+=`COUNT(CASE WHEN a.event_date>NOW() THEN 1 END) 'future',`;
+                            break;
+                        case "common":
+                            fields+="Общее количество,";
+                            select_query_part+=`COUNT(a.event_date) 'comm',`;
+                            break;
+                    }
+                });
+                fields=fields.substr(0,fields.length-1);
+                select_query_part=select_query_part.substr(0,select_query_part.length-1)+"\n";
+                from_query_part+=`events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \n`;
+                where_query_part+=`group_id=${serverUser.getUserGroup()} AND a.event_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) \n`;
+                groupby_query_part+="b.event_type_name";
+                break;
+            case "iw":
+                req.body['fields[]'].forEach(el=>{
+                    switch(el){
+                        case "ID":
+                            fields+="ID,";
+                            select_query_part+=`c.student_id,`;
+                            groupby_query_part+=`c.student_id,`;
+                            break;
+                        case "Фамилия":
+                            if(fields.search("Студент")<0){
+                                fields+="Студент,";
+                            }
+                            select_query_part+=`d.user_sur_name,`;
+                            groupby_query_part+=`d.user_sur_name,`;
+                            break;
+                        case "Имя":
+                            if(fields.search("Студент")<0){
+                                fields+="Студент,";
+                            }
+                            select_query_part+=`d.user_name,`;
+                            groupby_query_part+=`d.user_name,`;
+                            break;
+                        case "Отчество":
+                            if(fields.search("Студент")<0){
+                                fields+="Студент,";
+                            }
+                            select_query_part+=`d.user_mid_name,`;
+                            groupby_query_part+=`d.user_mid_name,`;
+                            break;
+                        case "psy":
+                            fields+="Работа с соц. психологом,";
+                            select_query_part+=`COUNT(CASE WHEN A.iw_reasone='Работа с социальным психологом' THEN 1 END) 'psy',`;
+                            break;
+                        case "rep":
+                            fields+="Полученные жалобы,";
+                            select_query_part+=`COUNT(CASE WHEN A.iw_reasone='Жалоба' THEN 1 END) 'rep',`;
+                            break;
+                        case "cons":
+                            fields+="Работа с советом по проф.,";
+                            select_query_part+=`COUNT(CASE WHEN A.iw_reasone='Работа с советом по профилактике' THEN 1 END) 'cons',`;
+                            break;
+                    }
+                });
+                fields=fields.substr(0,fields.length-1);
+                select_query_part=select_query_part.substr(0,select_query_part.length-1)+"\n";
+                groupby_query_part=groupby_query_part.substr(0,groupby_query_part.length-1);
+                from_query_part+=`individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id RIGHT JOIN students c ON a.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \n`;
+                where_query_part+=`(a.iw_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) OR a.iw_date IS NULL) AND c.group_id=${serverUser.getUserGroup()} AND c.student_id NOT IN (SELECT student_id FROM deductions) \n`;
+                break;
+        }
+        let query=select_query_part+from_query_part+where_query_part+groupby_query_part;
+        let check=await serverUser.createSelectQuery(query);
+        let result=await serverUser.createIUDQuery(`INSERT INTO reports VALUES(null,${serverUser.getUserGroup()},NOW(),DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}),'${req.body.type}','${fields}','${query.replace(/\'/gi,"\\'")}');`);
+        let id=await serverUser.createSelectQuery(`SELECT report_id FROM reports WHERE group_id=${serverUser.getUserGroup()} ORDER BY report_id DESC LIMIT 1 `);
+        res.end(`${id[0].report_id}`);
     }
     catch(err){
         console.log(err);
         res.end("Error");
     }
+});
+//Страница данных отчёта(+)
+app.get("/t/mygroup/report/:id",isAuthenticated,interfaceSplitter,async(req,res)=>{
+    let report=await serverUser.createSelectQuery(`SELECT * 
+    FROM reports
+    WHERE report_id=${JSON.stringify(req.params.id)}`);
+    let report_data=await serverUser.createSelectQuery(report[0].report_query);
+    let fields=report[0].report_fields.split(',');
+    console.log(report_data);
+    res.render("t_report_info",{
+        username:serverUser.getUserFullName(), 
+        role:serverUser.getUserState()[2],
+        options:serverUser.getUserOptions(),
+        user_photo:[serverUser.getUserData()[3],serverUser.getUserData()[4]],
+        sidebar_d:req.cookies.sidebar,
+        report:report[0],
+        fields:fields,
+        report_data:report_data[1]
+    });
 });
 //Страница посещаемости(+)
 app.get("/t/mygroup/attendance",isAuthenticated,interfaceSplitter,async(req,res)=>{
@@ -1061,7 +1302,7 @@ app.route("/t/newattendance").get(isAuthenticated,interfaceSplitter,async(req,re
         res.end("Error");
     }
 });
-//Страница-галерея(+)
+//Страница-галерея(-)
 app.route("/t/mygroup/gallery").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
     let gallery=await serverUser.createSelectQuery(`SELECT gallery_img
     FROM gallery

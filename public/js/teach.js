@@ -263,6 +263,9 @@ $(document).ready(function(){
     $("#t-my-group-na-link").on('click',function(){
         window.location.href="/t/newattendance";
     });
+    $("#t-my-group-re-link").on('click',function(){
+        window.location.href="/t/newreport";
+    });
     $("#t-attendance-list>div[id^=att-]").on('click',function(){
         window.location.href=`/t/mygroup/attendance/${$(this).attr("id").replace("att-",'')}`;
     });
@@ -317,7 +320,7 @@ $(document).ready(function(){
             });
         }
     });
-    //event
+    //events
     //Фильтрация
     $(".t-event-filter-button").on('click',function(e){
         e.preventDefault();
@@ -352,6 +355,10 @@ $(document).ready(function(){
             $(".t-event-type-pas").prop("hidden",true);
         }
     });
+    //Перенаправление
+    $("#t-my-group-attendance-rep-link").on('click',function(){
+        window.location.href="/t/newreport";
+    });
     //Создание нового мероприятия
     $(".t-event-form-button").on('click',async function(e){
         e.preventDefault();
@@ -371,32 +378,80 @@ $(document).ready(function(){
         }
     });
     //individual work
+    //report
+    $("#t-reports-list div[id^=t-rep-]").on('click',function(){
+        window.location.href=`/t/mygroup/report/${$(this).attr("id").replace(/\D/gi,'')}`;
+    });
+    $("#t-my-group-reports-link").on('click',function(){
+        window.location.href="/t/newreport";
+    });
     //newreport
-    //Отправка докладной
-    $("#t-report-form-submit").on('click',async function(e){
+    $("#t-report-form-type").on('change',function(e){
         e.preventDefault();
-        if(functions.filledCheck($(this),['select','textarea'])==true){
-            await $.ajax({
-                type:"POST",
-                url:"/t/newreport",
-                data:{
-                    group_id:functions.escapeHTML($("#t-report-form-group-select").val()),
-                    text:functions.escapeHTML($("#t-report-form-text").val())
-                },
-                success: function(){
-                    $("#new-report-block").hide()
-                    .html(`
-                        <div class="col-12>
-                            <h2>Докладная отправлена!</h2>
-                        </div>
-                        <div class="col-12 row justify-content-around">
-                            <button class="btn stylise-block col-5" onclick="window.location.reload()">Составить новую</button>
-                            <button class="btn stylise-block col-5" onclick="window.location.href='/'">Вернутся на главную страницу</button>
-                        </div>`)
-                    .delay(1000)
-                    .fadeIn();
+        switch($(this).val()){
+            case "attendance":
+                $("#t-report-form-iw").prop("hidden",true);
+                $("#t-report-form-events").prop("hidden",true);
+                $("#t-report-form-attendance").prop("hidden",false);
+                break;
+            case "events":
+                $("#t-report-form-iw").prop("hidden",true);
+                $("#t-report-form-attendance").prop("hidden",true);
+                $("#t-report-form-events").prop("hidden",false);
+                break;
+            case "iw":
+                $("#t-report-form-events").prop("hidden",true);
+                $("#t-report-form-attendance").prop("hidden",true);
+                $("#t-report-form-iw").prop("hidden",false);
+                break;
+        }
+        $("#t-report-form-button").prop("hidden",false);
+    });
+    $("#t-report-form-button #t-report-form-submit").on('click',async function(e){
+        e.preventDefault();
+        if(functions.filledCheck($(this),["select",":input[type='number']"])==true){
+            let fields=[];
+            let null_fields=[true,true];
+            let type=$("#t-report-form-type").val();
+            await $.each($(`#t-report-form #t-report-form-${type}-check-fields`),function(){
+                if($(this).prop("checked")==true){
+                    null_fields[0]=false;
+                    fields.push($(this).val());
                 }
             });
+            await $.each($(`#t-report-form #t-report-form-${type}-check-res`),function(){
+                if($(this).prop("checked")==true){
+                    null_fields[1]=false;
+                    fields.push($(this).val());
+                }
+            });
+            if(null_fields[0]==false&&null_fields[1]==false){
+                $.ajax({
+                    type:"POST",
+                    url:"/t/newreport",
+                    data:{
+                        type:type,
+                        fields:fields,
+                        date:[$("#t-report-form-number-date").val(),$("#t-report-form-date-date").val()]
+                    },
+                    success: function(id){
+                        if(id=="Error"){
+                            alert("Ошибка!!!");
+                        }
+                        else{
+                            window.location.href=`/t/mygroup/report/${id}`;
+                        }
+                    }
+                })
+            }
+            else{
+                if(null_fields[0]==true){
+                    $(`#t-report-form #t-report-form-${type}-check-fields`).addClass("border-danger").animate({left:"-=10"},10).animate({left:"+=10"},10);
+                }
+                if(null_fields[1]==true){
+                    $(`#t-report-form #t-report-form-${type}-check-res`).addClass("border-danger").animate({left:"-=10"},10).animate({left:"+=10"},10);
+                }
+            }
         }
     });
     //t_gallery

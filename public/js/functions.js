@@ -35,7 +35,8 @@ export function clear(element){
 }
 //Форматирование даты на уровне приложения 
 export function dateNormalise(val,format){
-    let date=new Date(val);
+    let date;
+    val!=="now"?date=new Date(val):date=new Date(); 
     let formation=format.split('');
     let result="";
     for(let i=0;i<formation.length;i++){
@@ -47,16 +48,16 @@ export function dateNormalise(val,format){
                 result+=date.getMonth()+1<10?"0"+(date.getMonth()+1):date.getMonth()+1;
                 break;
             case("D"):
-                result+=date.getUTCDate()+1<10?"0"+(date.getUTCDate()+1):date.getUTCDate()+1;
+                result+=date.getUTCDate()<10?"0"+date.getUTCDate():date.getUTCDate();
                 break;
             case("h"):
-                result+= date.getHours()+1<10?"0"+(date.getHours()+1):date.getHours()+1;
+                result+= date.getHours()<10?"0"+date.getHours():date.getHours();
                 break;
             case("m"):
-                result+= date.getMinutes()+1<10?"0"+(date.getMinutes()+1):date.getMinutes()+1;
+                result+= date.getMinutes()<10?"0"+date.getMinutes():date.getMinutes();
                 break;
             case("s"):
-                result+= date.getSeconds()+1<10?"0"+(date.getSeconds()+1):date.getSeconds()+1;
+                result+= date.getSeconds()<10?"0"+date.getSeconds():date.getSeconds();
                 break;
             default:
                 result+=formation[i];

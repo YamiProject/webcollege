@@ -19,25 +19,122 @@
                     {{>header}}
                     <div class="col-12 justify-content-center align-items-start align-content-start row m-0 p-0 app-window new-report-page">
                         <div class="col-12 h-of row">
-                            {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">Оичёи</h1>       
+                            {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">Отчёт</h1>       
                         </div>
                         <div class="col-12 row" id="new-report-block">
-                            <form class="col-12 row justify-content-center" id="report-form">
-                                <div class="col-10 row justify-content-start">
-                                    <label for="report-form-group-select">Выберите необходимое поле</label>
-                                    <select class="form-control" id="report-form-group-select">
-                                        <option value="" disabled selected></option>
-                                        {{#each group_list}}
-                                            <option value="{{group_id}}">{{spetiality_abbreviated}}</option>
-                                        {{/each}}
-                                    </select>
+                            <form class="col-12 row justify-content-center" id="t-report-form">
+                                <!--Общий блок-->
+                                <div class="col-12 row m-0 p-0 justify-content-center" id="t-report-form-common">
+                                    <div class="col-xl-5 col-12 m-2 p-2 stylise-block-static">
+                                        <label for="" class="col-12 text-center">Тип отчёта</label>
+                                        <select id="t-report-form-type" class="form-control">
+                                            <option value="" disabled {{#equal report_form ""}}selected{{/equal}}></option>
+                                            <option value="attendance" {{#equal report_form "attendance"}}selected{{/equal}}>Посещаемость</option>
+                                            <option value="events" {{#equal report_form "events"}}selected{{/equal}}>Мероприятия</option>
+                                            <option value="iw" {{#equal report_form "iw"}}selected{{/equal}}>Индивидуальная работа</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-5 col-12 row justify-content-center m-2 p-2 stylise-block-static">
+                                        <label for="" class="col-12 text-center">Промежуток/Исчесление</label>
+                                        <input type="number" min="1" max="999" id="t-report-form-number-date" class="form-control col-2 m-1">
+                                        <select id="t-report-form-date-date" class="form-control col-9 m-1">
+                                            <option value="" disabled selected></option>
+                                            <option value="DAY">Дни</option>
+                                            <option value="WEEK">Недели</option>
+                                            <option value="MONTH">Месяцы</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-10 mt-2 row justify-content-start">
-                                    <label for="report-form-group-select">Напишите заявление</label>
-                                    <textarea class="form-control" id="t-report-form-text"></textarea>
+                                <!--Блок для создания отчёта по посещаемости-->
+                                <div class="col-12 row justify-content-center" id="t-report-form-attendance" {{#nequal report_form "attendance"}}hidden{{/nequal}}>
+                                    <div class="col-xl-5 col-12 m-2 p-2 row justify-content-center stylise-block-static">
+                                        <label for="">Выберите необходимые поля:</label>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-attendance-check-fields" value="ID"><label class="p-2">ID студента</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-attendance-check-fields" value="Имя"><label class="p-2">Имя студента</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-attendance-check-fields" value="Фамилия"><label class="p-2">Фамилия студента</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-attendance-check-fields" value="Отчество"><label class="p-2">Отчество студента</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-5 col-12 m-2 p-2 row justify-content-center stylise-block-static" >
+                                        <label for="">Выберите что необходимо включить в отчёт:</label>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-attendance-check-res" value="Н"><label class="p-2">Число "Н"</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-attendance-check-res" value="З"><label class="p-2">Число "З"</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-attendance-check-res" value="common"><label class="p-2">Общее число прогулов</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-attendance-check-res" value="closed"><label class="p-2">Число закрытых прогулов</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-attendance-check-res" value="unclosed"><label class="p-2">Число незакрытых прогулов</label>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-10 mt-2">
-                                    <button class="btn stylise-block col-12" id="t-report-form-submit">Отправить</button>
+                                <!--Блок для создания отчёта по мероприятиям-->
+                                <div class="col-12 row justify-content-center" id="t-report-form-events" {{#nequal report_form "events"}}hidden{{/nequal}}>
+                                    <div class="col-xl-5 col-12 m-2 p-2 row justify-content-center stylise-block-static">
+                                        <label for="">Выберите необходимые поля:</label>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <label for="t-report-form-events-check-fields" class="p-2">Наименование мероприятия (по умолчанию)</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-events-check-fields" value="date"><label class="p-2">Дата последнего проведения</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-5 col-12 m-2 p-2 row justify-content-center stylise-block-static">
+                                        <label for="">Выберите что необходимо включить в отчёт:</label>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-events-check-res" value="compl"><label class="p-2">Проведённые</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-events-check-res" value="future"><label class="p-2">Предстоящие</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-events-check-res" value="common"><label class="p-2">Общее количество</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 row justify-content-center" id="t-report-form-iw" {{#nequal report_form "iw"}}hidden{{/nequal}}>
+                                    <div class="col-xl-5 col-12 m-2 p-2 row justify-content-center stylise-block-static">
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-iw-check-fields" value="ID"><label class="p-2">ID студента</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-iw-check-fields" value="Имя"><label class="p-2">Имя студента</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-iw-check-fields" value="Фамилия"><label class="p-2">Фамилия студента</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-iw-check-fields" value="Отчество"><label class="p-2">Отчество студента</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-5 col-12 m-2 p-2 row justify-content-center stylise-block-static">
+                                        <label for="">Выберите что необходимо включить в отчёт:</label>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-iw-check-res" value="psy"><label class="p-2">Работа с соц. психологом</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-iw-check-res" value="rep"><label class="p-2">Полученные жалобы</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-iw-check-res" value="cons"><label class="p-2">Работа с советом по проф.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-10 mt-2" {{#equal report_form ""}}hidden{{/equal}} id="t-report-form-button">
+                                    <button class="btn stylise-block col-12" id="t-report-form-submit">Составить</button>
                                 </div>
                             </form>
                         </div>

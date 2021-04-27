@@ -29,7 +29,7 @@ a{
 a:hover{
     text-decoration: none;
 }
-h1,h2,a,p,label{
+h1,h2,a,p,label,span{
     word-wrap: break-word;
 }
 p{
@@ -557,8 +557,8 @@ th,td{
         position: fixed;
         height: 600px;
     }
-    #t-my-group-na-link{
-        height: 500px;
+    #t-my-group-na-link,#t-my-group-re-link{
+        height: 200px;
     }
     /*t-new-attendance*/
     .t-na-st-block{
@@ -591,9 +591,26 @@ th,td{
         outline: none;
         color: white;
     }
-    /*t-new-reaport*/
-    #t-report-form-text{
-        height: 400px;
+    /*t_reporst*/
+    .fixed-reports-block{
+        z-index: 0 !important;
+        position: fixed;
+        height: 600px;
+    }
+    #t-my-group-reports-link{
+        height: 200px;
+    }
+    /*t_report_info*/
+    #report-info-table{
+        border-collapse: collapse;
+    }
+    #report-info-table td{
+        border: 1px solid black;
+        padding: 20px;
+    }
+    #report-info-table tr:first-of-type th{
+        border: 1px solid black;
+        padding: 20px;
     }
 }
 /*Tablet (several tags)*/
