@@ -66,6 +66,20 @@
                                             <div class="col-12 border-top border-dark">
                                                 <p>{{event_description}}</p>
                                             </div>
+                                            {{#dateop event_date "<now"}}
+                                                {{#notnull ../event_img}}
+                                                <div class="col-12 row justify-content-center my-1 p-5 border-dark border-top" id="t-event-img-block">
+                                                    <img src="{{../event_img}}" alt="EVENTIMG-{{../event_id}}">
+                                                </div>
+                                                {{else}}
+                                                <div class="col-12 border-top border-dark">
+                                                    <form class="col-12 row justify-content-end my-2" id="t-event-event-img-add-{{../event_id}}">
+                                                        <input type="file" class="form-control-file col-9" id="t-event-event-img-add-input">
+                                                        <button class="btn col-3 stylise-block" id="t-event-event-img-add-input-button" disabled>Загрузить</button>    
+                                                    </form>
+                                                </div>
+                                                {{/notnull}}
+                                            {{/dateop}}
                                         </article>
                                     {{else}}
                                     <div class="col-12">

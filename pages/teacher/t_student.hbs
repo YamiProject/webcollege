@@ -22,7 +22,7 @@
                             {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">{{user_name}}</h1>
                         </div>
                         <div class="col-12 row align-content-center align-items-center justify-content-center m-0 py-3 student-profile">
-                            <div class="col-xl-4 col-12 order-0 row justify-content-xl-end justify-content-center align-content-center">
+                            <div class="col-xl-4 col-12 order-0 row justify-content-xl-end justify-content-center align-content-center m-xl-0 m-2">
                                 <div class="col-10 t-student-info row justify-content-center align-content-center stylise-block-static py-3">
                                     <div class="col-12 row m-0 justify-content-center pb-3">
                                         <img src="{{#imgnotnull student.user_photo student.user_sex}}{{/imgnotnull}}" alt="">
@@ -37,7 +37,6 @@
                                             <span>Имя: {{parent_sec_name}} {{parent_name}} {{parent_mid_name}}</span><br>
                                             <span>Телефон: {{parent_number}}</span>
                                         </div>
-                                    {{else}}
                                     {{/each}}
                                 </div>
                             </div>

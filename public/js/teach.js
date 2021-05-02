@@ -236,6 +236,23 @@ $(document).ready(function(){
             });
         }
     });
+    //additional education
+    $("#t-st-ae-form-button").on('click',function(e){
+        e.preventDefault();
+        if(functions.filledCheck($(this),['select'])==true){
+            let url=window.location.href.match(/\/t\/student\/\d\/additionaleducation/i);
+            $.ajax({
+                type:"POST",
+                url:url,
+                data:{
+                    cource_id:functions.escapeHTML($("#t-st-ae-form-selection").val()) 
+                },
+                success: function(){
+                    window.location.reload();
+                }
+            });
+        }
+    });
     //st-absentismeses
     //Отправка объяснитльной
     $("#t-st-absentismeses-form-button").on('click',async function(e){
@@ -367,10 +384,35 @@ $(document).ready(function(){
                 type:"POST",
                 url:"/t/mygroup/events",
                 data:{
+                    type:"event",
                     event_type:functions.escapeHTML($("#t-event-form-select").val()),
                     event_discr:functions.escapeHTML($("#t-event-form-textarea").val()),
                     event_date:functions.escapeHTML($("#t-event-form-date").val())
                 },
+                success: function(){
+                    window.location.reload();
+                }
+            });
+        }
+    });
+    //Включение кнопки
+    $("#t-event-event-img-add-input").on('change',function(){
+        $(`#${$(this).closest("form").attr("id")} #t-event-event-img-add-input-button`).prop("disabled",false);
+    });
+    $("#t-event-event-img-add-input-button").on('click',async function(e){
+        e.preventDefault();
+        if(functions.filledCheck($(this),['input'])==true){
+            let formData=new FormData();
+            await $.each($(`#${$(this).closest("form").attr("id")} #t-event-event-img-add-input`)[0].files,function(i,file){
+                formData.append("file",file);
+            });
+            formData.append("event_id",$(this).closest("form").attr("id").replace(/\D/g,''));
+            await $.ajax({
+                type:"POST",
+                url:"/t/mygroup/events",
+                data:formData,
+                processData:false,
+                contentType:false,
                 success: function(){
                     window.location.reload();
                 }
@@ -493,4 +535,7 @@ $(document).ready(function(){
             });
         }
     });
+    $(".t-my-group-gallery-block img[id^=IMG_]").on('click',function(){
+        $("#t-my-group-gallery-show-img").attr("src",$(this).attr("src"));
+    })
 });

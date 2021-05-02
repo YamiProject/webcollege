@@ -21,18 +21,36 @@
                         <div class="col-12 row justify-content-between h-of pb-5">
                             {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">ДО/ДПО: {{student_name}}</h1>
                         </div>
+                        <div class="col-12 row justify-content-center">
+                            <div class="col-8 p-5 stylise-block-static">
+                                <div class="col-12">
+                                    <h2 class="text-center h-of">Записать студента на курс</h2>
+                                </div>
+                                <div class="col-12 row justify-content-center">
+                                    <form class="col-12 row justify-content-center" id="t-st-ae-form">
+                                    <select id="t-st-ae-form-selection" class="form-control">
+                                        <option value="" disabled selected></option>
+                                        {{#each ae_form_values}}
+                                            <option value="{{ae_id}}">{{ae_name}}///{{user_sur_name}} {{user_name}} {{user_mid_name}}</option>
+                                        {{/each}}
+                                    </select>
+                                    <button class="btn col-10 stylise-block m-3" id="t-st-ae-form-button">Записать</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-12 row justify-content-center t-additional-education-block">
-                            <div class="col-10 row justify-content-start">
+                            <div class="col-10 row justify-content-start m-5">
                                 {{#each ae}}
-                                    <div class="col-4 stylise-block-static">
+                                    <div class="col-5 stylise-block-static">
                                         <div class="col-12">
                                             <h3>Наименование: {{ae_name}}</h3>
                                         </div>
                                         <div class="col-6">
-                                            <p>Дата начала: {{#datenormalise ae_beg_date "DMY"}}{{/datenormalise}}</p>
+                                            <p>Дата начала: {{#datenormalise ae_beg_date "D/M/Y"}}{{/datenormalise}}</p>
                                         </div>
                                         <div class="col-6">
-                                            <p>Дата окончания: {{#datenormalise ae_end_date "DMY"}}{{/datenormalise}}</p>
+                                            <p>Дата окончания: {{#datenormalise ae_end_date "D/M/Y"}}{{/datenormalise}}</p>
                                         </div>
                                         <div class="col-12">
                                             <p>Преподаватель: {{user_sur_name}} {{user_name}} {{user_mid_name}}</p>
