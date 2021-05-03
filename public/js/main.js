@@ -2,6 +2,11 @@ import * as functions from "./functions.js";
 $(document).ready(function(){
     //profile
     //options
+    //Смена изображения темы при изменении SELECT
+    $("#opt-theme").on('change',function(e){
+        e.preventDefault();
+        $("#theme-preview").attr("src",`/img/themes/theme_${$(this).val()}.png`);
+    })
     //Возвращение опций по умолчанию
     $("#default-options-button").on('click', function(e){
         e.preventDefault();
