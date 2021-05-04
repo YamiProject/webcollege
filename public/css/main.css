@@ -617,6 +617,8 @@ th,td{
     /*t_report_info*/
     #report-info-table{
         border-collapse: collapse;
+        margin: 0 50px;
+        padding: 100px;
     }
     #report-info-table td{
         border: 1px solid black;
@@ -625,6 +627,9 @@ th,td{
     #report-info-table tr:first-of-type th{
         border: 1px solid black;
         padding: 20px;
+    }
+    #report-info-table th:last-of-type{
+        margin-right: 100px;
     }
 }
 /*Tablet (several tags)*/

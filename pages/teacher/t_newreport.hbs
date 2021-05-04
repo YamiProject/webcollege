@@ -18,22 +18,38 @@
                 <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
                     <div class="col-12 justify-content-center align-items-start align-content-start row m-0 p-0 app-window new-report-page">
-                        <div class="col-12 h-of row">
+                        <div class="col-12 h-of row justify-content-xl-center justify-content-center">
                             {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">Отчёт</h1>       
                         </div>
-                        <div class="col-12 row" id="new-report-block">
+                        <div class="col-12 row justify-content-center" id="new-report-block">
                             <form class="col-12 row justify-content-center" id="t-report-form">
-                                <!--Общий блок-->
+                                <!--Блок выбора типа-->
                                 <div class="col-12 row m-0 p-0 justify-content-center" id="t-report-form-common">
                                     <div class="col-xl-5 col-12 m-2 p-2 stylise-block-static">
                                         <label for="" class="col-12 text-center">Тип отчёта</label>
                                         <select id="t-report-form-type" class="form-control">
                                             <option value="" disabled {{#equal report_form ""}}selected{{/equal}}></option>
                                             <option value="attendance" {{#equal report_form "attendance"}}selected{{/equal}}>Посещаемость</option>
+                                            <option value="att-special">Посещаемость/Полный список</option>
                                             <option value="events" {{#equal report_form "events"}}selected{{/equal}}>Мероприятия</option>
                                             <option value="iw" {{#equal report_form "iw"}}selected{{/equal}}>Индивидуальная работа</option>
                                         </select>
                                     </div>
+                                </div>
+                                <!--Блок непроизвольной даты-->
+                                <div class="col-12 row justify-content-center" id="t-report-form-timespec" {{#equal report_form ""}}hidden{{/equal}}>
+                                    <div class="col-xl-5 col-12 row justify-content-center m-2 p-2 stylise-block-static">
+                                        <label class="col-12 text-center">Выберите за какой месяц составить отчёт:</label>
+                                        <select id="t-report-form-date-spec-date" class="form-control col-12 m-1">
+                                            <option value="" disabled selected></option>
+                                            <option value="BLAST">Позапрошлый месяц</option>
+                                            <option value="PREV">Предыдущий месяц</option>
+                                            <option value="NOW">Текущий месяц</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!--Блок произвольной даты-->
+                                <div class="col-12 row justify-content-center" id="t-report-form-timefloat" {{#equal report_form ""}}hidden{{/equal}}>
                                     <div class="col-xl-5 col-12 row justify-content-center m-2 p-2 stylise-block-static">
                                         <label for="" class="col-12 text-center">Промежуток/Исчесление</label>
                                         <input type="number" min="1" max="999" id="t-report-form-number-date" class="form-control col-2 m-1">
@@ -105,6 +121,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!--Блок для создания отчёта по индивдуальным работам-->
                                 <div class="col-12 row justify-content-center" id="t-report-form-iw" {{#nequal report_form "iw"}}hidden{{/nequal}}>
                                     <div class="col-xl-5 col-12 m-2 p-2 row justify-content-center stylise-block-static">
                                         <div class="col-12 row justify-content-center align-content-center align-items-center">
@@ -123,7 +140,10 @@
                                     <div class="col-xl-5 col-12 m-2 p-2 row justify-content-center stylise-block-static">
                                         <label for="">Выберите что необходимо включить в отчёт:</label>
                                         <div class="col-12 row justify-content-center align-content-center align-items-center">
-                                            <input type="checkbox" class="form-check" id="t-report-form-iw-check-res" value="psy"><label class="p-2">Работа с соц. психологом</label>
+                                            <input type="checkbox" class="form-check" id="t-report-form-iw-check-res" value="soc"><label class="p-2">Работа с соц. педагогом</label>
+                                        </div>
+                                        <div class="col-12 row justify-content-center align-content-center align-items-center">
+                                            <input type="checkbox" class="form-check" id="t-report-form-iw-check-res" value="psy"><label class="p-2">Работа с психологом</label>
                                         </div>
                                         <div class="col-12 row justify-content-center align-content-center align-items-center">
                                             <input type="checkbox" class="form-check" id="t-report-form-iw-check-res" value="rep"><label class="p-2">Полученные жалобы</label>

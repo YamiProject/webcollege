@@ -21,8 +21,10 @@ export function filledCheck(element,fields){
     });
     $(selector.substring(0,selector.length-1)).each(function(){
         if(escapeHTML($(this).val())==""||escapeHTML($(this).val())==null||escapeHTML($(this).val())=='null'){
-            $(this).addClass("border-danger text-danger");
-            check=false;
+            if($(this).prop("disabled")==false){
+                $(this).addClass("border-danger text-danger");
+                check=false;
+            }
         }
     });
     return check;

@@ -92,7 +92,7 @@ hbs.registerHelper('notnull',(val,options)=>{
 //HandleBars: Форматирование даты на уровне шаблонизатора
 hbs.registerHelper('datenormalise',(val,format)=>{
     let date;
-    val!=="now"?date=new Date(val):date=new Date(); 
+    val!=="now"?date=new Date(val):date=new Date().now(); 
     let formation=format.split('');
     let result="";
     for(let i=0;i<formation.length;i++){
@@ -101,10 +101,10 @@ hbs.registerHelper('datenormalise',(val,format)=>{
                 result+=date.getFullYear();
                 break;
             case("M"):
-                result+=date.getMonth()+1<10?"0"+(date.getMonth()+1):date.getMonth()+1;
+                result+=date.getMonth()<10?"0"+date.getMonth():date.getMonth();
                 break;
             case("D"):
-                result+=date.getUTCDate()<10?"0"+date.getUTCDate():date.getUTCDate();
+                result+=date.getUTCDay()+1<10?"0"+(date.getUTCDay()+1):date.getUTCDay()+1;
                 break;
             case("h"):
                 result+=date.getHours()<10?"0"+date.getHours():date.getHours();
@@ -206,7 +206,14 @@ class ServerUser{
         return [this.user_surname,this.user_name,this.user_middlename,this.user_photo,this.user_sex];
     }
     getUserFullName(){
-        return `${this.user_surname} ${this.user_name} ${this.user_middlename}`;
+        let string='';
+        let data=[this.user_surname,this.user_name,this.user_middlename];
+        data.forEach(el=>{
+            if(el!=='null'){
+                string+=" "+el;
+            }
+        })
+        return string.trim();
     }
     getUserGroup(){
         return this.user_group[0].group_id;
@@ -334,6 +341,10 @@ async function datenormalise(val,format){
     }
     return result;
 }
+//Функция: Количество дней в месяце
+async function daysInMonth(month, year) {
+    return new Date(year, month, 0).getDate();
+  }
 //Middleware функции
 //Middleware: Проверка на существование сессии
 function isAuthenticated(req,res,next){
@@ -1170,34 +1181,60 @@ app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                             break;
                         case "Н":
                             fields+="Н,";
-                            select_query_part+=`COUNT(case when absenteeismes_type='Н' then 1 end) 'N',`;
+                            select_query_part+=`COUNT(
+                                                    CASE 
+                                                        WHEN absenteeismes_type='Н' AND a.attendance_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1 
+                                                    END) 'N',`;
                             break;
                         case "З":
                             fields+="З,";
-                            select_query_part+=`COUNT(case when absenteeismes_type='З' then 1 end) 'Z',`;
+                            select_query_part+=`COUNT(
+                                                    CASE 
+                                                        WHEN absenteeismes_type='З' AND a.attendance_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1 
+                                                    END) 'Z',`;
                             break;
                         case "common":
                             fields+="Общее кол-во пропусков,";
-                            select_query_part+=`COUNT(absenteeismes_id) 'common',`;
+                            select_query_part+=`COUNT(
+                                                    CASE 
+                                                        WHEN a.attendance_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1 
+                                                    END) 'common',`;
                             break;
                         case "closed":
                             fields+="Закрытые пропуски,";
-                            select_query_part+=`COUNT(absenteeismes_file) 'closed',`;
+                            select_query_part+=`COUNT(
+                                                    CASE 
+                                                        WHEN absenteeismes_file IS NOT NULL AND a.attendance_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1 
+                                                    END) 'closed',`;
                             break;
                         case "unclosed":
                             fields+="Незакрытые пропуски,";
-                            select_query_part+=`COUNT(absenteeismes_id)-COUNT(absenteeismes_file) 'unclosed',`;
+                            select_query_part+=`COUNT(
+                                                    CASE 
+                                                        WHEN a.attendance_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1 
+                                                    END)
+                                                -COUNT(
+                                                        CASE 
+                                                            WHEN absenteeismes_file IS NOT NULL AND a.attendance_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                            THEN 1 
+                                                        END) 'unclosed',`;
                             break;
                     }
                 });
                 fields=fields.substr(0,fields.length-1);
                 select_query_part=select_query_part.substr(0,select_query_part.length-1)+"\n";
                 groupby_query_part=groupby_query_part.substr(0,groupby_query_part.length-1);
-                from_query_part+=`attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id RIGHT JOIN students c ON b.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \n`;
-                where_query_part+=`a.attendance_date<'${date_now}' AND DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]})>a.attendance_date AND c.group_id=${serverUser[req.session.user].getUserGroup()} AND c.student_id NOT IN (SELECT student_id FROM deductions) \n`;
+                from_query_part+=`attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id 
+                                  RIGHT JOIN students c ON b.student_id=c.student_id 
+                                  INNER JOIN users d ON c.user_id=d.user_id \n`;
+                where_query_part+=`c.group_id=${serverUser[req.session.user].getUserGroup()} AND c.student_id NOT IN (SELECT student_id FROM deductions) \n`;
                 break;
             case "events":
-                console.log(req.body);
                 select_query_part+="b.event_type_name,";
                 fields+="Наименование,";
                 req.body['fields[]'].forEach(el=>{
@@ -1208,22 +1245,34 @@ app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                             break;
                         case "compl":
                             fields+="Проведённые,";
-                            select_query_part+=`COUNT(CASE WHEN a.event_date<NOW() THEN 1 END) 'compl',`;
+                            select_query_part+=`COUNT(
+                                                    CASE 
+                                                        WHEN a.event_date<NOW() AND a.event_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1 
+                                                    END) 'compl',`;
                             break;
                         case "future":
                             fields+="Предстоящие,";
-                            select_query_part+=`COUNT(CASE WHEN a.event_date>NOW() THEN 1 END) 'future',`;
+                            select_query_part+=`COUNT(
+                                                    CASE 
+                                                        WHEN a.event_date>NOW() AND a.event_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1 
+                                                    END) 'future',`;
                             break;
                         case "common":
                             fields+="Общее количество,";
-                            select_query_part+=`COUNT(a.event_date) 'comm',`;
+                            select_query_part+=`COUNT(
+                                                    CASE
+                                                        WHEN a.event_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1
+                                                    END) 'comm',`;
                             break;
                     }
                 });
                 fields=fields.substr(0,fields.length-1);
                 select_query_part=select_query_part.substr(0,select_query_part.length-1)+"\n";
                 from_query_part+=`events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \n`;
-                where_query_part+=`group_id=${serverUser[req.session.user].getUserGroup()} AND a.event_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) \n`;
+                where_query_part+=`group_id=${serverUser[req.session.user].getUserGroup()} \n`;
                 groupby_query_part+="b.event_type_name";
                 break;
             case "iw":
@@ -1255,31 +1304,127 @@ app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                             select_query_part+=`d.user_mid_name,`;
                             groupby_query_part+=`d.user_mid_name,`;
                             break;
+                        case "soc":
+                            fields+="Работа с соц. педагогом";
+                            select_query_part+=`COUNT(
+                                                    CASE 
+                                                        WHEN a.iw_type_id=1 AND a.iw_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1 
+                                                    END) 'psy',`;
+                            break;
                         case "psy":
-                            fields+="Работа с соц. психологом,";
-                            select_query_part+=`COUNT(CASE WHEN A.iw_reasone='Работа с социальным психологом' THEN 1 END) 'psy',`;
+                            fields+="Работа с психологом,";
+                            select_query_part+=`COUNT(
+                                                    CASE 
+                                                        WHEN a.iw_type_id=2 AND a.iw_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1 
+                                                    END) 'psy',`;
                             break;
                         case "rep":
                             fields+="Полученные жалобы,";
-                            select_query_part+=`COUNT(CASE WHEN A.iw_reasone='Жалоба' THEN 1 END) 'rep',`;
+                            select_query_part+=`COUNT(
+                                                    CASE 
+                                                        WHEN a.iw_type_id=3 AND a.iw_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1 
+                                                    END) 'rep',`;
                             break;
                         case "cons":
                             fields+="Работа с советом по проф.,";
-                            select_query_part+=`COUNT(CASE WHEN A.iw_reasone='Работа с советом по профилактике' THEN 1 END) 'cons',`;
+                            select_query_part+=`COUNT(
+                                                    CASE 
+                                                        WHEN a.iw_type_id=4 AND a.iw_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) 
+                                                        THEN 1 
+                                                    END) 'cons',`;
                             break;
                     }
                 });
                 fields=fields.substr(0,fields.length-1);
                 select_query_part=select_query_part.substr(0,select_query_part.length-1)+"\n";
                 groupby_query_part=groupby_query_part.substr(0,groupby_query_part.length-1);
-                from_query_part+=`individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id RIGHT JOIN students c ON a.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \n`;
-                where_query_part+=`(a.iw_date>DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}) OR a.iw_date IS NULL) AND c.group_id=${serverUser[req.session.user].getUserGroup()} AND c.student_id NOT IN (SELECT student_id FROM deductions) \n`;
+                from_query_part+=`individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id 
+                                  RIGHT JOIN students c ON a.student_id=c.student_id 
+                                  INNER JOIN users d ON c.user_id=d.user_id \n`;
+                where_query_part+=`c.group_id=${serverUser[req.session.user].getUserGroup()} AND c.student_id NOT IN (SELECT student_id FROM deductions) \n`;
+                break;
+            case "att-special":
+                var days,month,interval;
+                let date=new Date(await datenormalise("now","Y-M-D"));
+                switch(req.body.date){
+                    case "BLAST":
+                        month=await date.setMonth(date.getMonth()-3);
+                        month=await datenormalise(month,"M");
+                        interval=2;
+                        days=await daysInMonth(month,date.getFullYear());
+                        break;
+                    case "PREV":
+                        month=await date.setMonth(date.getMonth()-2);
+                        month=await datenormalise(month,"M");
+                        interval=1;
+                        days=await daysInMonth(month,date.getFullYear());
+                        break;
+                    case "NOW":
+                        month=await date.setMonth(date.getMonth()-1);
+                        month=await datenormalise(month,"M");
+                        interval=0;
+                        days=await daysInMonth(month,date.getFullYear());
+                        break;
+                };
+                fields+="ID,Студент,";
+                select_query_part+="c.student_id,d.user_sur_name,d.user_name,d.user_mid_name,";
+                groupby_query_part+="c.student_id,d.user_sur_name,d.user_name,d.user_mid_name";
+                let day;
+                console.log(days);
+                for (let i=1;i<=days;i++){
+                    day=i<10?"0"+i:i;
+                    fields+=`${day}.${month},`;
+                    select_query_part+=`(CASE 
+                                            WHEN '${date.getFullYear()}-${month}-${day}'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type='Н' 
+                                                THEN 'Н' 
+                                            WHEN '${date.getFullYear()}-${month}-${day}' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type='З' 
+                                                THEN 'З' 
+                                            ELSE '' 
+                                        END) AS 'DAY${day}',`;
+                }
+                fields=fields.slice(0,-1);
+                select_query_part=select_query_part.slice(0,-1)+"\n";
+                from_query_part+=`attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id 
+                                RIGHT JOIN students c ON b.student_id=c.student_id 
+                                INNER JOIN users d ON c.user_id=d.user_id \n`;
+                where_query_part+=`c.group_id=${serverUser[req.session.user].getUserGroup()} AND c.student_id NOT IN (SELECT student_id FROM deductions) \n`;
                 break;
         }
         let query=select_query_part+from_query_part+where_query_part+groupby_query_part;
         //let check=await createSelectQuery(query);
-        let result=await createIUDQuery(`INSERT INTO reports VALUES(null,${serverUser[req.session.user].getUserGroup()},NOW(),DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}),'${req.body.type}','${fields}','${query.replace(/\'/gi,"\\'")}');`);
-        let id=await createSelectQuery(`SELECT report_id FROM reports WHERE group_id=${serverUser[req.session.user].getUserGroup()} ORDER BY report_id DESC LIMIT 1 `);
+        let result;
+        if(req.body.type!=="att-special"){
+            result=await createIUDQuery(`INSERT INTO reports 
+            VALUES(
+                null,
+                ${serverUser[req.session.user].getUserGroup()},
+                NOW(),
+                DATE_SUB('${date_now}',INTERVAL ${req.body['date[]'][0]} ${req.body['date[]'][1]}),
+                '${req.body.type}',
+                '${fields}',
+                '${query.replace(/\'/gi,"\\'")}'
+            );`);
+        }
+        else{
+            let spec_date=date_now.split(".");
+            result=await createIUDQuery(`INSERT INTO reports 
+            VALUES(
+                null,
+                ${serverUser[req.session.user].getUserGroup()},
+                NOW(),
+                DATE_SUB('${spec_date[0]}.${spec_date[1]}.01', INTERVAL ${interval} MONTH),
+                '${req.body.type}',
+                '${fields}',
+                '${query.replace(/\'/gi,"\\'")}'
+            );`);
+        }
+        let id=await createSelectQuery(`SELECT report_id 
+        FROM reports 
+        WHERE group_id=${serverUser[req.session.user].getUserGroup()} 
+        ORDER BY report_id DESC LIMIT 1;`);
         res.end(`${id[0].report_id}`);
     }
     catch(err){
@@ -1293,7 +1438,9 @@ app.get("/t/mygroup/report/:id",isAuthenticated,interfaceSplitter,async(req,res)
     FROM reports
     WHERE report_id=${JSON.stringify(req.params.id)}`);
     let report_data=await createSelectQuery(report[0].report_query);
+    console.log(report[0].report_type)
     let fields=report[0].report_fields.split(',');
+    console.log(report_data);
     res.render("t_report_info",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
@@ -1309,7 +1456,8 @@ app.get("/t/mygroup/report/:id",isAuthenticated,interfaceSplitter,async(req,res)
 app.get("/t/mygroup/attendance",isAuthenticated,interfaceSplitter,async(req,res)=>{
     let attendanceInfo=await createSelectQuery(`SELECT * 
     FROM attendance
-    WHERE group_id=${serverUser[req.session.user].getUserGroup()} LIMIT 3;`);
+    WHERE group_id=${serverUser[req.session.user].getUserGroup()}
+    ORDER BY attendance_id DESC;`);
     res.render("t_mygroupattendance",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],

@@ -332,7 +332,7 @@ $(document).ready(function(){
                 contentType:false,
                 processData:false,
                 success: function(){
-                    window.location.reload();
+                    window.location.href="/t/mygroup/attendance";
                 }
             });
         }
@@ -452,19 +452,40 @@ $(document).ready(function(){
         e.preventDefault();
         switch($(this).val()){
             case "attendance":
+                $("#t-report-form-timefloat").prop("hidden",false);
+                $("#t-report-form-timefloat input,#t-report-form-timefloat select").prop("disabled",false);
+                $("#t-report-form-timespec").prop("hidden",true);
+                $("#t-report-form-timespec select").prop("disabled",true);
                 $("#t-report-form-iw").prop("hidden",true);
                 $("#t-report-form-events").prop("hidden",true);
                 $("#t-report-form-attendance").prop("hidden",false);
                 break;
             case "events":
+                $("#t-report-form-timefloat").prop("hidden",false);
+                $("#t-report-form-timefloat input,#t-report-form-timefloat select").prop("disabled",false);
+                $("#t-report-form-timespec").prop("hidden",true);
+                $("#t-report-form-timespec select").prop("disabled",true);
                 $("#t-report-form-iw").prop("hidden",true);
                 $("#t-report-form-attendance").prop("hidden",true);
                 $("#t-report-form-events").prop("hidden",false);
                 break;
             case "iw":
+                $("#t-report-form-timefloat").prop("hidden",false);
+                $("#t-report-form-timefloat input,#t-report-form-timefloat select").prop("disabled",false);
+                $("#t-report-form-timespec").prop("hidden",true);
+                $("#t-report-form-timespec select").prop("disabled",true);
                 $("#t-report-form-events").prop("hidden",true);
                 $("#t-report-form-attendance").prop("hidden",true);
                 $("#t-report-form-iw").prop("hidden",false);
+                break;
+            case "att-special":
+                $("#t-report-form-timefloat").prop("hidden",true);
+                $("#t-report-form-timefloat input,#t-report-form-timefloat select").prop("disabled",true);
+                $("#t-report-form-timespec").prop("hidden",false);
+                $("#t-report-form-timespec select").prop("disabled",false);
+                $("#t-report-form-iw").prop("hidden",true);
+                $("#t-report-form-events").prop("hidden",true);
+                $("#t-report-form-attendance").prop("hidden",true);
                 break;
         }
         $("#t-report-form-button").prop("hidden",false);
@@ -472,29 +493,57 @@ $(document).ready(function(){
     $("#t-report-form-button #t-report-form-submit").on('click',async function(e){
         e.preventDefault();
         if(functions.filledCheck($(this),["select",":input[type='number']"])==true){
-            let fields=[];
-            let null_fields=[true,true];
-            let type=$("#t-report-form-type").val();
-            await $.each($(`#t-report-form #t-report-form-${type}-check-fields`),function(){
-                if($(this).prop("checked")==true){
-                    null_fields[0]=false;
-                    fields.push($(this).val());
+            if($("#t-report-form-type").val()!=="att-special"){
+                let fields=[];
+                let null_fields=[true,true];
+                let type=$("#t-report-form-type").val();
+                await $.each($(`#t-report-form #t-report-form-${type}-check-fields`),function(){
+                    if($(this).prop("checked")==true){
+                        null_fields[0]=false;
+                        fields.push($(this).val());
+                    }
+                });
+                await $.each($(`#t-report-form #t-report-form-${type}-check-res`),function(){
+                    if($(this).prop("checked")==true){
+                        null_fields[1]=false;
+                        fields.push($(this).val());
+                    }
+                });
+                if(null_fields[0]==false&&null_fields[1]==false){
+                    $.ajax({
+                        type:"POST",
+                        url:"/t/newreport",
+                        data:{
+                            type:type,
+                            fields:fields,
+                            date:[$("#t-report-form-number-date").val(),$("#t-report-form-date-date").val()]
+                        },
+                        success: function(id){
+                            if(id=="Error"){
+                                alert("Ошибка!!!");
+                            }
+                            else{
+                                window.location.href=`/t/mygroup/report/${id}`;
+                            }
+                        }
+                    });
                 }
-            });
-            await $.each($(`#t-report-form #t-report-form-${type}-check-res`),function(){
-                if($(this).prop("checked")==true){
-                    null_fields[1]=false;
-                    fields.push($(this).val());
+                else{
+                    if(null_fields[0]==true){
+                        $(`#t-report-form #t-report-form-${type}-check-fields`).addClass("border-danger").animate({left:"-=10"},10).animate({left:"+=10"},10);
+                    }
+                    if(null_fields[1]==true){
+                        $(`#t-report-form #t-report-form-${type}-check-res`).addClass("border-danger").animate({left:"-=10"},10).animate({left:"+=10"},10);
+                    }
                 }
-            });
-            if(null_fields[0]==false&&null_fields[1]==false){
+            }
+            else{
                 $.ajax({
                     type:"POST",
                     url:"/t/newreport",
                     data:{
-                        type:type,
-                        fields:fields,
-                        date:[$("#t-report-form-number-date").val(),$("#t-report-form-date-date").val()]
+                        type:$("#t-report-form-type").val(),
+                        date:$("#t-report-form-date-spec-date").val()
                     },
                     success: function(id){
                         if(id=="Error"){
@@ -504,15 +553,7 @@ $(document).ready(function(){
                             window.location.href=`/t/mygroup/report/${id}`;
                         }
                     }
-                })
-            }
-            else{
-                if(null_fields[0]==true){
-                    $(`#t-report-form #t-report-form-${type}-check-fields`).addClass("border-danger").animate({left:"-=10"},10).animate({left:"+=10"},10);
-                }
-                if(null_fields[1]==true){
-                    $(`#t-report-form #t-report-form-${type}-check-res`).addClass("border-danger").animate({left:"-=10"},10).animate({left:"+=10"},10);
-                }
+                });
             }
         }
     });

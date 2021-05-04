@@ -29,7 +29,7 @@
                                             <h2>Дата прогула: {{#datenormalise attendance_date "D-M-Y"}}{{/datenormalise}}</h2>
                                         </div>
                                         <div class="col-12">
-                                            <span>Тип прогула: {{absenteeismes_type}}</span>
+                                            <span>Тип прогула: {{absenteeismes_type}}/{{#notnull absenteeismes_file}}Уважительный{{/notnull}}</span>
                                         </div>
                                         {{#notnull absenteeismes_file}}
                                             <div class="col-12">
