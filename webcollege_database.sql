@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Апр 27 2021 г., 23:07
+-- Время создания: Май 05 2021 г., 22:20
 -- Версия сервера: 10.3.22-MariaDB
 -- Версия PHP: 7.1.33
 
@@ -40,8 +40,10 @@ CREATE TABLE `absenteeismes` (
 --
 
 INSERT INTO `absenteeismes` (`absenteeismes_id`, `attendance_id`, `student_id`, `absenteeismes_type`, `absenteeismes_file`) VALUES
-(7, 8, 1, 'Н', NULL),
-(8, 8, 2, 'З', '/files/1/2/absentismeses/abs_2000-03-02.png');
+(7, 8, 1, 'Н', '/files/1/1/absentismeses/6351992_preview.png'),
+(8, 8, 2, 'З', '/files/1/2/absentismeses/abs_2000-03-02.png'),
+(9, 9, 1, 'З', NULL),
+(10, 9, 2, 'Н', NULL);
 
 -- --------------------------------------------------------
 
@@ -77,6 +79,14 @@ CREATE TABLE `additional_educations` (
   `ae_beg_date` date NOT NULL,
   `ae_end_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `additional_educations`
+--
+
+INSERT INTO `additional_educations` (`ae_id`, `ae_name`, `ae_lecturer_id`, `ae_beg_date`, `ae_end_date`) VALUES
+(1, 'Машинное обучение', 1, '2021-05-25', '2021-05-31'),
+(2, 'Графический Дизайн', 1, '2021-05-25', '2021-05-31');
 
 -- --------------------------------------------------------
 
@@ -119,7 +129,10 @@ CREATE TABLE `announcements` (
 INSERT INTO `announcements` (`announcement_id`, `group_id`, `announcement_data`, `announcement_header`, `announcement_type`, `announcement_file`, `announcement_text`) VALUES
 (1, 1, '2021-04-14 20:53:43', '21323', 2, '/files/1/announcements_files/aaa.jpg', 'fawfwf'),
 (2, 1, '2021-04-20 12:07:37', 'dwdwd', 2, '/files/1/announcements_files/QR2.png', 'wdwdwd'),
-(3, 1, '2021-04-27 19:38:35', 'aaaaaaaaaaa', 1, '/files/1/announcements_files/6e727e315d647b5987533b12104aafe1.jpg', 'aaaaaaaaaaaaaa');
+(3, 1, '2021-04-27 19:38:35', 'aaaaaaaaaaa', 1, '/files/1/announcements_files/6e727e315d647b5987533b12104aafe1.jpg', 'aaaaaaaaaaaaaa'),
+(4, 1, '2021-05-03 00:03:24', 'wwwwwwwwwwww', 2, '/files/1/announcements_files/6e727e315d647b5987533b12104aafe1(1).jpg', 'dddddddddddddddd'),
+(5, 1, '2021-05-03 10:55:51', 'aaaaaa', 2, '/files/1/announcements_files/6e727e315d647b5987533b12104aafe1(2).jpg', 'csssssssssd'),
+(6, 1, '2021-05-05 18:51:24', '213213', 2, '/files/1/announcements_files/6e727e315d647b5987533b12104aafe1(3).jpg', 'dwdawdd');
 
 -- --------------------------------------------------------
 
@@ -160,7 +173,8 @@ CREATE TABLE `attendance` (
 --
 
 INSERT INTO `attendance` (`attendance_id`, `group_id`, `attendance_date`, `attendance_present`) VALUES
-(8, 1, '2000-03-02', 0);
+(8, 1, '2000-03-02', 0),
+(9, 1, '2021-04-01', 1);
 
 -- --------------------------------------------------------
 
@@ -173,6 +187,14 @@ CREATE TABLE `courses` (
   `ae_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `courses`
+--
+
+INSERT INTO `courses` (`course_id`, `ae_id`, `student_id`) VALUES
+(1, 1, 2),
+(2, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -235,7 +257,10 @@ INSERT INTO `documents` (`document_id`, `student_id`, `document_name`, `document
 (6, 2, 'ПОЛИС', NULL, NULL),
 (7, 3, 'ИНН', NULL, NULL),
 (8, 3, 'СНИЛС', NULL, NULL),
-(9, 3, 'ПОЛИС', NULL, NULL);
+(9, 3, 'ПОЛИС', NULL, NULL),
+(10, 5, 'СНИЛС', NULL, NULL),
+(11, 5, 'ИНН', NULL, NULL),
+(12, 5, 'ПОЛИС', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -261,20 +286,21 @@ CREATE TABLE `events` (
   `group_id` int(11) NOT NULL,
   `event_type_id` int(11) NOT NULL,
   `event_description` text NOT NULL,
-  `event_date` date NOT NULL
+  `event_date` date NOT NULL,
+  `event_img` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп данных таблицы `events`
 --
 
-INSERT INTO `events` (`event_id`, `group_id`, `event_type_id`, `event_description`, `event_date`) VALUES
-(1, 1, 2, 'fawfawf', '2021-04-23'),
-(2, 1, 1, '13WAD', '2021-04-15'),
-(3, 1, 1, 'DWDAAD', '2021-04-07'),
-(4, 1, 2, 'DD21123', '2021-04-07'),
-(5, 1, 3, 'ввввввввввввв', '2021-04-24'),
-(6, 1, 1, 'DWDWDWDWD', '2021-05-27');
+INSERT INTO `events` (`event_id`, `group_id`, `event_type_id`, `event_description`, `event_date`, `event_img`) VALUES
+(1, 1, 2, 'fawfawf', '2021-04-23', NULL),
+(2, 1, 1, '13WAD', '2021-04-15', NULL),
+(3, 1, 1, 'DWDAAD', '2021-04-07', NULL),
+(4, 1, 2, 'DD21123', '2021-04-07', '/files/1/events/photo-1525034687081-c702010cb70d.jfif'),
+(5, 1, 3, 'ввввввввввввв', '2021-04-24', '/files/1/events/6e727e315d647b5987533b12104aafe1.jpg'),
+(6, 1, 1, 'DWDWDWDWD', '2021-05-27', NULL);
 
 -- --------------------------------------------------------
 
@@ -314,7 +340,10 @@ CREATE TABLE `gallery` (
 
 INSERT INTO `gallery` (`gallery_id`, `group_id`, `gallery_img`) VALUES
 (1, 1, '/files/1/img/Untitled-1.png'),
-(2, 1, '/files/1/img/А4 ввод ключа.png');
+(2, 1, '/files/1/img/А4 ввод ключа.png'),
+(3, 1, '/files/1/events/6e727e315d647b5987533b12104aafe1.jpg'),
+(4, 1, '/files/1/events/photo-1525034687081-c702010cb70d.jfif'),
+(5, 1, '/files/1/img/6351992_preview.png');
 
 -- --------------------------------------------------------
 
@@ -337,7 +366,8 @@ CREATE TABLE `groups` (
 --
 
 INSERT INTO `groups` (`group_id`, `teacher_id`, `head_id`, `department_id`, `spetiality_id`, `group_beg_education_date`, `group_end_education_date`) VALUES
-(1, 1, 1, 1, 1, '2020-09-01', '2023-05-31');
+(1, 1, 1, 1, 1, '2020-09-01', '2023-05-31'),
+(2, NULL, 1, 1, 2, '2021-05-02', '2021-11-30');
 
 -- --------------------------------------------------------
 
@@ -394,9 +424,10 @@ CREATE TABLE `individual_work_types` (
 --
 
 INSERT INTO `individual_work_types` (`iw_type_id`, `iw_type_name`) VALUES
-(1, 'Работа с социальным психологом'),
-(2, 'Жалоба'),
-(3, 'Работа с советом по профилактике');
+(1, 'Работа с социальным педагогом'),
+(2, 'Работа с психологом'),
+(3, 'Жалоба'),
+(4, 'Вызов на совет по профилактике');
 
 -- --------------------------------------------------------
 
@@ -420,12 +451,13 @@ CREATE TABLE `options` (
 --
 
 INSERT INTO `options` (`option_id`, `h_size`, `h_color`, `font_size`, `font_color`, `theme_id`, `logo_d`, `app_name_d`) VALUES
-(1, 42, '#212529', 16, '#212529', 1, 0, 0),
+(1, 42, '#212529', 16, '#212529', 1, 1, 1),
 (2, 42, '#212529', 16, '#212529', 1, 1, 1),
 (3, 42, '#212529', 16, '#212529', 1, 1, 1),
 (4, 42, '#212529', 16, '#212529', 1, 1, 1),
 (5, 42, '#212529', 16, '#212529', 1, 1, 1),
-(6, 42, '#212529', 16, '#212529', 1, 1, 1);
+(6, 42, '#212529', 16, '#212529', 1, 1, 1),
+(13, 42, '#212529', 16, '#212529', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -468,7 +500,8 @@ CREATE TABLE `passports` (
 INSERT INTO `passports` (`passport_id`, `student_id`, `passport_series`, `passport_number`, `passport_data_of_issue`, `passport_address`, `passport_issued_by`, `passport_scan`) VALUES
 (1, 1, 1231, 123123, '2021-04-22', '12313313', 'dwadwawd', '/files/1/1/documents/passport-scan.png'),
 (2, 2, 1111, 111111, '2021-03-31', '1111111111111111', '111111111111111111111111111111111111', '/files/1/2/documents/passport-scan.png'),
-(3, 3, NULL, NULL, NULL, NULL, NULL, NULL);
+(3, 3, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, 5, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -491,10 +524,12 @@ CREATE TABLE `reports` (
 --
 
 INSERT INTO `reports` (`report_id`, `group_id`, `report_cr_date`, `report_interval_date`, `report_type`, `report_fields`, `report_query`) VALUES
-(1, 1, '2021-04-27', '2021-04-26', 'attendance', '#,ID,Студент,Н,З,Общее кол-во пропусков,Закрытые пропуски,Незакрытые пропуски', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',c.student_id,d.user_name,d.user_sur_name,d.user_mid_name,COUNT(case when absenteeismes_type=\'Н\' then 1 end) \'N\',COUNT(case when absenteeismes_type=\'З\' then 1 end) \'Z\',COUNT(absenteeismes_id) \'common\',COUNT(absenteeismes_file) \'closed\',COUNT(absenteeismes_id)-COUNT(absenteeismes_file) \'unclosed\'\r\nFROM attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id RIGHT JOIN students c ON b.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \r\nWHERE a.attendance_date<\'2021.04.27\' AND DATE_SUB(\'2021.04.27\',INTERVAL 1 DAY)>a.attendance_date AND c.group_id=1 AND c.student_id NOT IN (SELECT student_id FROM deductions) \r\nGROUP BY c.student_id,d.user_name,d.user_sur_name,d.user_mid_name'),
-(2, 1, '2021-04-27', '2021-04-20', 'events', '#,Наименование,Дата последнего мероприятия,Проведённые,Предстоящие,Общее количество', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',b.event_type_name,a.event_date,COUNT(CASE WHEN a.event_date<NOW() THEN 1 END) \'compl\',COUNT(CASE WHEN a.event_date>NOW() THEN 1 END) \'future\',COUNT(a.event_date) \'comm\'\r\nFROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \r\nWHERE group_id=1 AND a.event_date>DATE_SUB(\'2021.04.27\',INTERVAL 1 WEEK) \r\nGROUP BY b.event_type_name'),
-(3, 1, '2021-04-27', '2021-03-27', 'iw', '#,ID,Студент,Работа с соц. психологом,Полученные жалобы,Работа с советом по проф.', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',c.student_id,d.user_sur_name,d.user_mid_name,COUNT(CASE WHEN A.iw_reasone=\'Работа с социальным психологом\' THEN 1 END) \'psy\',COUNT(CASE WHEN A.iw_reasone=\'Жалоба\' THEN 1 END) \'rep\',COUNT(CASE WHEN A.iw_reasone=\'Работа с советом по профилактике\' THEN 1 END) \'cons\'\r\nFROM individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id RIGHT JOIN students c ON a.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \r\nWHERE (a.iw_date>DATE_SUB(\'2021.04.27\',INTERVAL 1 MONTH) OR a.iw_date IS NULL) AND c.group_id=1 AND c.student_id NOT IN (SELECT student_id FROM deductions) \r\nGROUP BY c.student_id,d.user_sur_name,d.user_mid_name'),
-(4, 1, '2021-04-27', '2020-12-27', 'attendance', '#,ID,Студент,Н,З,Общее кол-во пропусков,Закрытые пропуски,Незакрытые пропуски', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',c.student_id,d.user_name,d.user_sur_name,d.user_mid_name,COUNT(case when absenteeismes_type=\'Н\' then 1 end) \'N\',COUNT(case when absenteeismes_type=\'З\' then 1 end) \'Z\',COUNT(absenteeismes_id) \'common\',COUNT(absenteeismes_file) \'closed\',COUNT(absenteeismes_id)-COUNT(absenteeismes_file) \'unclosed\'\r\nFROM attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id RIGHT JOIN students c ON b.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \r\nWHERE a.attendance_date<\'2021.04.27\' AND DATE_SUB(\'2021.04.27\',INTERVAL 4 MONTH)>a.attendance_date AND c.group_id=1 AND c.student_id NOT IN (SELECT student_id FROM deductions) \r\nGROUP BY c.student_id,d.user_name,d.user_sur_name,d.user_mid_name');
+(8, 1, '2021-05-04', '2021-03-04', 'attendance', '#,ID,Студент,Н,З,Общее кол-во пропусков,Закрытые пропуски,Незакрытые пропуски', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',c.student_id,d.user_name,d.user_sur_name,d.user_mid_name,COUNT(case when absenteeismes_type=\'Н\' then 1 end) \'N\',COUNT(case when absenteeismes_type=\'З\' then 1 end) \'Z\',COUNT(absenteeismes_id) \'common\',COUNT(absenteeismes_file) \'closed\',COUNT(absenteeismes_id)-COUNT(absenteeismes_file) \'unclosed\'\nFROM attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id RIGHT JOIN students c ON b.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \nWHERE a.attendance_date<\'2021.05.04\' AND DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH)>a.attendance_date AND c.group_id=1 AND c.student_id NOT IN (SELECT student_id FROM deductions) \nGROUP BY c.student_id,d.user_name,d.user_sur_name,d.user_mid_name'),
+(9, 1, '2021-05-04', '2021-05-02', 'attendance', '#,ID,Студент,Н,З,Общее кол-во пропусков,Закрытые пропуски,Незакрытые пропуски', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',c.student_id,d.user_name,d.user_sur_name,d.user_mid_name,COUNT(case when absenteeismes_type=\'Н\' then 1 end) \'N\',COUNT(case when absenteeismes_type=\'З\' then 1 end) \'Z\',COUNT(absenteeismes_id) \'common\',COUNT(absenteeismes_file) \'closed\',COUNT(absenteeismes_id)-COUNT(absenteeismes_file) \'unclosed\'\nFROM attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id RIGHT JOIN students c ON b.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id \nWHERE (a.attendance_date<\'2021.05.04\' AND DATE_SUB(\'2021.05.04\',INTERVAL 2 DAY)>a.attendance_date) OR a.attendance_date IS NULL AND c.group_id=1 AND c.student_id NOT IN (SELECT student_id FROM deductions) \nGROUP BY c.student_id,d.user_name,d.user_sur_name,d.user_mid_name'),
+(11, 1, '2021-05-04', '2021-03-04', 'attendance', '#,ID,Студент,Н,З,Общее кол-во пропусков,Закрытые пропуски,Незакрытые пропуски', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',c.student_id,d.user_name,d.user_sur_name,d.user_mid_name,COUNT(\n                                                    CASE \n                                                        WHEN absenteeismes_type=\'Н\' AND a.attendance_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1 \n                                                    END) \'N\',COUNT(\n                                                    CASE \n                                                        WHEN absenteeismes_type=\'З\' AND a.attendance_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1 \n                                                    END) \'Z\',COUNT(\n                                                    CASE \n                                                        WHEN a.attendance_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1 \n                                                    END) \'common\',COUNT(\n                                                    CASE \n                                                        WHEN absenteeismes_file IS NOT NULL AND a.attendance_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1 \n                                                    END) \'closed\',COUNT(\n                                                    CASE \n                                                        WHEN a.attendance_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1 \n                                                    END)\n                                                -COUNT(\n                                                        CASE \n                                                            WHEN absenteeismes_file IS NOT NULL AND a.attendance_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                            THEN 1 \n                                                        END) \'unclosed\'\nFROM attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id \n                                  RIGHT JOIN students c ON b.student_id=c.student_id \n                                  INNER JOIN users d ON c.user_id=d.user_id \nWHERE c.group_id=1 AND c.student_id NOT IN (SELECT student_id FROM deductions) \nGROUP BY c.student_id,d.user_name,d.user_sur_name,d.user_mid_name'),
+(12, 1, '2021-05-04', '2021-03-04', 'events', '#,Наименование,Дата последнего мероприятия,Проведённые,Предстоящие,Общее количество', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',b.event_type_name,a.event_date,COUNT(\n                                                    CASE \n                                                        WHEN a.event_date<NOW() AND a.event_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1 \n                                                    END) \'compl\',COUNT(\n                                                    CASE \n                                                        WHEN a.event_date>NOW() AND a.event_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1 \n                                                    END) \'future\',COUNT(\n                                                    CASE\n                                                        WHEN a.event_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1\n                                                    END) \'comm\'\nFROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id \nWHERE group_id=1 \nGROUP BY b.event_type_name'),
+(13, 1, '2021-05-04', '2021-03-04', 'iw', '#,ID,Студент,Работа с соц. педагогомРабота с психологом,Полученные жалобы,Работа с советом по проф.', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',c.student_id,d.user_name,d.user_sur_name,d.user_mid_name,COUNT(\n                                                    CASE \n                                                        WHEN a.iw_type_id=1 AND a.iw_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1 \n                                                    END) \'psy\',COUNT(\n                                                    CASE \n                                                        WHEN a.iw_type_id=2 AND a.iw_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1 \n                                                    END) \'psy\',COUNT(\n                                                    CASE \n                                                        WHEN a.iw_type_id=3 AND a.iw_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1 \n                                                    END) \'rep\',COUNT(\n                                                    CASE \n                                                        WHEN a.iw_type_id=4 AND a.iw_date>DATE_SUB(\'2021.05.04\',INTERVAL 2 MONTH) \n                                                        THEN 1 \n                                                    END) \'cons\'\nFROM individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id \n                                  RIGHT JOIN students c ON a.student_id=c.student_id \n                                  INNER JOIN users d ON c.user_id=d.user_id \nWHERE c.group_id=1 AND c.student_id NOT IN (SELECT student_id FROM deductions) \nGROUP BY c.student_id,d.user_name,d.user_sur_name,d.user_mid_name'),
+(21, 1, '2021-05-04', '2021-05-01', 'att-special', '#,Студент,01.04,02.04,03.04,04.04,05.04,06.04,07.04,08.04,09.04,10.04,11.04,12.04,13.04,14.04,15.04,16.04,17.04,18.04,19.04,20.04,21.04,22.04,23.04,24.04,25.04,26.04,27.04,28.04,29.04,30.04', 'SET @rank=0; SELECT @rank:=@rank+1 as \'num\',d.user_sur_name,d.user_name,d.user_mid_name,(CASE \r\n                                            WHEN \'2021-04-01\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-01\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY01\',(CASE \r\n                                            WHEN \'2021-04-02\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-02\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY02\',(CASE \r\n                                            WHEN \'2021-04-03\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-03\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY03\',(CASE \r\n                                            WHEN \'2021-04-04\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-04\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY04\',(CASE \r\n                                            WHEN \'2021-04-05\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-05\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY05\',(CASE \r\n                                            WHEN \'2021-04-06\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-06\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY06\',(CASE \r\n                                            WHEN \'2021-04-07\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-07\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY07\',(CASE \r\n                                            WHEN \'2021-04-08\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-08\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY08\',(CASE \r\n                                            WHEN \'2021-04-09\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-09\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY09\',(CASE \r\n                                            WHEN \'2021-04-10\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-10\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY10\',(CASE \r\n                                            WHEN \'2021-04-11\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-11\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY11\',(CASE \r\n                                            WHEN \'2021-04-12\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-12\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY12\',(CASE \r\n                                            WHEN \'2021-04-13\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-13\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY13\',(CASE \r\n                                            WHEN \'2021-04-14\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-14\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY14\',(CASE \r\n                                            WHEN \'2021-04-15\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-15\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY15\',(CASE \r\n                                            WHEN \'2021-04-16\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-16\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY16\',(CASE \r\n                                            WHEN \'2021-04-17\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-17\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY17\',(CASE \r\n                                            WHEN \'2021-04-18\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-18\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY18\',(CASE \r\n                                            WHEN \'2021-04-19\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-19\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY19\',(CASE \r\n                                            WHEN \'2021-04-20\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-20\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY20\',(CASE \r\n                                            WHEN \'2021-04-21\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-21\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY21\',(CASE \r\n                                            WHEN \'2021-04-22\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-22\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY22\',(CASE \r\n                                            WHEN \'2021-04-23\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-23\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY23\',(CASE \r\n                                            WHEN \'2021-04-24\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-24\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY24\',(CASE \r\n                                            WHEN \'2021-04-25\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-25\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY25\',(CASE \r\n                                            WHEN \'2021-04-26\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-26\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY26\',(CASE \r\n                                            WHEN \'2021-04-27\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-27\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY27\',(CASE \r\n                                            WHEN \'2021-04-28\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-28\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY28\',(CASE \r\n                                            WHEN \'2021-04-29\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-29\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY29\',(CASE \r\n                                            WHEN \'2021-04-30\'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'Н\' \r\n                                                THEN \'Н\' \r\n                                            WHEN \'2021-04-30\' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type=\'З\' \r\n                                                THEN \'З\' \r\n                                            ELSE \'\' \r\n                                        END) AS \'DAY30\'\r\nFROM attendance a RIGHT JOIN absenteeismes b ON a.attendance_id=b.attendance_id \r\n                                RIGHT JOIN students c ON b.student_id=c.student_id \r\n                                INNER JOIN users d ON c.user_id=d.user_id \r\nWHERE c.group_id=1 AND c.student_id NOT IN (SELECT student_id FROM deductions) \r\nGROUP BY c.student_id,d.user_sur_name,d.user_name,d.user_mid_name ORDER BY d.user_sur_name');
 
 -- --------------------------------------------------------
 
@@ -513,7 +548,8 @@ CREATE TABLE `spetialities` (
 --
 
 INSERT INTO `spetialities` (`spetiality_id`, `spetiality_profession_id`, `spetiality_abbreviated`) VALUES
-(1, 1, '18ИС-13');
+(1, 1, '18ИС-13'),
+(2, 2, 'СА-1');
 
 -- --------------------------------------------------------
 
@@ -524,7 +560,7 @@ INSERT INTO `spetialities` (`spetiality_id`, `spetiality_profession_id`, `spetia
 CREATE TABLE `spetiality_professions` (
   `spetiality_profession_id` int(11) NOT NULL,
   `spetiality_full_name` varchar(200) NOT NULL,
-  `spetiality_profession` varchar(200) NOT NULL
+  `spetiality_profession` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -532,7 +568,8 @@ CREATE TABLE `spetiality_professions` (
 --
 
 INSERT INTO `spetiality_professions` (`spetiality_profession_id`, `spetiality_full_name`, `spetiality_profession`) VALUES
-(1, 'Информационные системы и программирование', 'Разработка веб и мультимедиа');
+(1, 'Информационные системы и программирование', 'Разработка веб и мультимедиа'),
+(2, 'Сетевое и системное администрирование', NULL);
 
 -- --------------------------------------------------------
 
@@ -546,7 +583,7 @@ CREATE TABLE `students` (
   `group_id` int(11) DEFAULT NULL,
   `student_disabled` tinyint(1) DEFAULT NULL,
   `student_headman` tinyint(1) DEFAULT NULL,
-  `date_of_enrollment` date NOT NULL
+  `date_of_enrollment` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -554,9 +591,10 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`student_id`, `user_id`, `group_id`, `student_disabled`, `student_headman`, `date_of_enrollment`) VALUES
-(1, 4, 1, NULL, NULL, '0000-00-00'),
-(2, 5, 1, NULL, NULL, '0000-00-00'),
-(3, 6, 1, NULL, NULL, '0000-00-00');
+(1, 4, 1, NULL, NULL, NULL),
+(2, 5, 1, NULL, NULL, NULL),
+(3, 6, 1, NULL, NULL, NULL),
+(5, 13, 2, NULL, NULL, NULL);
 
 --
 -- Триггеры `students`
@@ -610,7 +648,10 @@ CREATE TABLE `themes` (
 --
 
 INSERT INTO `themes` (`theme_id`, `theme_name`) VALUES
-(1, 'По умолчанию');
+(1, 'По умолчанию'),
+(2, 'Тёплый вечер'),
+(3, 'Изумрудный город'),
+(4, 'Меланхолия');
 
 -- --------------------------------------------------------
 
@@ -638,12 +679,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `user_login`, `user_password`, `user_role`, `user_sur_name`, `user_name`, `user_mid_name`, `user_birthdate`, `user_sex`, `user_number`, `user_email`, `user_photo`) VALUES
-(1, 'Kiselova123', '123', 'Преподаватель', 'Киселёва', 'Светлана', 'Владимировна', '2021-01-31', 'Ж', '11111111111', 'aa@mail.ru', '/img/users/1_1.png'),
+(1, 'Kiselova123', 'I6W1C6yTWOJWN/J2nm241w==', 'Преподаватель', 'Киселёва', 'Светлана', 'Владимировна', '2021-01-28', 'Ж', '11111111111', 'aa@mail.ru', '/img/users/1_1.png'),
 (2, 'admin', 'admin', 'Администратор', 'Костин', 'Владислав', 'Константинович', '2021-02-04', 'М', '22222222222', 'bb@mail.ru', 'null'),
 (3, 'mAkSI', '111', 'ЗавОтделением', 'Максимова', 'Татьяна', 'Викторовна', '2021-02-04', 'Ж', '33333333333', 'cc@mail.ru', 'null'),
 (4, 'KOSTIN', '1123', 'Студент', 'Костин', 'Владислав', 'Константинович', '2021-02-04', 'М', '44444444444', 'dd@mail.ru', 'null'),
 (5, 'sec_student', '11112', 'Студент', 'Абдулберов', 'Тимур', 'Рушанович', '2021-02-04', 'М', '88888888888', 'ee@mail.ru', 'null'),
-(6, 'Natali', '222', 'Студент', 'Тихомирова', 'Наталья', NULL, '2021-04-01', 'Ж', '21111111111', '', NULL);
+(6, 'Natali', 'Y/eGYDEHi96EblqmeGifuw==', 'Студент', 'Тихомирова', 'Наталья', NULL, '2021-04-01', 'Ж', '21111111111', '', NULL),
+(13, 'Oksi', '1C1Y1xPX6e54zLTw5/0Q+w==', 'Студент', 'Юрченко', 'Оксана', NULL, '2021-05-01', 'Ж', '111', '111', NULL);
 
 --
 -- Триггеры `users`
@@ -651,7 +693,7 @@ INSERT INTO `users` (`user_id`, `user_login`, `user_password`, `user_role`, `use
 DELIMITER $$
 CREATE TRIGGER `new_user_insert` AFTER INSERT ON `users` FOR EACH ROW BEGIN
 	IF NEW.user_role LIKE 'Студент' THEN
-    	INSERT INTO students VALUES(NULL,NEW.user_id,null,null,null);
+    	INSERT INTO students VALUES(NULL,NEW.user_id,null,null,null,null);
     ELSEIF NEW.user_role LIKE 'Преподаватель' THEN
     	INSERT INTO teachers VALUES(NULL,NEW.user_id,null,null);
     ELSEIF NEW.user_role LIKE 'ЗавОтделением' THEN
@@ -892,7 +934,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `absenteeismes`
 --
 ALTER TABLE `absenteeismes`
-  MODIFY `absenteeismes_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `absenteeismes_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT для таблицы `achievements`
@@ -904,7 +946,7 @@ ALTER TABLE `achievements`
 -- AUTO_INCREMENT для таблицы `additional_educations`
 --
 ALTER TABLE `additional_educations`
-  MODIFY `ae_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ae_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `admins`
@@ -916,7 +958,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT для таблицы `announcements`
 --
 ALTER TABLE `announcements`
-  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT для таблицы `announcement_types`
@@ -928,13 +970,13 @@ ALTER TABLE `announcement_types`
 -- AUTO_INCREMENT для таблицы `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT для таблицы `courses`
 --
 ALTER TABLE `courses`
-  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `deductions`
@@ -952,7 +994,7 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT для таблицы `documents`
 --
 ALTER TABLE `documents`
-  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT для таблицы `duty_schedule`
@@ -976,13 +1018,13 @@ ALTER TABLE `event_types`
 -- AUTO_INCREMENT для таблицы `gallery`
 --
 ALTER TABLE `gallery`
-  MODIFY `gallery_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `gallery_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT для таблицы `groups`
 --
 ALTER TABLE `groups`
-  MODIFY `group_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `group_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `heads`
@@ -1000,7 +1042,7 @@ ALTER TABLE `individual_works`
 -- AUTO_INCREMENT для таблицы `individual_work_types`
 --
 ALTER TABLE `individual_work_types`
-  MODIFY `iw_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `iw_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT для таблицы `parents`
@@ -1012,31 +1054,31 @@ ALTER TABLE `parents`
 -- AUTO_INCREMENT для таблицы `passports`
 --
 ALTER TABLE `passports`
-  MODIFY `passport_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `passport_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT для таблицы `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT для таблицы `spetialities`
 --
 ALTER TABLE `spetialities`
-  MODIFY `spetiality_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `spetiality_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `spetiality_professions`
 --
 ALTER TABLE `spetiality_professions`
-  MODIFY `spetiality_profession_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `spetiality_profession_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `students`
 --
 ALTER TABLE `students`
-  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT для таблицы `teachers`
@@ -1048,13 +1090,13 @@ ALTER TABLE `teachers`
 -- AUTO_INCREMENT для таблицы `themes`
 --
 ALTER TABLE `themes`
-  MODIFY `theme_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `theme_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц

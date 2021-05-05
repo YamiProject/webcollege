@@ -189,7 +189,7 @@ th,td{
     #navbar li{
         text-decoration: none;
         list-style: none;
-        min-width: 12%;
+        min-width: 195px;
     }
     #navbar a{
         display: block;
@@ -348,6 +348,28 @@ th,td{
         transform: scale(1.03);
         transition: all .2s ease-in-out;
     }
+    /*chat*/
+    #chat-block{
+        border-radius: 20px 20px 50px 50px;
+    }
+    #msg-block{  
+        border-radius: 10px;
+        height: 400px;
+        overflow-y: scroll;
+    }
+    #chat-block div:first-of-type{  
+        margin-top: 40px;
+    }
+    #chatform-block{
+        padding: 10px;
+        border-radius: 10px;
+    }
+    .msg p:first-child{
+        border-bottom: 2px solid rgba(16, 12, 68, 0.514);
+    }
+    .msg p{
+        font-size: 12pt !important;
+    }
     /*error*/
     #error-page{
         min-height: 100vh;
@@ -386,68 +408,68 @@ th,td{
         font-size: 16pt;
     }
     /*t_announcements*/
-    .t-announcement-block{
+    .announcement-block{
         padding-top: 20px;
         padding-bottom: 100px;
         width: 100%;
     }
-    .t-announcement-open-form-block{
+    .announcement-open-form-block{
         padding: 20px 0 40px 0;
     }
-    .t-announcement-open-form-block button{
+    .announcement-open-form-block button{
         width: 50%;
         height: 100px;
         border-radius: 25px !important;
     }
-    .t-announcement-block>article{
+    .announcement-block>article{
         margin-bottom: 50px;
     }
-    .t-announcement-block>article:last-child{
+    .announcement-block>article:last-child{
         margin-bottom: 0 !important;
     }
-    .t-announcement-header{
+    .announcement-header{
         border-radius: 40px;
         padding: 5px;
     }
-    .t-announcement-info>div{
+    .announcement-info>div{
         padding: 10px 0;
     }
-    .t-announcement-info>div:first-child{
+    .announcement-info>div:first-child{
         border-bottom-left-radius: 25px;
     }
-    .t-announcement-info>div:last-child{
+    .announcement-info>div:last-child{
         border-bottom-right-radius: 25px;
     }
-    .t-announcement-text{
+    .announcement-text{
         margin-top: 10px;
         padding: 10px 0;
         border-radius: 40px;
         min-height: 300px;
     }
-    .t-announcement-text p{
+    .announcement-text p{
         overflow-y: initial;
         height: 100%;
     }
-    .t-announcement-text p::first-letter{
+    .announcement-text p::first-letter{
         margin-left: 40px;
     }
-    .t-announcement-download{
+    .announcement-download{
         border-radius: 10px;
         margin-top: 5px;
         padding: 10px;
     }
-    .t-announcement-form{
+    .announcement-form{
         position: fixed;
         bottom: 0;
         border-top-right-radius: 40px;
         border-top-left-radius: 40px;
         height: 150px;
     }
-    #t-anouncement-form-text{
+    #anouncement-form-text{
         border-radius: 10px 10px 0 0;
         height: 400px;
     }
-    .t-announcement-form-button{
+    .announcement-form-button{
         border-radius: 0 0 10px 10px !important;
         outline: none;
         color: white;
@@ -635,10 +657,10 @@ th,td{
 /*Tablet (several tags)*/
 @media screen and (max-width:1200px){
     /*t_announcements*/
-    .t-announcement-info{
+    .announcement-info{
         margin-right: 1px;
     }
-    .t-announcement-info>div{
+    .announcement-info>div{
         padding: 20px 0;
         margin-top: 10px;
         border-radius: 25px !important;

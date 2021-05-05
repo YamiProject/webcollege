@@ -6,7 +6,7 @@ export function escapeHTML(string){
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;")
-        .replace(/\s/g,'');
+        .trim();
     }
     catch{
         return "";

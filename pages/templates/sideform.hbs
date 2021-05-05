@@ -9,20 +9,20 @@
                     <div class="px-3">
                         <h3 class="text-center">Создать объявление</h3>
                     </div>
-                    <form class="row w-100 justify-content-center h-100 align-items-center align-content-center mx-0 px-3" id="t-anouncement-form">
+                    <form class="row w-100 justify-content-center h-100 align-items-center align-content-center mx-0 px-3" id="anouncement-form">
                         <div class="w-100 row justify-content-center">
-                            <input type="text" id="t-anouncement-form-head" class="form-control m-1" placeholder="Заголовок...">
-                            <select type="text" id="t-anouncement-form-type" class="form-control m-1" placeholder="Тема..">
+                            <input type="text" id="anouncement-form-head" class="form-control m-1" placeholder="Заголовок...">
+                            <select type="text" id="anouncement-form-type" class="form-control m-1" placeholder="Тема..">
                                 <option value="" hidden>Тема...</option>
                             {{#each ../announcement_type}}
                                 <option value="{{announcement_type_id}}">{{announcement_type_name}}</option>
                             {{/each}}
                             </select>
-                            <input type="file" id="t-anouncement-form-file" class="form-control-file m-1 text-light" accept=".rar,.zip,.doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.png,.jpg,.jpeg" >
+                            <input type="file" id="anouncement-form-file" class="form-control-file m-1 text-light" accept=".rar,.zip,.doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.png,.jpg,.jpeg" >
                         </div>
                         <div class="w-100 row align-content-center justify-content-center">
-                            <textarea class="w-100" id="t-anouncement-form-text"></textarea>
-                            <button class="w-100 t-announcement-form-button btn" id="t-anouncement-form-sumbit">+</button>
+                            <textarea class="w-100" id="anouncement-form-text"></textarea>
+                            <button class="w-100 announcement-form-button btn">+</button>
                         </div>
                     </form>
                 {{/equal}}

@@ -6,20 +6,24 @@ const app=express();
 const fs=require("fs");
 const formidable=require("formidable");
 //Настройка дерикторий
-app.use(express.static("./public"));
+app.use(express.static(__dirname+"/public"));
 app.set('views',["./pages",`./pages/teacher`,`./pages/student`,`./pages/head`,`./pages/admin`]);
 //Модуль BodyParser
 const bodyParser=require('body-parser');
 const urlencodedParser = bodyParser.urlencoded({extended:false});
 //Модуль Express-Сессия
-const session=require('express-session');
-app.use(session({
+const session=require('express-session')({
     secret:'SupaPassword',
     proxy:true,
     resave:true,
     saveUninitialized:true,
     cookie:{maxAge: 86000*60*60*60}
-}));
+});
+var sharedsession=require("express-socket.io-session");
+app.use(session);
+//Сервер
+const http=require("http");
+const server=http.createServer(app);
 //Модуль Crypto-js
 const crypto=require('crypto');
 //Шифрование данных
@@ -218,12 +222,12 @@ class ServerUser{
     getUserGroup(){
         return this.user_group[0].group_id;
     }
-    getUserGroupsInString(){
+    async getUserGroupsInString(){
         let string="";
         this.user_group.forEach(el=>{
-            string+=`'${el}',`;
+            string+=`'${el.group_id}',`;
         });
-        string.slice(0,-1);
+        string=string.slice(0,-1);
         return string;
     }
     getUserOptions(){
@@ -356,7 +360,6 @@ async function interfaceSplitter(req,res,next){
 }
 //Middleware: Проверка доступа
 async function isAccsessable(req,res,next){
-
     let result;
     let accsessData=req.url.slice(1).split("/");
     try{
@@ -369,19 +372,29 @@ async function isAccsessable(req,res,next){
                                                                         FROM deductions \
                                                                         WHERE deductions.student_id=students.student_id) LIMIT 1`);
                 }
-                if(accsessData[2]=="attendance"){
+                else if(accsessData[2]=="attendance"){
                     result=await createSelectQuery(`SELECT attendance_id
                     FROM attendance
                     WHERE attendance_id=${accsessData[3]} AND group_id=${serverUser[req.session.user].getUserGroup()}`);
                 }
-                if(accsessData[1]=="report"){
+                else if(accsessData[1]=="report"){
                     result=await createSelectQuery(`SELECT report_id
                     FROM reports
                     WHERE report_id=${accsessData[2]} AND group_id=${serverUser[req.session.user].getUserGroup()}`);
                 }
+                else{
+                    result=[]
+                }
                 break;
             case "h":
-                result=[];
+                if(accsessData[1]=="group"){
+                    result=await createSelectQuery(`SELECT group_id
+                    FROM groups
+                    WHERE ${accsessData[2]} IN (${await serverUser[req.session.user].getUserGroupsInString()})`);          
+                }
+                else{
+                    result=[];
+                }
                 break;
             case "s":
                 result=[];
@@ -399,7 +412,7 @@ async function isAccsessable(req,res,next){
 }
 //Конвейер обработки
 //Создание проверочных сессий
-app.use(async(req,res,next) =>{
+app.use(async(req,res,next)=>{
     let createRole='t';
     switch(createRole){
         case "t":
@@ -432,6 +445,7 @@ app.use(async(req,res,next) =>{
             req.session.user_options=await createSelectQuery(`SELECT *
             FROM options
             WHERE option_id=1`);
+            console.log(req.session.user_groups);
             serverUser[req.session.user]=new ServerUser();
             await identifyUser(serverUser[req.session.user],await decrypt(req.session.user),req.session.user_groups,req.session.user_options);
             break;
@@ -455,9 +469,65 @@ app.use(async(req,res,next)=>{
         res.cookie('sidebar',1);
     }
     if(req.url.search("/t/newreport")<0){
-        req.session.current_url=req.url;
+        req.session.current_url=await req.url;
     }
     next();
+});
+//Модуль Socket.IO
+const socketIO=require("socket.io");
+const io=socketIO(server);
+io.use(function(socket,next){
+    next();
+});
+io.use(sharedsession(session,{
+autoSave:true
+})); 
+io.on('connection',async(socket)=>{
+    let url=socket.handshake.session.current_url.slice(1).split("/");
+    switch(url[0]){
+        case "t":
+            if(url[1]=="announcements"){
+                socket.join(`AnnouncementsOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[1]=="chat"){
+                socket.join(`Room_ChatOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="individualwork"){
+                socket.join(`Room_IWOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="events"){
+                socket.join(`Room_EventsOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="attendance"){
+                socket.join(`Room_AttendanceOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="reports"){
+                socket.join(`Room_ReportsOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            break;
+        case "s":
+            console.log(url[1])
+            if(url[1]=="announcements"){
+                socket.join(`AnnouncementsOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[1]=="chat"){
+                socket.join(`Room_ChatOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="events"){
+                socket.join(`Room_EventsOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="reports"){
+                socket.join(`Room_ReportsOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            break;
+        case "h":
+            
+            break;
+    }
+    
+    socket.on('chatMessage',async(msg)=>{
+        io.to(`Room_ChatOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('chatMSG',{user:await serverUser[socket.handshake.session.user].getUserFullName(),date:await datenormalise("now","D/M/Y h:m:s"),msg:msg});
+    })
 });
 //Выход из состояния EMPTY-POST
 app.use(async(req,res,next)=>{
@@ -470,7 +540,7 @@ app.use(async(req,res,next)=>{
 })
 //Express 
 //Главная страница приложения(+)
-app.route('/welcomepage').get((req,res)=>{
+app.route('/welcomepage').get(async(req,res)=>{
     if(req.session.user){
         res.redirect("/");
     }
@@ -480,8 +550,8 @@ app.route('/welcomepage').get((req,res)=>{
 }).post(urlencodedParser, async(req,res)=>{
     try{
         let connect=connect_db();
-        let login=await encrypt(req.body.user_login.trim());
-        let password=await encypt(req.body.user_password.trim());
+        let login=req.body.user_login.trim();
+        let password=await encrypt(req.body.user_password.trim());
         connect.query(`SELECT a.user_id,user_role,user_sur_name,user_name,user_mid_name,user_photo,teacher_id,head_id,student_id,admin_id,user_sex
         FROM users a LEFT JOIN teachers b ON a.user_id=b.user_id
         LEFT JOIN students c ON a.user_id=c.user_id
@@ -539,13 +609,19 @@ app.route('/welcomepage').get((req,res)=>{
 //Общие страницы
 //Главная страница веб-приложения(+)
 app.get("/",isAuthenticated,async(req,res)=>{
-    console.log(await encrypt(JSON.stringify(req.session.user_groups)));
+    let list;
+    if(serverUser[req.session.user].getUserState()[3]=="h"){
+        list=await createSelectQuery(`SELECT a.group_id,b.spetiality_abbreviated
+        FROM groups a INNER JOIN spetialities b ON a.spetiality_id=b.spetiality_id
+        WHERE a.group_id IN (${await serverUser[req.session.user].getUserGroupsInString()}) AND a.group_end_education_date>NOW()`);
+    }
     res.render(`${serverUser[req.session.user].getUserState()[3]}_index`,{
         username:serverUser[req.session.user].getUserFullName(),
         role:serverUser[req.session.user].getUserState()[2], 
         options:serverUser[req.session.user].getUserOptions(),
         user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
+        group_list:list
     });
 });
 //Страница профиля пользователя(+)
@@ -707,6 +783,36 @@ app.route("/t/announcements").get(isAuthenticated,interfaceSplitter,async(req,re
             );`);
             res.end(file_path);
         });
+    }
+    catch(err){
+        console.log(err);
+        res.end("Error");
+    }
+});
+app.route("/t/chat").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    let chat=await createSelectQuery(`SELECT a.user_sur_name,a.user_name,a.user_mid_name,b.chat_date,b.chat_msg
+    FROM users a INNER JOIN group_chat b ON a.user_id=b.id_user
+    WHERE b.id_group=${serverUser[req.session.user].getUserGroup()}`);
+    res.render("t_chat",{
+        username:serverUser[req.session.user].getUserFullName(), 
+        role:serverUser[req.session.user].getUserState()[2],
+        options:serverUser[req.session.user].getUserOptions(),
+        user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
+        sidebar_d:req.cookies.sidebar,
+        chat:chat
+    });
+}).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
+    try{ 
+        console.log(req.body.msg);
+        let newMessage=await createIUDQuery(`INSERT INTO group_chat
+        VALUES(
+            null,
+            ${serverUser[req.session.user].getUserState()[1]},
+            ${serverUser[req.session.user].getUserGroup()},
+            NOW(),
+            '${req.body.msg}'
+        )`);
+        res.end("Succsess");
     }
     catch(err){
         console.log(err);
@@ -981,7 +1087,8 @@ app.route("/t/student/:id/absenteeismes").get(isAuthenticated,interfaceSplitter,
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
     SELECT *
     FROM attendance a INNER JOIN absenteeismes b on a.attendance_id=b.attendance_id
-    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};`);
+    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')}
+    ORDER BY attendance_date DESC;`);
     res.render("t_student_absenteeismes",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
@@ -1042,7 +1149,6 @@ app.route("/t/mygroup/events").get(isAuthenticated,interfaceSplitter,async(req,r
         else{
             let form=new formidable.IncomingForm();
             form.parse(req,async(err,fields,files)=>{
-                console.log(fields.event_id);
                 let savePath=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/events`,files.file,files.file.name,'rn');
                 let result=await createIUDQuery(`UPDATE events 
                 SET event_img='${savePath}'
@@ -1073,7 +1179,6 @@ app.route("/t/mygroup/individualwork").get(isAuthenticated,interfaceSplitter,asy
     SELECT a.student_id,user_sur_name,user_name,user_mid_name
     FROM students a INNER JOIN users b ON a.user_id=b.user_id
     WHERE group_id=${serverUser[req.session.user].getUserGroup()}`);
-    console.log(iw[1]);
     res.render("t_mygroupindividualwork",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
@@ -1369,9 +1474,9 @@ app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                         days=await daysInMonth(month,date.getFullYear());
                         break;
                 };
-                fields+="ID,Студент,";
-                select_query_part+="c.student_id,d.user_sur_name,d.user_name,d.user_mid_name,";
-                groupby_query_part+="c.student_id,d.user_sur_name,d.user_name,d.user_mid_name";
+                fields+="Студент,";
+                select_query_part+="d.user_sur_name,d.user_name,d.user_mid_name,";
+                groupby_query_part+="d.user_sur_name,d.user_name,d.user_mid_name ORDER BY d.user_sur_name";
                 let day;
                 console.log(days);
                 for (let i=1;i<=days;i++){
@@ -1438,9 +1543,7 @@ app.get("/t/mygroup/report/:id",isAuthenticated,interfaceSplitter,async(req,res)
     FROM reports
     WHERE report_id=${JSON.stringify(req.params.id)}`);
     let report_data=await createSelectQuery(report[0].report_query);
-    console.log(report[0].report_type)
     let fields=report[0].report_fields.split(',');
-    console.log(report_data);
     res.render("t_report_info",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
@@ -1730,6 +1833,13 @@ app.get("/s/announcements",isAuthenticated,interfaceSplitter,async(req,res)=>{
         options:serverUser[req.session.user].getUserOptions()
     });
 });
+app.get("/s/chat",isAuthenticated,interfaceSplitter,async(req,res)=>{
+    res.render("s_chat",{
+        username:serverUser[req.session.user].getUserFullName(), 
+        role:serverUser[req.session.user].getUserState()[2],
+        options:serverUser[req.session.user].getUserOptions()
+    });
+});
 //Страница мероприятий (-)
 app.get("/s/events",isAuthenticated,interfaceSplitter,async(req,res)=>{
     res.render("s_events",{
@@ -1857,7 +1967,7 @@ app.get("/logout",(req,res)=>{
     delete req.session.user_groups;
     delete req.session.user_options;
     res.redirect("/welcomepage");
-})
+});
 //Обработка ошибок
 //Ошибка доступа
 app.get("/accsesserror",async(req,res)=>{
@@ -1874,11 +1984,11 @@ app.use(async(req, res)=>{
     });
 });
 //Ошибка 500 - произошла непредвиенная ошибка в работе приложения
-app.use(async(error, req, res, next)=>{
+/*app.use(async(error, req, res, next)=>{
     res.status(500).render("error",{
         title:"Ошибка 500",
         status:500,
     });
-});
+});*/
 //Прослушивание порта
-app.listen(3000);
+server.listen(3000);

@@ -126,6 +126,22 @@ a{
         background-color: #3d2d978c;
         color: white;
     }
+     /*chat*/
+     #chat-block{
+        background-color: rgba(42, 42, 87, 0.904);
+    }
+    #msg-block{
+        background-color: rgb(217, 216, 252);
+    }
+    #chatform-block{
+        background-color: rgb(216, 216, 252);
+    }
+    .chatsubmbutton{
+        border: 1px solid rgba(16, 12, 68, 0.514);
+    }
+    .chatsubmbutton:hover{
+        background-color: rgba(16, 12, 68, 0.514);
+    }
     /*teacher*/
     /*t_announcements*/
     .open-form-button{
@@ -135,26 +151,26 @@ a{
     .open-form-button-selector:hover{
         border: dashed 3px #4c3d9e !important;
     }
-    .t-announcement-header{
+    .announcement-header{
         background-color: #ffffff44;
         box-shadow: 0px 0px 10px #4d3f9b;
     }
-    .t-announcement-info>div,.t-announcement-text{
+    .announcement-info>div,.announcement-text{
         box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
         background-color: #ffffff44;
     }
-    .t-announcement-download{
+    .announcement-download{
         box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
         background-color: #ffffff44;
     }
-    .t-announcement-download:hover{
+    .announcement-download:hover{
         color: white !important;
     }
-    .t-announcement-form{
+    .announcement-form{
         background-color: rgba(20, 16, 68, 0.514);
         box-shadow: #1f157a70 -2px -2px 50px;
     }
-    .t-announcement-form-button{
+    .announcement-form-button{
         background-color: rgba(16, 12, 68, 0.514);
         color: white;
     }
@@ -224,7 +240,7 @@ a{
     }
 }
 @media screen and (max-width:1200px){
-    .t-announcement-info>div{
+    .announcement-info>div{
         box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
         background-color: #ffffff44;
     }
