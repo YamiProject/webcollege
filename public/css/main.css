@@ -395,86 +395,85 @@ th,td{
         transform: scale(1.03);
         transition: all .2s ease-in-out;
     }
-    /*teacher*/
-    /*t_mainpage*/
-    .t-mainpage-links{
+    /*mainpage*/
+    .t-mainpage-links,.s-mainpage-links>div{
         min-height: 65vh;
     }
-    .t-mainpage-links>div{
+    .t-mainpage-links>div,.s-mainpage-links>div{
         min-height: 200px;
     }
-    .t-mainpage-links h2{
+    .t-mainpage-links h2,.s-mainpage-links h2{
         font-weight: 500;
         font-size: 16pt;
     }
-    /*t_announcements*/
-    .announcement-block{
+    /*announcements*/
+    .t-announcement-block,.s-announcement-block{
         padding-top: 20px;
         padding-bottom: 100px;
         width: 100%;
     }
-    .announcement-open-form-block{
+    .t-announcement-open-form-block{
         padding: 20px 0 40px 0;
     }
-    .announcement-open-form-block button{
+    .t-announcement-open-form-block button{
         width: 50%;
         height: 100px;
         border-radius: 25px !important;
     }
-    .announcement-block>article{
+    .t-announcement-block>article,.s-announcement-block>article{
         margin-bottom: 50px;
     }
-    .announcement-block>article:last-child{
+    .t-announcement-block>article:last-child,.s-announcement-block>article:last-child{
         margin-bottom: 0 !important;
     }
-    .announcement-header{
+    .t-announcement-header,.s-announcement-header{
         border-radius: 40px;
         padding: 5px;
     }
-    .announcement-info>div{
+    .t-announcement-info>div,.s-announcement-info>div{
         padding: 10px 0;
     }
-    .announcement-info>div:first-child{
+    .t-announcement-info>div:first-child,.s-announcement-info>div:first-child{
         border-bottom-left-radius: 25px;
     }
-    .announcement-info>div:last-child{
+    .t-announcement-info>div:last-child,.s-announcement-info>div:last-child{
         border-bottom-right-radius: 25px;
     }
-    .announcement-text{
+    .t-announcement-text,.s-announcement-text{
         margin-top: 10px;
         padding: 10px 0;
         border-radius: 40px;
         min-height: 300px;
     }
-    .announcement-text p{
+    .t-announcement-text p,.s-announcement-text p{
         overflow-y: initial;
         height: 100%;
     }
-    .announcement-text p::first-letter{
+    .t-announcement-text p::first-letter,.s-announcement-text p::first-letter{
         margin-left: 40px;
     }
-    .announcement-download{
+    .t-announcement-download,.s-announcement-download{
         border-radius: 10px;
         margin-top: 5px;
         padding: 10px;
     }
-    .announcement-form{
+    .t-announcement-form{
         position: fixed;
         bottom: 0;
         border-top-right-radius: 40px;
         border-top-left-radius: 40px;
         height: 150px;
     }
-    #anouncement-form-text{
+    #t-anouncement-form-text{
         border-radius: 10px 10px 0 0;
         height: 400px;
     }
-    .announcement-form-button{
+    .t-announcement-form-button{
         border-radius: 0 0 10px 10px !important;
         outline: none;
         color: white;
     }
-    /*t_mygroup*/
+    /*mygroup*/
     .t-my-group .t-student-block{
         height: 160px;
     }
@@ -489,7 +488,7 @@ th,td{
     #t-my-group-table{
         border: 1px solid rgba(0, 0, 0, 0.178);
     }
-    /*t_student*/
+    /*student*/
     .t-student-info{
         border-radius: 20px;
     }
@@ -512,16 +511,16 @@ th,td{
     .t-student-parent-block:last-of-type{
         margin-bottom: 50px;
     }
-    /*t_student_achievements*/
-    .t-st-achevements-open-form-block{
+    /*student_achievements*/
+    .t-st-achevements-open-form-block,.s-achevements-open-form-block{
         height: 350px;
         border-radius: 40px !important;
     }
-    .t-achevements-block{
+    .t-achevements-block,.s-achevements-block{
         display: flex;
         flex: row wrap;
     }
-    .t-achevements-block>div>div{
+    .t-achevements-block>div>div,.s-achevements-block>div>div{
         width: 250px;
     }
     .achievement-object img{
@@ -529,28 +528,28 @@ th,td{
         height: 300px;
         border-radius: 4px;
     }
-    #t-achievements-form-img-block{
+    #t-achievements-form-img-block,#s-achievements-form-img-block{
         height: 500px !important;
         padding: 5px;
         border-radius: 20px 20px 0 0;
         background-color: blueviolet;
         overflow-x: hidden;
     }
-    #t-achievements-form-img-block>img{
+    #t-achievements-form-img-block>img,#s-achievements-form-img-block>img{
         height: 480px;
         width: 70%;
         border-radius: 10px;
     }
-    .t-achievements-form-button{
+    .t-achievements-form-button,.s-achievements-form-button{
         border-radius: 0 0 10px 10px !important;
         outline: none;
         color: white;
     }
-    /*t_st_absenteeismes*/
+    /*absenteeismes*/
     .t-st-absentismeses-form label{
         font-size: 12pt !important;
     }
-    /*t_mygroupgallery*/
+    /*mygroupgallery*/
     .t-my-group-gallery-block{
         display: flex;
         flex: row wrap;
@@ -583,7 +582,7 @@ th,td{
         height: 100%;
         width: 100%;
     }
-    /*t_attendance*/
+    /*attendance*/
     .fixed-attendance-block{
         z-index: 0 !important;
         position: fixed;
@@ -592,7 +591,7 @@ th,td{
     #t-my-group-na-link,#t-my-group-re-link{
         height: 200px;
     }
-    /*t-new-attendance*/
+    /*new-attendance*/
     .t-na-st-block{
         height: 50px;
     }
@@ -602,7 +601,7 @@ th,td{
     #t-new-attendance-form-button{
         height: 100px;
     }
-    /*t-absensemes*/
+    /*absensemes*/
     .t-abs-student-block{
         height: 160px;
     }
@@ -614,20 +613,20 @@ th,td{
         height: 120px;
         width: 120px;
     }
-    /*t-events*/
-    #t-event-form-textarea{
+    /*events*/
+    #t-event-form-textarea,#s-event-form-textarea{
         height: 350px;
     }
-    .t-event-form-button{
+    .t-event-form-button,.s-event-form-button{
         border-radius: 0 0 10px 10px !important;
         outline: none;
     }
-    #t-event-img-block>img{
+    #t-event-img-block>img,#s-event-img-block>img{
         max-width: 80%;
         max-height: 300px;
         background-size: contain;
     }
-    /*t_reporst*/
+    /*reporst*/
     .fixed-reports-block{
         z-index: 0 !important;
         position: fixed;
@@ -636,7 +635,7 @@ th,td{
     #t-my-group-reports-link{
         height: 200px;
     }
-    /*t_report_info*/
+    /*report_info*/
     #report-info-table{
         border-collapse: collapse;
         margin: 0 50px;
@@ -656,11 +655,11 @@ th,td{
 }
 /*Tablet (several tags)*/
 @media screen and (max-width:1200px){
-    /*t_announcements*/
-    .announcement-info{
+    /*announcements*/
+    .t-announcement-info{
         margin-right: 1px;
     }
-    .announcement-info>div{
+    .t-announcement-info>div{
         padding: 20px 0;
         margin-top: 10px;
         border-radius: 25px !important;

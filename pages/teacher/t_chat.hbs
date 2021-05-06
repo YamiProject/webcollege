@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
     <meta name="description" content="Главная страница второго уровня приложения (куратор)."/>
-    <title>Главная страница</title>
+    <title>Чат</title>
     {{>linkscripts}}
     {{>styles}}
 
@@ -23,7 +23,7 @@
                             <h1 class="col-12 text-right">Чат</h1>
                         </div>
                         <div class="col-xl-8 m-1 col-12 row justify-content-center align-content-end align-items-end mt-n4 p-0 " id="chat-block">
-                            <div class="col-10 row m-4 p-0 justify-content-center" id="msg-block">
+                            <div class="col-10 m-4 p-0 justify-content-end" id="msg-block">
                                 {{#each chat}}
                                     <div class="col-11 mx-4 msg">
                                         <p>{{user_sur_name}} {{user_name}} {{user_mid_name}} [{{#datenormalise chat_date "D/M/Y h:m:s"}}{{/datenormalise}}]</p>
@@ -43,6 +43,5 @@
             </div>
         </div>
     </div>
-    <script src="/js/chatController.js"></script>
 </body>
 </html>

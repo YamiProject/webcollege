@@ -142,8 +142,7 @@ a{
     .chatsubmbutton:hover{
         background-color: rgba(16, 12, 68, 0.514);
     }
-    /*teacher*/
-    /*t_announcements*/
+    /*announcements*/
     .open-form-button{
         border: dashed 3px #4c3d9e62;
         color: #4c3d9e62;
@@ -151,26 +150,26 @@ a{
     .open-form-button-selector:hover{
         border: dashed 3px #4c3d9e !important;
     }
-    .announcement-header{
+    .t-announcement-header,.s-announcement-header{
         background-color: #ffffff44;
         box-shadow: 0px 0px 10px #4d3f9b;
     }
-    .announcement-info>div,.announcement-text{
+    .t-announcement-info>div,.t-announcement-text,.s-announcement-info>div,.s-announcement-text{
         box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
         background-color: #ffffff44;
     }
-    .announcement-download{
+    .t-announcement-download,.s-announcement-download{
         box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
         background-color: #ffffff44;
     }
-    .announcement-download:hover{
+    .t-announcement-download:hover,.s-announcement-download:hover{
         color: white !important;
     }
-    .announcement-form{
+    .t-announcement-form{
         background-color: rgba(20, 16, 68, 0.514);
         box-shadow: #1f157a70 -2px -2px 50px;
     }
-    .announcement-form-button{
+    .t-announcement-form-button{
         background-color: rgba(16, 12, 68, 0.514);
         color: white;
     }
@@ -190,14 +189,14 @@ a{
     .t-student-parent-block{
         border-top: 1px solid rgba(0, 0, 0, 0.493);
     }
-    /*t_st_achievements*/
-    #t-achievements-form-img-block{
+    /*achievements*/
+    #t-achievements-form-img-block,#s-achievements-form-img-block{
         background-color: #11094170;
     }
-    #t-achievements-form-file{
+    #t-achievements-form-file,#s-achievements-form-file{
         color: white;
     }
-    .t-achievements-form-button{
+    .t-achievements-form-button,.s-achievements-form-button{
         background-color: rgba(16, 12, 68, 0.514);
         color: white;
     }
@@ -240,7 +239,7 @@ a{
     }
 }
 @media screen and (max-width:1200px){
-    .announcement-info>div{
+    .t-announcement-info>div{
         box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
         background-color: #ffffff44;
     }

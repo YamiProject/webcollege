@@ -1,9 +1,52 @@
 import * as functions from "./functions.js";
 $(document).ready(function(){
-    var chatHistory=document.getElementById("msg-block");
-    if(chatHistory!==null){
-        chatHistory.scrollTop=chatHistory.scrollHeight;
+    if(window.location.href.indexOf("/s/chat")>0){
+        $("#msg-block").scrollTop(`${$("#msg-block")[0].scrollHeight}`);
     }
+    //Подгрузка
+    var load=true;
+    $(window).on('scroll',function(e){
+        e.preventDefault();
+        if($(this).scrollTop()>parseInt($("#t-announcement-block")[0].scrollHeight-500)){
+            if(load==true){
+                load=false;
+                if(window.location.href.indexOf("/t/announcements")>0){
+                    $.ajax({
+                            type:"POST",
+                            url:"/announcements_load",
+                            data:{
+                                count:$("#t-announcement-block>article").length
+                            },
+                            success: async function(data){
+                                await $("#t-announcement-block").append(data);
+                                load=true;
+                            }
+                    });
+                }
+            }
+        }
+    });
+    $("#msg-block").on('scroll',function(e){
+        e.preventDefault();
+        if($("#msg-block").scrollTop()==0){
+            if(load==true){
+                load=false;
+                let scrollHeight=$("#msg-block")[0].scrollHeight;
+                $.ajax({
+                    type:"POST",
+                    url:"/chat_load",
+                    data:{
+                        count:$("#msg-block>div").length
+                    },
+                    success: async function(data){
+                        await $("#msg-block").prepend(data);
+                        $("#msg-block").scrollTop($("#msg-block")[0].scrollHeight-scrollHeight);
+                        load=true;
+                    }
+            });
+            }
+        }
+    })
     const socket=io();
     //main_Page
     //Ссылки
@@ -24,72 +67,72 @@ $(document).ready(function(){
     });
     //announcements
     //Публикация объявлений (доделать)
-    socket.on('addAnnounce',(data)=>{
-        if(path==""){
-            $(".announcement-block").prepend(`
-            <article class="col-xl-8 col-11 row justify-content-center d-none">
+    socket.on('addNewAnnounce',(data)=>{
+        if(!data.path){
+            $("#t-announcement-block").prepend(`
+            <article class="col-xl-8 col-11 row justify-content-center d-none mt-1 mb-5">
                 <div class="col-xl-11 col-12 row justify-content-center">
                     <div class="col-12">
-                        <div class="col-12 announcement-header">
-                            <h2 class="col-12 text-center">${functions.escapeHTML($("#anouncement-form-head").val())}</h2>
+                        <div class="col-12 t-announcement-header">
+                            <h2 class="col-12 text-center">${data.head}</h2>
                         </div>
                     </div>
-                    <div class="col-xl-10 col-4 row announcement-info">
+                    <div class="col-xl-10 col-4 row t-announcement-info">
                         <div class="col-xl-4 col-12">
-                            <label class="col-12 text-center">${functions.dateNormalise($.now(),"D/M/Y h:m")}</label>
+                            <label class="col-12 text-center">${data.date}</label>
                         </div>
                         <div class="col-xl-8 col-12">
-                            <label class="col-12 text-center">${$("#anouncement-form-type").find('option:selected').text()}</label>
+                            <label class="col-12 text-center">${data.type}</label>
                         </div>
                     </div>
-                    <div class="col-xl-12 col-8 announcement-text">
-                        <p class="col">${functions.escapeHTML($("#anouncement-form-text").val())}</p>
+                    <div class="col-xl-12 col-8 t-announcement-text">
+                        <p class="col">${data.text}</p>
                     </div>
                 </div>  
             </article>`
             );
         }
         else{
-            $(".announcement-block").prepend(`
-            <article class="col-xl-8 col-11 row justify-content-center d-none">
+            $("#t-announcement-block").prepend(`
+            <article class="col-xl-8 col-11 row justify-content-center d-none mt-1 mb-5">
                 <div class="col-xl-11 col-12 row justify-content-center">
                     <div class="col-12">
-                        <div class="col-12 announcement-header">
-                            <h2 class="col-12 text-center">${functions.escapeHTML($("#anouncement-form-head").val())}</h2>
+                        <div class="col-12 t-announcement-header">
+                            <h2 class="col-12 text-center">${data.head}</h2>
                         </div>
                     </div>
-                    <div class="col-xl-10 col-4 row announcement-info">
+                    <div class="col-xl-10 col-4 row t-announcement-info">
                         <div class="col-xl-4 col-12">
-                            <label class="col-12 text-center">${functions.dateNormalise($.now(),"D/M/Y h:m")}</label>
+                            <label class="col-12 text-center">${data.date}</label>
                         </div>
                         <div class="col-xl-8 col-12">
-                            <label class="col-12 text-center">${$("#anouncement-form-type").find('option:selected').text()}</label>
+                            <label class="col-12 text-center">${data.type}</label>
                         </div>
                     </div>
-                    <div class="col-xl-12 col-8 announcement-text">
-                        <p class="col">${functions.escapeHTML($("#anouncement-form-text").val())}</p>
+                    <div class="col-xl-12 col-8 t-announcement-text">
+                        <p class="col">${data.text}</p>
                     </div>
                     <div class="col-12 row justify-content-end">
                         <div class="col-4 row justify-content-center">
-                            <a href="${path}" class="announcement-download col-12 text-center text-black-50" download>Вложение</a>
+                            <a href="${data.path}" class="t-announcement-download col-12 text-center text-black-50" download>Вложение</a>
                         </div>
                     </div>
                 </div>  
             </article>`
             );        
         }
-        $(".announcement-block .d-none").fadeOut().delay(1111).removeClass("d-none").fadeIn();
+        $("#t-announcement-block .d-none").fadeOut().delay(1111).removeClass("d-none").fadeIn();
     })
-    $(".announcement-form-button").on('click', async function(e){
+    $(".t-announcement-form-button").on('click', async function(e){
         e.preventDefault();
         if(functions.filledCheck($(this),[':input:text','textarea','select'])==true){
             let formData=new FormData();
-            await $.each($("#anouncement-form-file")[0].files,function(i,file){
+            await $.each($("#t-anouncement-form-file")[0].files,function(i,file){
                 formData.append('file', file);
             });
-            formData.append("head",functions.escapeHTML($("#anouncement-form-head").val()));
-            formData.append("type",functions.escapeHTML($("#anouncement-form-type").val()));
-            formData.append("text",functions.escapeHTML($("#anouncement-form-text").val()));
+            formData.append("head",functions.escapeHTML($("#t-anouncement-form-head").val()));
+            formData.append("type",functions.escapeHTML($("#t-anouncement-form-type").val()));
+            formData.append("text",functions.escapeHTML($("#t-anouncement-form-text").val()));
             await $.ajax({
                 type:"POST",
                 url:"/t/announcements",
@@ -97,13 +140,13 @@ $(document).ready(function(){
                 contentType: false,
                 processData: false,
                 success: async function(path){
-                    if($(".announcement-page").html().indexOf(`<h2 class="display-4 pt-5">Нет объявлений!</h2>`)>0){
-                        await $(".announcement-block").html("");
+                    if($(".t-announcement-page").html().indexOf(`<h2 class="display-4 pt-5">Нет объявлений!</h2>`)>0){
+                        await $(".t-announcement-block").html("");
                     }
                     socket.emit('newAnnounce',{
-                        head:functions.escapeHTML($("#anouncement-form-head").val()),
-                        type:functions.escapeHTML($("#anouncement-form-type").val()),
-                        text:functions.escapeHTML($("#anouncement-form-text").val()),
+                        head:functions.escapeHTML($("#t-anouncement-form-head").val()),
+                        type:functions.escapeHTML($("#t-anouncement-form-type").val()),
+                        text:functions.escapeHTML($("#t-anouncement-form-text").val()),
                         path:path
                     });
                 }
@@ -112,7 +155,7 @@ $(document).ready(function(){
         }
     });
     //chat
-    socket.on('chatMSG',(data)=>{
+    socket.on('addChatMSG',(data)=>{
         $("#chatmbox").val("");
         $("#msg-block").append(`<div class="col-11 mx-4 msg">
                                     <p>${data.user} [${data.date}]</p>
@@ -132,7 +175,7 @@ $(document).ready(function(){
                     msg:await functions.escapeHTML($("#chatmbox").val())
                 },
                 success: async function(){
-                    socket.emit('chatMessage',await functions.escapeHTML($("#chatmbox").val()));
+                    socket.emit('newChatMessage',await functions.escapeHTML($("#chatmbox").val()));
                 }
             });    
         }

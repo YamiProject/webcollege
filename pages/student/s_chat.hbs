@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
     <meta name="description" content="Главная страница второго уровня приложения (куратор)."/>
-    <title>Главная страница</title>
+    <title>Чат</title>
     {{>linkscripts}}
     {{>styles}}
+
 </head>
 <body>
     <div class="container-fluid h-100">
@@ -17,18 +18,23 @@
                 {{>applogo}}
                 <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
-                    <div class="col-12 justify-content-center align-items-start align-content-start row m-0 p-0 app-window mainpage">
-                        <div class="col-12 h-of h-auto">
+                    <div class="col-12 justify-content-center align-items-start align-content-start row m-0 p-0 app-window overflow-auto">
+                        <div class="col-12 h-of">
                             <h1 class="col-12 text-right">Чат</h1>
                         </div>
-                        <div class="col-12 row justify-content-center">
-                            <div class="col-10">
-
+                        <div class="col-xl-8 m-1 col-12 row justify-content-center align-content-end align-items-end mt-n4 p-0 " id="chat-block">
+                            <div class="col-10 m-4 p-0 justify-content-end" id="msg-block">
+                                {{#each chat}}
+                                    <div class="col-11 mx-4 msg">
+                                        <p>{{user_sur_name}} {{user_name}} {{user_mid_name}} [{{#datenormalise chat_date "D/M/Y h:m:s"}}{{/datenormalise}}]</p>
+                                        <p>{{chat_msg}}</p>
+                                    </div>
+                                {{/each}}
                             </div>
-                            <div class="col-10 row justify-content-center">
-                                <form class="col-10 row justify-content-center m-0 p-0" id="chatform">
-                                    <textarea id="chatmbox"></textarea>
-                                    <button class="chatsubmbutton"></button>
+                            <div class="col-10 m-4 row justify-content-center" id="chatform-block">
+                                <form class="col-12 row justify-content-around m-0 p-0" id="chatform">
+                                    <textarea id="chatmbox" class="form-control col-8 m-1"></textarea>
+                                    <button class="chatsubmbutton btn col-3 m-1">Отправить</button>
                                 </form>
                             </div>
                         </div>

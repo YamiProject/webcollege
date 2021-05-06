@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="author" content="Kostin Vladislav"/>
+    <meta name="description" content="Содержит форму отправки для ."/>
+    <title>Посещаемость</title>
+    {{>linkscripts}}
+    {{>styles}}
+</head>
+<body>
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            {{>sidebar}}
+            <div class="row h-100 main {{#equal sidebar_d 0}}main-full-screen{{else}}main-n-full-screen{{/equal}}">
+                {{>applogo}}
+                <div class="row justify-content-center col-12 mx-0 px-0 application">
+                    {{>header}}
+                    <div class="col-12 row justify-content-center align-items-start align-content-start row mx-0 px-0 app-window t-report-info">
+                        <div class="col-12 h-of row">
+                             {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">Отчёт: ID_{{report.report_id}}</h1> 
+                        </div>
+                        <div class="col-12">
+                            <h2 class="text-center h-section">{{#equal report.report_type "attendance"}}Посещаемость{{/equal}}{{#equal report.report_type "att-special"}}Посещаемость{{/equal}}{{#equal report.report_type "events"}}Мероприятия{{/equal}}{{#equal report.report_type "iw"}}Индивидуальная работа{{/equal}} [{{#nequal report.report_type "att-special"}}{{#datenormalise ../report.report_interval_date "D-M-Y"}}{{/datenormalise}}{{else}}{{#datenormalise ../report.report_interval_date "M-Y"}}{{/datenormalise}}{{/nequal}}/{{#datenormalise report.report_cr_date "D-M-Y"}}{{/datenormalise}}]</h2>
+                        </div>
+                        <div class="overflow-auto col-12 row pb-5 justify-content-start">
+                            <table class="col-10" id="report-info-table">
+                                <tr>
+                                    {{#each fields}}
+                                        <th>{{this}}</th>
+                                    {{/each}}
+                                    <th style="visibility: hidden;"></th>
+                                </tr>
+                                {{#each report_data}}
+                                    <tr>
+                                        <td>{{#math @index "+" 1}}{{/math}}</td>
+                                        {{#equal ../report.report_type "attendance"}}
+                                            {{#undefine ../student_id}}<td>{{../student_id}}</td>{{/undefine}}
+                                            {{#have ../../fields "Студент"}}<td>{{../user_sur_name}} {{../user_name}} {{../user_mid_name}}</td>{{/have}}
+                                            {{#undefine ../N}}<td>{{../N}}</td>{{/undefine}}
+                                            {{#undefine ../Z}}<td>{{../Z}}</td>{{/undefine}}
+                                            {{#undefine ../common}}<td>{{../common}}</td>{{/undefine}}
+                                            {{#undefine ../closed}}<td>{{../closed}}</td>{{/undefine}}
+                                            {{#undefine ../unclosed}}<td>{{../unclosed}}</td>{{/undefine}}
+                                        {{/equal}}
+                                        {{#equal ../report.report_type "events"}}
+                                            {{#undefine ../event_type_name}}<td>{{../event_type_name}}</td>{{/undefine}}
+                                            {{#undefine ../event_date}}<td>{{#datenormalise ../event_date "D-M-Y"}}{{/datenormalise}}</td>{{/undefine}}
+                                            {{#undefine ../compl}}<td>{{../compl}}</td>{{/undefine}}
+                                            {{#undefine ../future}}<td>{{../future}}</td>{{/undefine}}
+                                            {{#undefine ../comm}}<td>{{../comm}}</td>{{/undefine}}
+                                        {{/equal}}
+                                        {{#equal ../report.report_type "iw"}}
+                                            {{#undefine ../student_id}}<td>{{../student_id}}</td>{{/undefine}}
+                                            {{#have ../../fields "Студент"}}<td>{{../user_sur_name}} {{../user_name}} {{../user_mid_name}}</td>{{/have}}
+                                            {{#undefine ../soc}}<td>{{../soc}}</td>{{/undefine}}
+                                            {{#undefine ../psy}}<td>{{../psy}}</td>{{/undefine}}
+                                            {{#undefine ../rep}}<td>{{../rep}}</td>{{/undefine}}
+                                            {{#undefine ../cons}}<td>{{../cons}}</td>{{/undefine}}
+                                        {{/equal}}
+                                        {{#equal ../report.report_type "att-special"}}
+                                            {{#undefine ../student_id}}<td>{{../student_id}}</td>{{/undefine}}
+                                            {{#have ../../fields "Студент"}}<td>{{../user_sur_name}} {{../user_name}} {{../user_mid_name}}</td>{{/have}}
+                                            {{#undefine ../DAY01}}<td>{{../DAY01}}</td>{{/undefine}}
+                                            {{#undefine ../DAY02}}<td>{{../DAY02}}</td>{{/undefine}}
+                                            {{#undefine ../DAY03}}<td>{{../DAY03}}</td>{{/undefine}}
+                                            {{#undefine ../DAY04}}<td>{{../DAY04}}</td>{{/undefine}}
+                                            {{#undefine ../DAY05}}<td>{{../DAY05}}</td>{{/undefine}}
+                                            {{#undefine ../DAY06}}<td>{{../DAY06}}</td>{{/undefine}}
+                                            {{#undefine ../DAY07}}<td>{{../DAY07}}</td>{{/undefine}}
+                                            {{#undefine ../DAY08}}<td>{{../DAY08}}</td>{{/undefine}}
+                                            {{#undefine ../DAY09}}<td>{{../DAY09}}</td>{{/undefine}}
+                                            {{#undefine ../DAY10}}<td>{{../DAY10}}</td>{{/undefine}}
+                                            {{#undefine ../DAY11}}<td>{{../DAY11}}</td>{{/undefine}}
+                                            {{#undefine ../DAY12}}<td>{{../DAY12}}</td>{{/undefine}}
+                                            {{#undefine ../DAY13}}<td>{{../DAY13}}</td>{{/undefine}}
+                                            {{#undefine ../DAY14}}<td>{{../DAY14}}</td>{{/undefine}}
+                                            {{#undefine ../DAY15}}<td>{{../DAY15}}</td>{{/undefine}}
+                                            {{#undefine ../DAY16}}<td>{{../DAY16}}</td>{{/undefine}}
+                                            {{#undefine ../DAY17}}<td>{{../DAY17}}</td>{{/undefine}}
+                                            {{#undefine ../DAY18}}<td>{{../DAY18}}</td>{{/undefine}}
+                                            {{#undefine ../DAY19}}<td>{{../DAY19}}</td>{{/undefine}}
+                                            {{#undefine ../DAY20}}<td>{{../DAY20}}</td>{{/undefine}}
+                                            {{#undefine ../DAY21}}<td>{{../DAY21}}</td>{{/undefine}}
+                                            {{#undefine ../DAY22}}<td>{{../DAY22}}</td>{{/undefine}}
+                                            {{#undefine ../DAY23}}<td>{{../DAY23}}</td>{{/undefine}}
+                                            {{#undefine ../DAY24}}<td>{{../DAY24}}</td>{{/undefine}}
+                                            {{#undefine ../DAY25}}<td>{{../DAY25}}</td>{{/undefine}}
+                                            {{#undefine ../DAY26}}<td>{{../DAY26}}</td>{{/undefine}}
+                                            {{#undefine ../DAY27}}<td>{{../DAY27}}</td>{{/undefine}}
+                                            {{#undefine ../DAY28}}<td>{{../DAY28}}</td>{{/undefine}}
+                                            {{#undefine ../DAY29}}<td>{{../DAY29}}</td>{{/undefine}}
+                                            {{#undefine ../DAY30}}<td>{{../DAY30}}</td>{{/undefine}}
+                                            {{#undefine ../DAY31}}<td>{{../DAY31}}</td>{{/undefine}}
+                                        {{/equal}}
+                                    </tr>
+                                {{/each}}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+</body>
+</html>
