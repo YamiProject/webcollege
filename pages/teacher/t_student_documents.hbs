@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
-    <meta name="description" content="Содержит документы студента из группы куратора."/>
+    <meta name="description" content="Страница, содеражащая документы студента."/>
     <title>Документы: {{title}}</title>
     {{>linkscripts}}
     {{>styles}}
@@ -63,7 +63,7 @@
                                             <input type="text" class="form-control" name="{{document_name}}" value="{{document_number}}" id="t-oth-document-number" {{#equal document_name 'СНИЛС'}}maxlength="11"{{/equal}}{{#equal document_name 'ИНН'}}maxlength="10"{{/equal}}{{#equal document_name 'ПОЛИС'}}maxlength="10"{{/equal}}>
                                             <input type="file" class="form-control-file" name="{{document_name}}" id="t-oth-document-scan" accept=".png,.jpg">
                                             {{#notnull document_scan}}
-                                                <a href="{{#base64 document_scan}}{{/base64}}" download>Скан</a>
+                                                <a href="{{#base64 ../document_scan}}{{/base64}}" download>Скан</a>
                                             {{/notnull}}
                                         </div>
                                     {{/each}}

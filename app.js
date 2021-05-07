@@ -10,7 +10,7 @@ app.use(express.static(__dirname+"/public"));
 app.set('views',["./pages",`./pages/teacher`,`./pages/student`,`./pages/head`,`./pages/admin`]);
 //Модуль BodyParser
 const bodyParser=require('body-parser');
-const urlencodedParser = bodyParser.urlencoded({extended:false});
+const urlencodedParser=bodyParser.urlencoded({extended:false});
 //Модуль Express-Сессия
 const session=require('express-session')({
     secret:'SupaPassword',
@@ -164,6 +164,9 @@ hbs.registerHelper('notnull',(val,options)=>{
 });
 //Handlebars: Шифрование данных
 hbs.registerHelper('base64',(path)=>{
+    if(!path||path==''||path=='null'||path==null){
+        return null;
+    }
     let split=path.split(".");
     let format=split[split.length-1];
     let data;
@@ -218,10 +221,10 @@ hbs.registerHelper('datenormalise',(val,format)=>{
                 result+=date.getFullYear();
                 break;
             case("M"):
-                result+=date.getMonth()<10?"0"+date.getMonth():date.getMonth();
+                result+=date.getMonth()+1<10?"0"+(date.getMonth()+1):date.getMonth()+1;
                 break;
             case("D"):
-                result+=date.getUTCDay()+1<10?"0"+(date.getUTCDay()+1):date.getUTCDay()+1;
+                result+=date.getDate()<10?"0"+date.getDate():date.getDate();
                 break;
             case("h"):
                 result+=date.getHours()<10?"0"+date.getHours():date.getHours();
@@ -237,6 +240,7 @@ hbs.registerHelper('datenormalise',(val,format)=>{
                 break;
         }
     }
+    console.log(result);
     return result;
 });
 //HandleBars: Cравнение даты
@@ -440,7 +444,7 @@ async function datenormalise(val,format){
                 result+=date.getMonth()+1<10?"0"+(date.getMonth()+1):date.getMonth()+1;
                 break;
             case("D"):
-                result+=date.getUTCDate()<10?"0"+date.getUTCDate():date.getUTCDate();
+                result+=date.getDate()<10?"0"+date.getDate():date.getDate();
                 break;
             case("h"):
                 result+=date.getHours()<10?"0"+date.getHours():date.getHours();
@@ -505,6 +509,37 @@ async function base64(path){
     let buff=new Buffer(bitmap);
     let b64=buff.toString('base64');
     return `data:${data};base64,${b64}`;
+}
+async function decodeDocuments(docs){
+    let passport={};
+    for(const [varible,value] of Object.entries(docs[0][0])){
+        if(varible=="passport_id"||varible=="student_id"){
+            passport[varible]=value;
+        }
+        else{
+            passport[varible]=value!==null?await decrypt(value):null;
+        }
+    }
+    let document_info={};
+    let documents=[];
+    let count=0;
+    for (let i=0;i<docs[1].length;i++){
+        for(const [varible,value] of Object.entries(docs[1][i])){
+            if(varible=="document_id"||varible=="student_id"||varible=="document_name"){
+                document_info[varible]=value;
+            }
+            else{
+                document_info[varible]=value!==null?await decrypt(value):null;
+            }
+            count++;
+            if(count==5){
+                documents.push(document_info);
+                document_info={}
+            }
+        }
+        count=0;
+    }
+    return [passport,documents];
 }
 //Middleware функции
 //Middleware: Проверка на существование сессии
@@ -641,13 +676,13 @@ app.route('/welcomepage').get(async(req,res)=>{
     try{
         let connect=connect_db();
         let login=req.body.user_login.trim();
-        let password=await encrypt(req.body.user_password.trim());
-        connect.query(`SELECT a.user_id,user_role,user_sur_name,user_name,user_mid_name,user_photo,teacher_id,head_id,student_id,admin_id,user_sex
+        let password=await encrypt(req.body.user_password.trim().replace(/&quot;/g,"\""));
+        let password_raw=req.body.user_password.trim().replace(/&quot;/g,"\"");
+        connect.query(`SELECT a.user_id,user_role,user_sur_name,user_name,user_mid_name,user_photo,teacher_id,head_id,student_id,user_sex,user_password
         FROM users a LEFT JOIN teachers b ON a.user_id=b.user_id
         LEFT JOIN students c ON a.user_id=c.user_id
         LEFT JOIN heads d ON a.user_id=d.user_id
-        LEFT JOIN admins e ON a.user_id=e.user_id
-        WHERE user_login LIKE '${login}' AND user_password LIKE '${password}' LIMIT 1`, async(err,data)=>{
+        WHERE (user_login LIKE '${login}' AND user_password LIKE '${password}') OR (user_login LIKE '${login}' AND user_password LIKE '${password_raw}') LIMIT 1`, async(err,data)=>{
             if(err) throw err;
             if(data[0]){
                 let photo='null';
@@ -679,6 +714,10 @@ app.route('/welcomepage').get(async(req,res)=>{
                 WHERE option_id=${data[0].user_id}`);
                 serverUser[req.session.user]=new ServerUser();
                 await identifyUser(serverUser[req.session.user],await decrypt(req.session.user),req.session.user_groups,req.session.user_options);
+                if(data[0].user_password==password_raw){
+                    let q=await createIUDQuery(`UPDATE users SET user_password='${await encrypt(data[0].user_password)}'
+                    WHERE user_id=${data[0].user_id};`);
+                }
                 connect.end();
                 res.end("Success");
             }
@@ -715,7 +754,7 @@ app.get("/",isAuthenticated,async(req,res)=>{
 app.route("/profile").get(isAuthenticated,async(req,res)=>{
     let userData=await createSelectQuery(`SELECT *
     FROM users
-    WHERE user_id=${serverUser[req.session.user].getUserState()[0]} LIMIT 1;`);
+    WHERE user_id=${serverUser[req.session.user].getUserState()[1]} LIMIT 1;`);
     res.render("profile",{
         title:serverUser[req.session.user].getUserFullName(),
         username:serverUser[req.session.user].getUserFullName(), 
@@ -880,14 +919,14 @@ app.route("/t/chat").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
     let chat=await createSelectQuery(`SELECT a.user_sur_name,a.user_name,a.user_mid_name,b.chat_date,b.chat_msg
     FROM users a INNER JOIN group_chat b ON a.user_id=b.id_user
     WHERE b.id_group=${serverUser[req.session.user].getUserGroup()}
-    ORDER BY chat_date LIMIT 20;`);
+    ORDER BY chat_date DESC LIMIT 20;`);
     res.render("t_chat",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
         options:serverUser[req.session.user].getUserOptions(),
         user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
-        chat:chat
+        chat:chat.reverse()
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
     try{ 
@@ -939,7 +978,7 @@ app.get("/t/mygroup",isAuthenticated,interfaceSplitter,async(req,res)=>{
     });
 });
 //Страница студента(+)
-app.get("/t/student/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
+app.route("/t/student/:id").get(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     let student=await createSelectQuery(`SELECT *
     FROM students a INNER JOIN users b ON a.user_id=b.user_id
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
@@ -957,29 +996,42 @@ app.get("/t/student/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(r
         parents:student[1],
         user_name:`${student[0][0].user_sur_name} ${student[0][0].user_name} ${student[0][0].user_mid_name}`
     });
+}).post(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
+    try{
+        let nullification=await createIUDQuery(`UPDATE students SET student_headman=0
+        WHERE group_id=${serverUser[req.session.user].getUserGroup()}`);
+        let result=await createIUDQuery(`UPDATE students SET student_headman=1
+        WHERE group_id=${serverUser[req.session.user].getUserGroup()} AND student_id=${JSON.stringify(req.params.id)}`);
+        res.end("Success");
+    }
+    catch(err){
+        console.log(err);
+        res.end("Error");
+    }
 });
 //Страница документов студента(+)
 app.route("/t/student/:id/documents").get(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
-    let studentsDocumentary=await createSelectQuery(`SELECT *
+    let studentInfo=await createSelectQuery(`SELECT *
     FROM students a INNER JOIN users b ON a.user_id=b.user_id
-    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
-    SELECT *
+    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};`);
+    let studentsDocumentary=await createSelectQuery(`SELECT *
     FROM passports
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
     SELECT *
     FROM documents
     WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')}
     ORDER BY document_name DESC;`);
+    let documents=await decodeDocuments(studentsDocumentary);
     res.render("t_student_documents",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
         options:serverUser[req.session.user].getUserOptions(),
         user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
-        title:`${studentsDocumentary[0][0].user_sur_name} ${studentsDocumentary[0][0].user_name} ${studentsDocumentary[0][0].user_mid_name}`,
-        student_name:`${studentsDocumentary[0][0].user_sur_name} ${studentsDocumentary[0][0].user_name} ${studentsDocumentary[0][0].user_mid_name}`,
-        passport:studentsDocumentary[1][0],
-        documents:studentsDocumentary[2]
+        title:`${studentsDocumentary[0].user_sur_name} ${studentsDocumentary[0].user_name} ${studentsDocumentary[0].user_mid_name}`,
+        student_name:`${studentsDocumentary[0].user_sur_name} ${studentsDocumentary[0].user_name} ${studentsDocumentary[0].user_mid_name}`,
+        passport:documents[0],
+        documents:documents[1]
     });
 }).post(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     try{
@@ -1006,8 +1058,8 @@ app.route("/t/student/:id/documents").get(isAuthenticated,interfaceSplitter,isAc
                             }
                         }
                         result=await createIUDQuery(`UPDATE documents SET
-                        document_number='${field_val}',
-                        document_scan='${savePath}'
+                        document_number='${await encrypt(field_val)}',
+                        document_scan='${await encrypt(savePath)}'
                         WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'СНИЛС';`);
                         break;
                     case "ИНН":
@@ -1026,8 +1078,8 @@ app.route("/t/student/:id/documents").get(isAuthenticated,interfaceSplitter,isAc
                             }
                         }
                         result=await createIUDQuery(`UPDATE documents SET
-                        document_number='${field_val}',
-                        document_scan='${savePath}'
+                        document_number='${await encrypt(field_val)}',
+                        document_scan='${await encrypt(savePath)}'
                         WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'ИНН';`);
                         break;
                     case "ПОЛИС":
@@ -1046,8 +1098,8 @@ app.route("/t/student/:id/documents").get(isAuthenticated,interfaceSplitter,isAc
                             }
                         }
                         result=await createIUDQuery(`UPDATE documents SET
-                        document_number='${field_val}',
-                        document_scan='${savePath}'
+                        document_number='${await encrypt(field_val)}',
+                        document_scan='${await encrypt(savePath)}'
                         WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'ПОЛИС';`);
                         break;
                 }
@@ -1067,12 +1119,12 @@ app.route("/t/student/:id/documents").get(isAuthenticated,interfaceSplitter,isAc
                 }
             }
             result=await createIUDQuery(`UPDATE passports SET
-            passport_series=${fields.passport_sir},
-            passport_number=${fields.passport_num},
-            passport_data_of_issue='${fields.passport_date}',
-            passport_address='${fields.passport_lp}',
-            passport_issued_by='${fields.passport_by}',
-            passport_scan='${savePath}'
+            passport_series='${await encrypt(fields.passport_sir)}',
+            passport_number='${await encrypt(fields.passport_num)}',
+            passport_data_of_issue='${await encrypt(fields.passport_date)}',
+            passport_address='${await encrypt(fields.passport_lp)}',
+            passport_issued_by='${await encrypt(fields.passport_by)}',
+            passport_scan='${await encrypt(savePath)}'
             WHERE student_id=${JSON.stringify(req.params.id)};`);
             res.end("Succsess");
         });
@@ -1200,6 +1252,49 @@ app.route("/t/student/:id/absenteeismes").get(isAuthenticated,interfaceSplitter,
     catch(err){
         console.log(err);
         res.end("Error");
+    }
+});
+//Страница ИР со студентом(+)
+app.route("/t/student/:id/individualwork").get(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
+    let studentIW=await createSelectQuery(`SELECT *
+    FROM students a INNER JOIN users b ON a.user_id=b.user_id
+    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
+    SELECT * 
+    FROM individual_work_types;
+    SELECT c.student_id,user_sur_name,user_name,user_mid_name,iw_type_name,iw_reasone,iw_date
+    FROM individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id
+    LEFT JOIN students c ON a.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id
+    WHERE c.group_id=${serverUser[req.session.user].getUserGroup()} AND c.student_id=${JSON.stringify(req.params.id)}
+    ORDER BY iw_date DESC LIMIT 15;`);
+    console.log(studentIW[2]);
+    res.render("t_student_individualwork",{
+        username:serverUser[req.session.user].getUserFullName(), 
+        role:serverUser[req.session.user].getUserState()[2],
+        options:serverUser[req.session.user].getUserOptions(),
+        user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
+        sidebar_d:req.cookies.sidebar,
+        title:`${studentIW[0][0].user_sur_name} ${studentIW[0][0].user_name} ${studentIW[0][0].user_mid_name}`,
+        student_name:`${studentIW[0][0].user_sur_name} ${studentIW[0][0].user_name} ${studentIW[0][0].user_mid_name}`,
+        iw:studentIW[2],
+        iw_type:studentIW[1],
+        form:'t-st-iw'
+    });
+}).post(isAuthenticated,interfaceSplitter,isAccsessable,urlencodedParser,async(req,res)=>{
+    try{
+        console.log(req.body);
+        let result=await createIUDQuery(`INSERT INTO individual_works
+        VALUES(
+            null,
+            ${req.body.iw_type},
+            ${JSON.stringify(req.params.id)},
+            '${req.body.iw_reasone}',
+            '${req.body.iw_date}'
+        );`);
+        res.end('');
+    }
+    catch(err){
+        console.log(err);
+        res.end('Error');
     }
 });
 //Страница мероприятий(+)
@@ -1565,7 +1660,6 @@ app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                 select_query_part+="d.user_sur_name,d.user_name,d.user_mid_name,";
                 groupby_query_part+="d.user_sur_name,d.user_name,d.user_mid_name ORDER BY d.user_sur_name";
                 let day;
-                console.log(days);
                 for (let i=1;i<=days;i++){
                     day=i<10?"0"+i:i;
                     fields+=`${day}.${month},`;
@@ -1796,7 +1890,7 @@ app.route("/t/mygroup/gallery").get(isAuthenticated,interfaceSplitter,async(req,
         res.end("Error");
     }
 });
-//Страницы студента (-)
+//Страницы студента (+)
 //Страница анонсов (+)
 app.get("/s/announcements",isAuthenticated,interfaceSplitter,async(req,res)=>{
     let announcements=await createSelectQuery(`SELECT *
@@ -1815,18 +1909,19 @@ app.get("/s/announcements",isAuthenticated,interfaceSplitter,async(req,res)=>{
 app.route("/s/chat").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
     let chat=await createSelectQuery(`SELECT a.user_sur_name,a.user_name,a.user_mid_name,b.chat_date,b.chat_msg
     FROM users a INNER JOIN group_chat b ON a.user_id=b.id_user
-    WHERE b.id_group=${serverUser[req.session.user].getUserGroup()}
-    ORDER BY chat_date LIMIT 20;`);
+    WHERE b.id_group=${serverUser[req.session.user].getUserGroup()} 
+    ORDER BY chat_date DESC LIMIT 20`);
     res.render("t_chat",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
         options:serverUser[req.session.user].getUserOptions(),
         user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
-        chat:chat
+        chat:chat.reverse()
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
-    try{ 
+    try{
+        console.log("Aaaaa"); 
         let newMessage=await createIUDQuery(`INSERT INTO group_chat
         VALUES(
             null,
@@ -1857,16 +1952,110 @@ app.get("/s/events",isAuthenticated,interfaceSplitter,async(req,res)=>{
         events:events
     });
 });
-//Страница дежурств (-)
+//Страница группы студента (+)
+app.get("/s/mygroup",isAuthenticated,interfaceSplitter,async(req,res)=>{
+    let group=await createSelectQuery(`SELECT student_id,user_sur_name,user_name,user_mid_name,user_photo,student_headman,user_sex
+    FROM students a INNER JOIN users b ON a.user_id=b.user_id
+    WHERE group_id=${serverUser[req.session.user].getUserGroup()} AND NOT EXISTS (SELECT student_id FROM deductions WHERE deductions.student_id=a.student_id)
+    ORDER BY user_sur_name;
+    SELECT *
+    FROM spetialities a INNER JOIN groups b ON a.spetiality_id=b.spetiality_id
+    INNER JOIN spetiality_professions c ON a.spetiality_profession_id=c.spetiality_profession_id
+    WHERE b.group_id=${serverUser[req.session.user].getUserGroup()} LIMIT 1;
+    SELECT q1.all, q2.educated, SUM(q1.all-q2.educated) 'deducted'
+    FROM (SELECT COUNT(a.student_id) 'all'
+            FROM students a
+            WHERE a.group_id=${serverUser[req.session.user].getUserGroup()}) q1,
+        (SELECT COUNT(b.student_id) 'educated'
+            FROM students b
+            WHERE b.group_id=${serverUser[req.session.user].getUserGroup()} AND NOT EXISTS(SELECT c.student_id
+                                            FROM deductions c
+                                            WHERE b.student_id=c.student_id)) q2;
+    SELECT user_sur_name,user_name,user_mid_name
+    FROM users a INNER JOIN teachers b ON a.user_id=b.user_id
+    INNER JOIN groups c ON b.teacher_id=c.group_id
+    WHERE group_id=${serverUser[req.session.user].getUserGroup()} LIMIT 1`);
+    res.render("s_mygroup",{
+        username:serverUser[req.session.user].getUserFullName(), 
+        role:serverUser[req.session.user].getUserState()[2],
+        options:serverUser[req.session.user].getUserOptions(),
+        user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
+        sidebar_d:req.cookies.sidebar,
+        title:group[1][0].spetiality_abbreviated,
+        groupInfo:group[1][0],
+        teacher:`${group[3][0].user_sur_name} ${group[3][0].user_name} ${group[3][0].user_mid_name}`,
+        groupStudentInfo:group[2][0],
+        studentsList:group[0]
+    });
+});
+//Страница дежурств (+)
 app.route("/s/duty").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    let duty=await createSelectQuery(`SELECT a.user_sur_name,a.user_name,a.user_mid_name,b.student_id
+    FROM users a INNER JOIN students b ON a.user_id=b.user_id
+    WHERE b.group_id=${serverUser[req.session.user].getUserGroup()}
+    ORDER BY a.user_sur_name;
+    SELECT a.ds_date, c.user_sur_name 'f_st_sn',c.user_name 'f_st_n',c.user_mid_name 'f_st_mn',e.user_sur_name 's_st_sn',e.user_name 's_st_n',e.user_mid_name 's_st_mn'
+    FROM duty_schedule a INNER JOIN students b ON a.first_student_id=b.student_id
+    INNER JOIN users c ON b.user_id=c.user_id
+    INNER JOIN students d ON a.second_student_id=d.student_id
+    INNER JOIN users e ON e.user_id=d.user_id
+    WHERE a.group_id=${serverUser[req.session.user].getUserGroup()}
+    ORDER BY a.ds_date DESC LIMIT 10;
+    SELECT a.ds_date, c.user_sur_name 'f_st_sn',c.user_name 'f_st_n',c.user_mid_name 'f_st_mn',e.user_sur_name 's_st_sn',e.user_name 's_st_n',e.user_mid_name 's_st_mn'
+    FROM duty_schedule a INNER JOIN students b ON a.first_student_id=b.student_id
+    INNER JOIN users c ON b.user_id=c.user_id
+    INNER JOIN students d ON a.second_student_id=d.student_id
+    INNER JOIN users e ON e.user_id=d.user_id
+    WHERE a.group_id=${serverUser[req.session.user].getUserGroup()} AND a.ds_date=CURDATE() LIMIT 1;
+    SELECT student_headman
+    FROM students
+    WHERE student_id=${serverUser[req.session.user].getUserState()[0]} LIMIT 1`);
     res.render("s_duty",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
         options:serverUser[req.session.user].getUserOptions(),
         user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
-        events:events
+        students_list:duty[0],
+        duty_list:duty[1],
+        duty_today:duty[2],
+        headman:duty[3][0]
     });
+}).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
+    try{
+        let checkAccsess=await createSelectQuery(`SELECT student_id
+        FROM students 
+        WHERE student_id=${req.body.f_student} OR student_id=${req.body.s_student}`);
+        if(checkAccsess.length==2){
+            let check=await createSelectQuery(`SELECT *
+            FROM duty_schedule
+            WHERE group_id=${serverUser[req.session.user].getUserGroup()} and ds_date=CURDATE()`);
+            if(check[0]){
+                let res= await createIUDQuery(`UPDATE duty_schedule SET 
+                first_student_id=${req.body.f_student},
+                second_student_id=${req.body.s_student}
+                WHERE group_id=${serverUser[req.session.user].getUserGroup()} and ds_date=CURDATE()`);
+            }
+            else{
+                let res=await createIUDQuery(`INSERT INTO duty_schedule 
+                VALUES(
+                    null,
+                    NOW(),
+                    ${req.body.f_student},
+                    ${req.body.s_student},
+                    ${serverUser[req.session.user].getUserGroup()}
+                )`);
+            }
+            res.end("Success");
+        }
+        else{
+            res.end("Hacking attempt!")
+        }
+    }
+    catch(err){
+        console.log(err);
+        res.end("Error");
+    }
 });
 //Страница достижений (+)
 app.route("/s/achievements").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
@@ -1883,10 +2072,8 @@ app.route("/s/achievements").get(isAuthenticated,interfaceSplitter,async(req,res
         achievements:studentAchievments
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
-    console.log("here");
     try{
         let form = new formidable.IncomingForm();
-        console.log("Aaaa");
         form.parse(req,async(err, fields, files)=>{
             let file_name=files.file.name;
             let file_path=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/${serverUser[req.session.user].getUserState()[0]}/achievements`,files.file,file_name,'rn');
@@ -1905,14 +2092,11 @@ app.route("/s/achievements").get(isAuthenticated,interfaceSplitter,async(req,res
         res.end("Error");
     }
 });
-//Страница посещаемости (-)
+//Страница посещаемости (+)
 app.route("/s/absenteeismes").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
     let studentAbsenteeismes=await createSelectQuery(`SELECT *
-    FROM students a INNER JOIN users b ON a.user_id=b.user_id
-    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
-    SELECT *
     FROM attendance a INNER JOIN absenteeismes b on a.attendance_id=b.attendance_id
-    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')}
+    WHERE student_id=${serverUser[req.session.user].getUserState()[0]}
     ORDER BY attendance_date DESC;`);
     res.render("s_absenteeismes",{
         username:serverUser[req.session.user].getUserFullName(), 
@@ -1920,19 +2104,17 @@ app.route("/s/absenteeismes").get(isAuthenticated,interfaceSplitter,async(req,re
         options:serverUser[req.session.user].getUserOptions(),
         user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
-        title:`${studentAbsenteeismes[0][0].user_sur_name} ${studentAbsenteeismes[0][0].user_name} ${studentAbsenteeismes[0][0].user_mid_name}`,
-        student_name:`${studentAbsenteeismes[0][0].user_sur_name} ${studentAbsenteeismes[0][0].user_name} ${studentAbsenteeismes[0][0].user_mid_name}`,
-        absentismeses: studentAbsenteeismes[1]
+        absentismeses: studentAbsenteeismes
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
     try{
         let form=new formidable.IncomingForm();
         form.parse(req,async(err,fields,files)=>{
             let file_name=files.file.name;
-            let file_path=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/absentismeses`,files.file,file_name,'rn');
+            let file_path=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/${serverUser[req.session.user].getUserState()[0]}/absentismeses`,files.file,file_name,'rn');
             let result=await createIUDQuery(`UPDATE absenteeismes SET absenteeismes_file='${file_path}'
             WHERE absenteeismes_id=${fields.id}`);
-            res.end('');
+            res.end(file_path);
         });
     }
     catch(err){
@@ -1940,28 +2122,24 @@ app.route("/s/absenteeismes").get(isAuthenticated,interfaceSplitter,async(req,re
         res.end("Error");
     }
 });
-//Страница документов (-)
+//Страница документов (+)
 app.route("/s/documents").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
     let studentsDocumentary=await createSelectQuery(`SELECT *
-    FROM students a INNER JOIN users b ON a.user_id=b.user_id
-    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
-    SELECT *
     FROM passports
-    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')};
-    SELECT *
+    WHERE student_id=${serverUser[req.session.user].getUserState()[0]};
+    SELECT document_id,student_id,document_name,document_number,document_scan
     FROM documents
-    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/gi,'')}
+    WHERE student_id=${serverUser[req.session.user].getUserState()[0]}
     ORDER BY document_name DESC;`);
-    res.render("t_documents",{
-        username:serverUser[req.session.user].getUserFullName(), 
-        role:serverUser[req.session.user].getUserState()[2],
-        options:serverUser[req.session.user].getUserOptions(),
-        user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
-        sidebar_d:req.cookies.sidebar,
-        title:`${studentsDocumentary[0][0].user_sur_name} ${studentsDocumentary[0][0].user_name} ${studentsDocumentary[0][0].user_mid_name}`,
-        student_name:`${studentsDocumentary[0][0].user_sur_name} ${studentsDocumentary[0][0].user_name} ${studentsDocumentary[0][0].user_mid_name}`,
-        passport:studentsDocumentary[1][0],
-        documents:studentsDocumentary[2]
+    let documents=await decodeDocuments(studentsDocumentary);
+    res.render("s_documents",{
+    username:serverUser[req.session.user].getUserFullName(), 
+    role:serverUser[req.session.user].getUserState()[2],
+    options:serverUser[req.session.user].getUserOptions(),
+    user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
+    sidebar_d:req.cookies.sidebar,
+    passport:documents[0],
+    documents:documents[1]
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
     try{
@@ -1974,12 +2152,12 @@ app.route("/s/documents").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                 switch(field_name){
                     case "СНИЛС":
                         if(files[field_name+"_scan"]){
-                            savePath=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/documents`,files[field_name+"_scan"],'SNILS-scan.png','rw');
+                            savePath=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/${serverUser[req.session.user].getUserState()[0]}/documents`,files[field_name+"_scan"],'SNILS-scan.png','rw');
                         }
                         else{
                             file_exist=await createSelectQuery(`SELECT document_scan 
                             FROM documents 
-                            WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'СНИЛС' AND document_scan IS NOT NULL`);
+                            WHERE student_id=${serverUser[req.session.user].getUserState()[0]} AND document_name LIKE 'СНИЛС' AND document_scan IS NOT NULL`);
                             if(file_exist[0]){
                                 savePath=file_exist[0].document_scan;
                             }
@@ -1988,18 +2166,18 @@ app.route("/s/documents").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                             }
                         }
                         result=await createIUDQuery(`UPDATE documents SET
-                        document_number='${field_val}',
-                        document_scan='${savePath}'
-                        WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'СНИЛС';`);
+                        document_number='${await encrypt(field_val)}',
+                        document_scan='${await encrypt(savePath)}'
+                        WHERE student_id=${serverUser[req.session.user].getUserState()[0]} AND document_name LIKE 'СНИЛС';`);
                         break;
                     case "ИНН":
                         if(files[field_name+"_scan"]){
-                            savePath=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/documents`,files[field_name+"_scan"],'INN-scan.png','rw');
+                            savePath=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/${serverUser[req.session.user].getUserState()[0]}/documents`,files[field_name+"_scan"],'INN-scan.png','rw');
                         }
                         else{
                             file_exist=await createSelectQuery(`SELECT document_scan 
                             FROM documents 
-                            WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'ИНН' AND document_scan IS NOT NULL;`);
+                            WHERE student_id=${serverUser[req.session.user].getUserState()[0]} AND document_name LIKE 'ИНН' AND document_scan IS NOT NULL;`);
                             if(file_exist[0]){
                                 savePath=file_exist[0].document_scan;
                             }
@@ -2008,18 +2186,18 @@ app.route("/s/documents").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                             }
                         }
                         result=await createIUDQuery(`UPDATE documents SET
-                        document_number='${field_val}',
-                        document_scan='${savePath}'
-                        WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'ИНН';`);
+                        document_number='${await encrypt(field_val)}',
+                        document_scan='${await encrypt(savePath)}'
+                        WHERE student_id=${serverUser[req.session.user].getUserState()[0]} AND document_name LIKE 'ИНН';`);
                         break;
                     case "ПОЛИС":
                         if(files[field_name+"_scan"]){
-                            savePath=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/documents`,files[field_name+"_scan"],'POLIS-scan.png','rw');
+                            savePath=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/${serverUser[req.session.user].getUserState()[0]}/documents`,files[field_name+"_scan"],'POLIS-scan.png','rw');
                         }
                         else{
                             file_exist=await createSelectQuery(`SELECT document_scan 
                             FROM documents 
-                            WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'ПОЛИС' AND document_scan IS NOT NULL;`);
+                            WHERE student_id=${serverUser[req.session.user].getUserState()[0]} AND document_name LIKE 'ПОЛИС' AND document_scan IS NOT NULL;`);
                             if(file_exist[0]){
                                 savePath=file_exist[0].document_scan;
                             }
@@ -2028,19 +2206,19 @@ app.route("/s/documents").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                             }
                         }
                         result=await createIUDQuery(`UPDATE documents SET
-                        document_number='${field_val}',
-                        document_scan='${savePath}'
-                        WHERE student_id=${JSON.stringify(req.params.id)} AND document_name LIKE 'ПОЛИС';`);
+                        document_number='${await encrypt(field_val)}',
+                        document_scan='${await encrypt(savePath)}'
+                        WHERE student_id=${serverUser[req.session.user].getUserState()[0]} AND document_name LIKE 'ПОЛИС';`);
                         break;
                 }
             }
             if(files.passport_scan){
-                savePath=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/${JSON.stringify(req.params.id).replace(/\"/gi,'')}/documents`,files.passport_scan,'passport-scan.png','rw');
+                savePath=await fileUpload(`/public/files/${serverUser[req.session.user].getUserGroup()}/${serverUser[req.session.user].getUserState()[0]}/documents`,files.passport_scan,'passport-scan.png','rw');
             }
             else{
                 file_exist=await createSelectQuery(`SELECT passport_scan 
                 FROM passports 
-                WHERE student_id=${JSON.stringify(req.params.id)} AND passport_scan IS NOT NULL;`);
+                WHERE student_id=${serverUser[req.session.user].getUserState()[0]} AND passport_scan IS NOT NULL;`);
                 if(file_exist[0]){
                     savePath=file_exist[0].passport_scan;
                 }
@@ -2049,13 +2227,13 @@ app.route("/s/documents").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                 }
             }
             result=await createIUDQuery(`UPDATE passports SET
-            passport_series=${fields.passport_sir},
-            passport_number=${fields.passport_num},
-            passport_data_of_issue='${fields.passport_date}',
-            passport_address='${fields.passport_lp}',
-            passport_issued_by='${fields.passport_by}',
-            passport_scan='${savePath}'
-            WHERE student_id=${JSON.stringify(req.params.id)};`);
+            passport_series='${await encrypt(fields.passport_sir)}',
+            passport_number='${await encrypt(fields.passport_num)}',
+            passport_data_of_issue='${await encrypt(fields.passport_date)}',
+            passport_address='${await encrypt(fields.passport_lp)}',
+            passport_issued_by='${await encrypt(fields.passport_by)}',
+            passport_scan='${await encrypt(savePath)}'
+            WHERE student_id=${serverUser[req.session.user].getUserState()[0]};`);
             res.end("Succsess");
         });
     }
@@ -2064,24 +2242,13 @@ app.route("/s/documents").get(isAuthenticated,interfaceSplitter,async(req,res)=>
         res.end("Error");
     }
 });
-//Страница ДО/ДПО (-)
+//Страница ДО/ДПО (+)
 app.get("/s/additionaleducation",isAuthenticated,interfaceSplitter,async(req,res)=>{
-    let studentAdditionEducation=await createSelectQuery(`SELECT *
-    FROM students a INNER JOIN users b ON a.user_id=b.user_id
-    WHERE student_id=${JSON.stringify(req.params.id)};
-    SELECT *
+    let studentAdditionEducation=await createSelectQuery(`SELECT ae_name,ae_beg_date,ae_end_date,user_sur_name,user_name,user_mid_name
     FROM additional_educations a INNER JOIN courses b ON a.ae_id=b.ae_id
     INNER JOIN teachers c ON a.ae_lecturer_id=c.teacher_id
     INNER JOIN users d ON c.user_id=d.user_id
-    WHERE b.student_id=${JSON.stringify(req.params.id)}
-    ORDER BY ae_beg_date DESC;
-    SELECT a.ae_id,a.ae_name,user_sur_name,user_name,user_mid_name
-    FROM additional_educations a LEFT JOIN courses b ON a.ae_id=b.ae_id
-    INNER JOIN teachers c ON a.ae_lecturer_id=c.teacher_id
-    INNER JOIN users d ON c.user_id=d.user_id
-    WHERE ae_beg_date>NOW() AND a.ae_id NOT IN (SELECT ae_id
-                                              FROM courses
-                                              WHERE student_id=${JSON.stringify(req.params.id)})
+    WHERE b.student_id=${serverUser[req.session.user].getUserState()[0]}
     ORDER BY ae_beg_date DESC;`);
     res.render("s_additionaleducation",{
         username:serverUser[req.session.user].getUserFullName(), 
@@ -2089,30 +2256,39 @@ app.get("/s/additionaleducation",isAuthenticated,interfaceSplitter,async(req,res
         options:serverUser[req.session.user].getUserOptions(),
         user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
-        title:`${studentAdditionEducation[0][0].user_sur_name} ${studentAdditionEducation[0][0].user_name} ${studentAdditionEducation[0][0].user_mid_name}`,
-        student_name:`${studentAdditionEducation[0][0].user_sur_name} ${studentAdditionEducation[0][0].user_name} ${studentAdditionEducation[0][0].user_mid_name}`,
-        ae:studentAdditionEducation[1],
-        ae_form_values:studentAdditionEducation[2]
+        ae:studentAdditionEducation,
     });
 });
-//Страница индивидуальной работы (-)
+//Страница индивидуальной работы (+)
 app.get("/s/individualwork",isAuthenticated,interfaceSplitter,async(req,res)=>{
+    let individualWork=await createSelectQuery(`SELECT c.student_id,user_sur_name,user_name,user_mid_name,iw_type_name,iw_reasone,iw_date
+        FROM individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id
+        LEFT JOIN students c ON a.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id
+        WHERE c.student_id=${serverUser[req.session.user].getUserState()[0]}
+        ORDER BY iw_date DESC LIMIT 15;`);
     res.render("s_individualwork",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
         options:serverUser[req.session.user].getUserOptions(),
         user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
+        iw:individualWork
     });
 });
 //Страница галлереи (-)
-app.rote("/s/groupgallery").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
-    res.render("s_events",{
+app.route("/s/groupgallery").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
+    let gallery=await createSelectQuery(`SELECT gallery_id,gallery_img
+    FROM gallery
+    WHERE group_id=${serverUser[req.session.user].getUserGroup()}
+    ORDER BY gallery_id DESC;`);
+    res.render("s_gallery",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
         options:serverUser[req.session.user].getUserOptions(),
         user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
         sidebar_d:req.cookies.sidebar,
+        gallery:gallery,
+        form:"s-gallery"
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
     try{
@@ -2340,7 +2516,7 @@ app.post("/chat_load",isAuthenticated,urlencodedParser,async(req,res)=>{
         WHERE b.id_group=${serverUser[req.session.user].getUserGroup()}
         ORDER BY chat_date DESC LIMIT ${req.body.count},20;`);
         data="";
-        await chatLoad.forEach(async(el)=>{
+        await chatLoad.reverse().forEach(async(el)=>{
             let date=await datenormalise(el.chat_date,"D/M/Y h:m");
             data+=`<div class="col-11 mx-4 msg">
                     <p>${el.user_sur_name} ${el.user_name} ${el.user_mid_name} [${date}]</p>

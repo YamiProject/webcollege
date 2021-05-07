@@ -25,7 +25,7 @@
                                     <h2 class="h-section text-center col-xl-3 col-12">Аватар</h2>
                                 </div>
                                 <div class="col-12 row justify-content-center">
-                                    <img src="{{#base64 (imgnotnull userData.user_photo userData.user_sex)}}{{/base64}}" alt="profile-avatar" id="t-profile-img">
+                                    <img src="{{#base64 (imgnotnull userData.user_photo userData.user_sex)}}{{/base64}}" alt="profile-avatar" class="rounded-circle" id="t-profile-img">
                                 </div>
                                 <div class="col-12 row justify-content-center">
                                     <input type="file" id="profile-form-img" disabled onchange="document.getElementById('t-profile-img').src = window.URL.createObjectURL(this.files[0])">

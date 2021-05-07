@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Kostin Vladislav">
-    <meta name="description" content="Содержит библиотеку картинок со всех мероприятий группы куратора.">
+    <meta name="description" content="Страница, содеражащая галерею веб-приложения.">
     <title>Галерея</title>
     {{>linkscripts}}
     {{>styles}}
@@ -23,7 +23,9 @@
                                 <h1 class="col-12 text-right">Галерея</h1>
                             </div>
                             <div class="col-12 row justify-content-center align-content-center align-items-center" id="t-my-group-gallery-carousel-block">
-                                <img src="{{#base64 gallery.[0].gallery_img}}{{/base64}}" alt="IMG" id="t-my-group-gallery-show-img">
+                                {{#undefine gallery.[0].gallery_img}}    
+                                    <img src="{{#base64 ../gallery.[0].gallery_img}}{{/base64}}" alt="IMG" id="t-my-group-gallery-show-img">
+                                {{/undefine}}
                             </div>
                             <div class="col-12 row justify-content-start m-5">
                                 <div class="col-9 row justify-content-start">

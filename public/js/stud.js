@@ -155,4 +155,155 @@ $(document).ready(function(){
             });
         }
     });
+    //absentismeses
+    $("#s-absentismeses-form-button").on('click',async function(e){
+        e.preventDefault();
+        if(functions.filledCheck($(this),["input:file"])==true){
+            let formData=new FormData();
+            await $.each($("#s-st-absentismeses-form-file")[0].files,function(i,file){
+                formData.append('file',file);
+            });
+            formData.append("id",$(this).closest("form").attr("id").match(/\d+/));
+            $.ajax({
+                type:"POST",
+                url:"/s/absenteeismes",
+                data:formData,
+                contentType:false,
+                processData:false,
+                success: function(){
+                    window.location.reload();
+                }
+            })
+        }
+    });
+    //documents
+    $("#s-st-pas-form-sir,#s-st-pas-form-num,#s-oth-document-number").on('keypress keyup keydown',function(){
+        if($(this).val().search(/\D/gi)>=0){
+            $(this).val($(this).val().slice(0,-1));
+        }
+    });
+    //Добавление данных документов
+    $("#s-doc-save").on('click',async function(e){
+        e.preventDefault();
+        let formData=new FormData();
+        let accs=true;
+        let accs_file=[];
+        await $.each($("form #s-oth-document-number"),function(){
+            if($(this).val().trim()!==''){
+                switch($(this).attr("name")){
+                    case "СНИЛС":
+                        if($(this).val().length==11){
+                            accs_file.push($(this).attr("name"));
+                            formData.append($(this).attr("name"),$(this).val());
+                        }
+                        else{
+                            accs=false;
+                            $(this).addClass("text-danger border-danger");
+                        }
+                        break;
+                    case "ИНН":
+                        if($(this).val().length==10){
+                            accs_file.push($(this).attr("name"));
+                            formData.append($(this).attr("name"),$(this).val());
+                        }
+                        else{
+                            accs=false;
+                            $(this).addClass("text-danger border-danger");
+                        }
+                        break;
+                    case "ПОЛИС":
+                        if($(this).val().length==10){
+                            accs_file.push($(this).attr("name"));
+                            formData.append($(this).attr("name"),$(this).val());
+                        }
+                        else{
+                            accs=false;
+                            $(this).addClass("text-danger border-danger");
+                        }
+                        break;
+                }
+            }
+        });
+        await $.each($("form #s-oth-document-scan"),function(){
+            if(accs_file.includes($(this).attr("name"))){
+                let scan_name=$(this).attr("name");
+                $.each($(this)[0].files,function(i,file){
+                   formData.append(scan_name+"_scan",file); 
+                });
+            }
+        });
+        let pasp=false;
+        let pasp_array={};
+        await $.each($("#s-pas-data-block input:text,#s-pas-data-block input[type='date']"),function(){
+            if($(this).val().trim()!==''){
+                pasp=true;
+                formData.append("passport_"+$(this).attr("id").replace("s-pas-form-",''),$(this).val());
+            }
+            else{
+                $(this).addClass("text-danger border-danger");
+                accs=false;
+            }
+        });
+        if(pasp==true){
+            await $.each($("#s-pas-form-scan")[0].files,function(i,file){
+                formData.append("passport_scan",file);
+            });
+        }
+        if(accs==true){
+            $.ajax({
+                type:"POST",
+                url:"/s/documents",
+                data:formData,
+                contentType:false,
+                processData:false,
+                success: function(){
+                    window.location.reload();
+                }
+            });
+        }
+    });
+    //duty
+    $(".s-duty-form-button").on('click',function(e){
+        e.preventDefault();
+        if(functions.filledCheck($(this),['select'])==true){
+            if($("#s-duty-f-s").val()!==$("#s-duty-s-s").val()){
+                $.ajax({
+                    type:"POST",
+                    url:"/s/duty",
+                    data:{
+                        f_student:functions.escapeHTML($("#s-duty-f-s").val()),
+                        s_student:functions.escapeHTML($("#s-duty-s-s").val())
+                    },
+                    success: function(){
+                        window.location.reload();
+                    }
+                })
+            }
+            else{
+                $("#s-duty-f-s, #s-duty-s-s").addClass("border-danger");
+            }
+        }
+    });
+    //gallery
+    $("#s-gallery-form-button").on('click',async function(){
+        if(functions.filledCheck($(this),['input'])==true){
+            let formData=new FormData();
+            await $.each($('#s-gallery-form-file')[0].files,function(i,file){
+                formData.append(file.name,file);
+            });
+            $.ajax({
+                type:"POST",
+                url:'/s/groupgallery',
+                data:formData,
+                contentType:false,
+                processData:false,
+                success:function(){
+                    window.location.reload();
+                }
+            });
+        }
+    });
+    $(".s-gallery-block img[id^=IMG_]").on('click',function(){
+        $("#s-gallery-show-img").attr("src",$(this).attr("src"));
+    });
 });

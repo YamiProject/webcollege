@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
-    <meta name="description" content="Страница студента из группы куратора."/>
+    <meta name="description" content="Страница, содеражащая информацию о студенте."/>
     <title>Студент: {{title}}</title>
     {{>linkscripts}}
     {{>styles}}
@@ -24,6 +24,13 @@
                         <div class="col-12 row align-content-center align-items-center justify-content-center m-0 py-3 student-profile">
                             <div class="col-xl-4 col-12 order-0 row justify-content-xl-end justify-content-center align-content-center m-xl-0 m-2">
                                 <div class="col-10 t-student-info row justify-content-center align-content-center stylise-block-static py-3">
+                                    <div class="col-12 row justify-content-center">
+                                        {{#equal student.student_headman 1}}
+                                            <span>Староста группы</span>
+                                        {{else}}
+                                                <button class="btn stylise-block" id="t-st-makehead">Назначить старостой</button>
+                                        {{/equal}}
+                                    </div>
                                     <div class="col-12 row m-0 justify-content-center pb-3">
                                         <img class="p-2 shadow rounded-circle" src="{{#base64 (imgnotnull student.user_photo student.user_sex)}}{{/base64}}" alt="">
                                     </div>
@@ -31,6 +38,13 @@
                                         <span>Имя: {{user_name}}</span><br>
                                         <span>Телефон: {{student.user_number}}</span>
                                     </div>
+                                    {{#undefine student.date_of_enrollment}}
+                                        {{#notnull ../student.date_of_enrollment}}
+                                            <div class="col-12">
+                                                <span>Дата зачисления: {{../../student.date_of_enrollment}}</span>
+                                            </div>
+                                        {{/notnull}}
+                                    {{/undefine}}
                                     {{#each parents}}
                                         <div class="col-12 t-student-parent-block">
                                             <span>Роль: {{parent_role}}</span><br>
@@ -60,7 +74,12 @@
                                     <div class="col-12">
                                         <h2 class="text-center">Прогулы</h2>
                                     </div>
-                                </div> 
+                                </div>
+                                <div class="row align-items-center col-10 my-2 mx-3 stylise-block" id="t-st-ind-link-{{student.student_id}}">
+                                    <div class="col-12">
+                                        <h2 class="text-center">Индивидуальная работа</h2>
+                                    </div>
+                                </div>  
                             </div>
                         </div>
                     </div>

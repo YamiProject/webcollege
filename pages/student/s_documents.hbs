@@ -4,8 +4,8 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
-    <meta name="description" content="Содержит документы студента из группы куратора."/>
-    <title>Документы: {{title}}</title>
+    <meta name="description" content="Страница, содеражащая документы."/>
+    <title>Документы</title>
     {{>linkscripts}}
     {{>styles}}
 </head>
@@ -19,7 +19,7 @@
                     {{>header}}
                     <div class="col-12 justify-content-center align-items-start align-content-start row mx-0 px-0 app-window s-documents">
                         <div class="col-12 row justify-content-between h-of pb-5">
-                            {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">Документы: {{student_name}}</h1>
+                            {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">Документы</h1>
                         </div>
                         <div class="col-12 row justify-content-center align-items-start">
                             <form class="row col-12 justify-content-center m-0 p-0" id="s-docs-form">
@@ -39,7 +39,7 @@
                                                 <input class="form-control" type="text" value="{{passport.passport_issued_by}}" placeholder="Кем выдан..." id="s-pas-form-by"/>
                                             </div>
                                             <div class="col-12 p-1">
-                                                <input class="form-control" type="date" value="{{#datenormalise passport.passport_data_of_issue "Y-M-D"}}{{/datenormalise}}" placeholder="Дата выдачи:" id="t-st-pas-form-date"/>
+                                                <input class="form-control" type="date" value="{{#datenormalise passport.passport_data_of_issue "Y-M-D"}}{{/datenormalise}}" placeholder="Дата выдачи:" id="s-pas-form-date"/>
                                             </div>
                                             <div class="col-12 p-1">
                                                 <input class="form-control" type="text" value="{{passport.passport_address}}" placeholder="Место проживания..." id="s-pas-form-lp"/>
@@ -63,7 +63,7 @@
                                             <input type="text" class="form-control" name="{{document_name}}" value="{{document_number}}" id="s-oth-document-number" {{#equal document_name 'СНИЛС'}}maxlength="11"{{/equal}}{{#equal document_name 'ИНН'}}maxlength="10"{{/equal}}{{#equal document_name 'ПОЛИС'}}maxlength="10"{{/equal}}>
                                             <input type="file" class="form-control-file" name="{{document_name}}" id="s-oth-document-scan" accept=".png,.jpg">
                                             {{#notnull document_scan}}
-                                                <a href="{{#base64 document_scan}}{{/base64}}" download>Скан</a>
+                                                <a href="{{#base64 ../document_scan}}{{/base64}}" download>Скан</a>
                                             {{/notnull}}
                                         </div>
                                     {{/each}}

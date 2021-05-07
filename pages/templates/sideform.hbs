@@ -127,6 +127,33 @@
                         </div>
                     </form>
                 {{/equal}}
+                {{#equal form 't-st-iw'}}
+                    <div class="px-3 mb-n2">
+                        <h3 class="text-center">Назначить</h3>
+                    </div>
+                    <form class="row w-100 justify-content-center align-items-start align-content-start mx-0 px-3" id="s-st-iw-form">
+                        <div class="w-100">
+                            <label for="">Выберите тип работы:</label>
+                            <select class="form-control" id="t-st-iw-form-type">
+                                <option value="" disabled selected></option>
+                                {{#each ../iw_type}}
+                                    <option value="{{iw_type_id}}">{{iw_type_name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="w-100">
+                            <label for="">Выберите дату проведения работы:</label>
+                            <input type="date" class="form-control" id="t-st-iw-form-date">
+                        </div>
+                        <div class="w-100">
+                            <label for="">Опишите причину:</label>
+                            <textarea class="form-control" id="t-st-iw-form-reasone" cols="30" rows="10"></textarea>
+                        </div>
+                        <div class="w-100">
+                            <button class="btn w-100 t-st-iw-form-button">+</button>
+                        </div>
+                    </form>
+                {{/equal}}
                 {{#equal form 't-gallery'}}
                     <div class="px-3 mb-n2">
                         <h3 class="text-center">Загрузить</h3>
@@ -137,6 +164,19 @@
                         </div>
                         <div class="w-100">
                             <button class="btn w-100" id="t-gallery-form-button">+</button>
+                        </div>
+                    </form>
+                {{/equal}}
+                {{#equal form 's-gallery'}}
+                    <div class="px-3 mb-n2">
+                        <h3 class="text-center">Загрузить</h3>
+                    </div>
+                    <form class="row w-100 justify-content-center align-items-start align-content-start mx-0 px-3" id="s-gallery-form">
+                        <div class="w-100">
+                            <input type="file" class="form-control-file" id="s-gallery-form-file" multiple accept=".png,.jpg">
+                        </div>
+                        <div class="w-100">
+                            <button class="btn w-100" id="s-gallery-form-button">+</button>
                         </div>
                     </form>
                 {{/equal}}

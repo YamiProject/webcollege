@@ -1,6 +1,6 @@
 import * as functions from "./functions.js";
 $(document).ready(function(){
-    if(window.location.href.indexOf("/s/chat")>0){
+    if(window.location.href.indexOf("/t/chat")>0){
         $("#msg-block").scrollTop(`${$("#msg-block")[0].scrollHeight}`);
     }
     //Подгрузка
@@ -190,6 +190,16 @@ $(document).ready(function(){
         window.location.href=`/t/student/${$(this).attr("id")}`;
     });
     //student
+    $("#t-st-makehead").on('click',function(){
+        let url=window.location.href.match(/\/t\/student\/\d/i);
+        $.ajax({
+            type:"POST",
+            url:url,
+            success: function(){
+                window.location.reload();
+            }
+        })
+    });
     //Ссылки
     $(".t-student-sections>div[id^=t-st-dot-link]").on('click', function(){
         window.location.href=`/t/student/${$(this).attr("id").substr(-1)}/documents`;
@@ -203,13 +213,16 @@ $(document).ready(function(){
     $(".t-student-sections>div[id^=t-st-abs-link]").on('click', function(){
         window.location.href=`/t/student/${$(this).attr("id").substr(-1)}/absenteeismes`;
     });
+    $(".t-student-sections>div[id^=t-st-ind-link]").on('click', function(){
+        window.location.href=`/t/student/${$(this).attr("id").substr(-1)}/individualwork`;
+    });
     //documents
     $("#t-st-pas-form-sir,#t-st-pas-form-num,#t-oth-document-number").on('keypress keyup keydown',function(){
         if($(this).val().search(/\D/gi)>=0){
             $(this).val($(this).val().slice(0,-1));
         }
     });
-    //Добавление пасспортных данных
+    //Добавление данных документов
     $("#t-st-doc-save").on('click',async function(e){
         e.preventDefault();
         let formData=new FormData();
@@ -356,6 +369,24 @@ $(document).ready(function(){
                     window.location.reload();
                 }
             })
+        }
+    });
+    //st-iw
+    $(".t-st-iw-form-button").on('click',function(){
+        if(functions.filledCheck($(this),['select','input','textarea'])==true){
+            let url=window.location.href.match(/\/t\/student\/\d\/individualwork/i);
+            $.ajax({
+                type:"POST",
+                url:url,
+                data:{
+                    iw_type:functions.escapeHTML($("#t-st-iw-form-type").val()),
+                    iw_reasone:functions.escapeHTML($("#t-st-iw-form-reasone").val()),
+                    iw_date:functions.escapeHTML($("#t-st-iw-form-date").val())
+                },
+                success: function(){
+                    window.location.reload();
+                }
+            });
         }
     });
     //attendance
@@ -660,5 +691,5 @@ $(document).ready(function(){
     });
     $(".t-my-group-gallery-block img[id^=IMG_]").on('click',function(){
         $("#t-my-group-gallery-show-img").attr("src",$(this).attr("src"));
-    })
+    });
 });

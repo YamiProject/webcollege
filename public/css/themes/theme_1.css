@@ -173,7 +173,7 @@ a{
         background-color: rgba(16, 12, 68, 0.514);
         color: white;
     }
-    /*t_mygroup*/
+    /*mygroup*/
     #с-my-group-fast-form{
         background-color: rgba(16, 12, 68, 0.514);
         color: white;
@@ -182,7 +182,7 @@ a{
         background-color: rgba(34, 29, 104, 0.514);
         color: rgba(16, 12, 68, 0.514);
     }
-    /*t_student*/
+    /*student*/
     .t-student-info{
         box-shadow: #110941 2px 2px 10px;
     }
@@ -200,7 +200,7 @@ a{
         background-color: rgba(16, 12, 68, 0.514);
         color: white;
     }
-    /*t_event*/
+    /*event*/
     #t-event-form label{
         color:white !important;
     }
@@ -211,35 +211,44 @@ a{
     .t-event-form-button{
         color: white;
     }
-    /*t_iw*/
-    #t-iw-form label{
+    /*iw*/
+    #t-iw-form label,#t-st-iw-form label{
         color:white !important;
     }
-    .t-iw-form-button{
-        background-color: rgba(144, 138, 226, 0.514) !important;
+    .t-iw-form-button,.t-st-iw-form-button{
+        background-color: rgba(144, 138, 226, 0.514);
         color: white;
     }
-    .t-iw-form-button{
+    .t-iw-form-button:hover,.t-st-iw-form-button:hover{
+        background-color: rgba(16, 12, 68, 0.514);
         color: white;
     }
-    /*t_report_info*/
+    /*report_info*/
     #report-info-table td{
         border: 1px solid black;
     }
     #report-info-table tr:first-of-type th{
         border: 1px solid black;
     }
-    /*t_gallery*/
-    #t-gallery-form-file{
+    /*gallery*/
+    #t-gallery-form-file,#s-gallery-form-file{
         color: white;
     }
-    #t-gallery-form-button{
+    #t-gallery-form-button,#s-gallery-form-button{
+        background-color: rgba(144, 138, 226, 0.514);
+        color: white;
+    }
+    #t-gallery-form-button:hover,#s-gallery-form-button:hover{
         background-color: rgba(16, 12, 68, 0.514);
         color: white;
     }
 }
 @media screen and (max-width:1200px){
     .t-announcement-info>div{
+        box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
+        background-color: #ffffff44;
+    }
+    .s-announcement-info>div{
         box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
         background-color: #ffffff44;
     }

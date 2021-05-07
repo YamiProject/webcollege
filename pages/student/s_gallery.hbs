@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Kostin Vladislav">
-    <meta name="description" content="Содержит библиотеку картинок со всех мероприятий группы куратора.">
+    <meta name="description" content="Страница, содеражащая галерею веб-приложения.">
     <title>Галерея</title>
     {{>linkscripts}}
     {{>styles}}
@@ -17,17 +17,19 @@
                 {{>applogo}}
                 <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
-                    <div class="col-12 justify-content-start align-items-start align-content-start row mx-0 px-0 app-window s-my-group-gallery">
+                    <div class="col-12 justify-content-start align-items-start align-content-start row mx-0 px-0 app-window s-gallery">
                         <div class="m-0 block-to-slide">
                             <div class="col-12 h-of">
                                 <h1 class="col-12 text-right">Галерея</h1>
                             </div>
-                            <div class="col-12 row justify-content-center align-content-center align-items-center" id="s-my-group-gallery-carousel-block">
-                                <img src="{{#base64 gallery.[0].gallery_img}}{{/base64}}" alt="IMG" id="s-my-group-gallery-show-img">
-                            </div>
+                                <div class="col-12 row justify-content-center align-content-center align-items-center" id="s-gallery-carousel-block">
+                                {{#undefine gallery.[0].gallery_img}}    
+                                    <img src="{{#base64 ../gallery.[0].gallery_img}}{{/base64}}" alt="IMG" id="s-gallery-show-img">
+                                {{/undefine}}
+                                </div>
                             <div class="col-12 row justify-content-start m-5">
                                 <div class="col-9 row justify-content-start">
-                                    <div class="col-12 row justify-content-start align-items-start align-content-start s-my-group-gallery-block">
+                                    <div class="col-12 row justify-content-start align-items-start align-content-start s-gallery-block">
                                         <div class="row m-2">
                                             <button class="btn open-form-button open-form-button-selector col-12">+</button>
                                         </div>
@@ -36,9 +38,6 @@
                                                 <img src="{{#base64 gallery_img}}{{/base64}}" alt="IMG_{{gallery_id}}" id="IMG_{{gallery_id}}"/>
                                             </div>
                                         {{else}}
-                                            <div class="row m-0 align-content-center justify-content-center">
-                                                <h2 class="text-center">Галерея пуста</h2>
-                                            </div>
                                         {{/each}}
                                     </div>
                                 </div>

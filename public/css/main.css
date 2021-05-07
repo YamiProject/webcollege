@@ -546,39 +546,39 @@ th,td{
         color: white;
     }
     /*absenteeismes*/
-    .t-st-absentismeses-form label{
+    .t-st-absentismeses-form label,.s-st-absentismeses-form label{
         font-size: 12pt !important;
     }
     /*mygroupgallery*/
-    .t-my-group-gallery-block{
+    .t-my-group-gallery-block,.s-gallery-block{
         display: flex;
         flex: row wrap;
         justify-content: flex-start;
     }
-    #t-my-group-gallery-carousel-block{
+    #t-my-group-gallery-carousel-block,#s-gallery-carousel-block{
         height: 400px;
     }
-    #t-my-group-gallery-carousel-block #t-my-group-gallery-show-img{
+    #t-my-group-gallery-carousel-block #t-my-group-gallery-show-img,#s-gallery-carousel-block #s-gallery-show-img{
         max-height: 400px !important;
         max-width: 600px !important;
         background-size: contain;
         padding: 10px;
     }
-    .t-my-group-gallery-block>div,.t-my-group-gallery-block img{
+    .t-my-group-gallery-block>div,.t-my-group-gallery-block img,.s-gallery-block>div,.s-gallery-block img{
         height: 80px !important;
         width: 80px;
         overflow: hidden;
         cursor: pointer;
     }
-    .t-my-group-gallery-block>div:hover{
+    .t-my-group-gallery-block>div:hover,.s-gallery-block>div:hover{
         transform: scale(1.1);
     }
-    .t-my-group-gallery-block img{
+    .t-my-group-gallery-block img,.s-gallery-block img{
         background-size: contain;
         width: 100%;
         height: 100%;
     }
-    .t-my-group-gallery-block button{
+    .t-my-group-gallery-block button,.s-gallery-block button{
         height: 100%;
         width: 100%;
     }
