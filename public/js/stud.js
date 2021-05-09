@@ -12,15 +12,17 @@ $(document).ready(function(){
                 load=false;
                 if(window.location.href.indexOf("/s/announcements")>0){
                     $.ajax({
-                            type:"POST",
-                            url:"/announcements_load",
-                            data:{
-                                count:$("#s-announcement-block>article").length
-                            },
-                            success: async function(data){
-                                await $("#s-announcement-block").append(data);
-                                load=true;
+                        type:"POST",
+                        url:"/announcements_load",
+                        data:{
+                            count:$("#s-announcement-block>article").length
+                        },
+                        success: async function(data){
+                            if(data!==""){
+                            await $("#s-announcement-block").append(data);
+                            load=true;
                             }
+                        }
                     });
                 }
             }

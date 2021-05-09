@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
-    <meta name="description" content="Содержит документы студента из группы куратора."/>
+    <meta name="description" content="Страница, содеражащая документы студента."/>
     <title>Документы: {{title}}</title>
     {{>linkscripts}}
     {{>styles}}
@@ -30,22 +30,19 @@
                                                 <hr>
                                             </div>
                                             <div class="col-xl-6 col-12 p-1">
-                                                <input class="form-control" maxlength="4" type="text" value="{{passport.passport_series}}" placeholder="Серия..." id="t-st-pas-form-sir"/>
+                                                <input class="form-control" maxlength="4" type="text" value="{{passport.passport_series}}" placeholder="Серия..."/>
                                             </div>
                                             <div class="col-xl-6 col-12 p-1">
-                                                <input class="form-control" maxlength="6" type="text" value="{{passport.passport_number}}" placeholder="Номер..." id="t-st-pas-form-num"/>
+                                                <input class="form-control" maxlength="6" type="text" value="{{passport.passport_number}}" placeholder="Номер..."/>
                                             </div>
                                             <div class="col-12 p-1">
-                                                <input class="form-control" type="text" value="{{passport.passport_issued_by}}" placeholder="Кем выдан..." id="t-st-pas-form-by"/>
+                                                <input class="form-control" type="text" value="{{passport.passport_issued_by}}" placeholder="Кем выдан..."/>
                                             </div>
                                             <div class="col-12 p-1">
-                                                <input class="form-control" type="date" value="{{#datenormalise passport.passport_data_of_issue "Y-M-D"}}{{/datenormalise}}" placeholder="Дата выдачи:" id="t-st-pas-form-date"/>
+                                                <input class="form-control" type="date" value="{{#datenormalise passport.passport_data_of_issue "Y-M-D"}}{{/datenormalise}}" placeholder="Дата выдачи:"/>
                                             </div>
                                             <div class="col-12 p-1">
-                                                <input class="form-control" type="text" value="{{passport.passport_address}}" placeholder="Место проживания..." id="t-st-pas-form-lp"/>
-                                            </div>
-                                            <div class="col-12 p-1">
-                                                <input class="form-control-file" type="file" id="t-st-pas-form-scan" accept=".png,.jpg"/>
+                                                <input class="form-control" type="text" value="{{passport.passport_address}}" placeholder="Место проживания..."/>
                                             </div>
                                                 {{#undefine passport.passport_scan}}
                                                     {{#notnull ../passport.passport_scan}}
@@ -58,18 +55,14 @@
                                 </div>
                                 <div class="col-xl-7 col-12 mt-xl-0 mt-4 row justify-content-end align-items-start align-content-start">
                                     {{#each documents}}
-                                        <div class="col-10 m-2 p-2 stylise-block-static" id="t-oth-document-block">
+                                        <div class="col-10 m-2 p-2 stylise-block-static" id="h-oth-document-block">
                                             <label for="">{{document_name}}</label>
-                                            <input type="text" class="form-control" name="{{document_name}}" value="{{document_number}}" id="t-oth-document-number" {{#equal document_name 'СНИЛС'}}maxlength="11"{{/equal}}{{#equal document_name 'ИНН'}}maxlength="10"{{/equal}}{{#equal document_name 'ПОЛИС'}}maxlength="10"{{/equal}}>
-                                            <input type="file" class="form-control-file" name="{{document_name}}" id="t-oth-document-scan" accept=".png,.jpg">
+                                            <input type="text" class="form-control" name="{{document_name}}" value="{{document_number}}"{{#equal document_name 'СНИЛС'}}maxlength="11"{{/equal}}{{#equal document_name 'ИНН'}}maxlength="10"{{/equal}}{{#equal document_name 'ПОЛИС'}}maxlength="10"{{/equal}}>
                                             {{#notnull document_scan}}
-                                                <a href="{{#base64 document_scan}}{{/base64}}" download>Скан</a>
+                                                <a href="{{#base64 ../document_scan}}{{/base64}}" download>Скан</a>
                                             {{/notnull}}
                                         </div>
                                     {{/each}}
-                                </div>
-                                <div class="col-12 row justify-content-center mt-5">
-                                    <button class="btn col-10 stylise-block p-4" id="t-st-doc-save">Сохранить</button>
                                 </div>
                             </form>
                         </div>

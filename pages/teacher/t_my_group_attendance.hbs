@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
-    <meta name="description" content="Содержит форму отправки для ."/>
+    <meta name="description" content="Страница, содержащая списки посещаемости."/>
     <title>Посещаемость</title>
     {{>linkscripts}}
     {{>styles}}
@@ -34,6 +34,10 @@
                                         <div class="col-12">
                                             <span>Присутствующих: {{attendance_present}}</span>
                                         </div>
+                                    </div>
+                                {{else}}
+                                    <div class="col-12">
+                                        <h2 class="text-center">Отчёты отсутствуют</h2>
                                     </div>
                                 {{/each}}
                             </div>

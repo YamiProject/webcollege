@@ -4,8 +4,8 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
-    <meta name="description" content="Содержит форму отправки для ."/>
-    <title>Посещаемость</title>
+    <meta name="description" content="Страница, содеражащая информацию об отчёте."/>
+    <title>Отчёт</title>
     {{>linkscripts}}
     {{>styles}}
 </head>
@@ -23,6 +23,9 @@
                         </div>
                         <div class="col-12">
                             <h2 class="text-center h-section">{{#equal report.report_type "attendance"}}Посещаемость{{/equal}}{{#equal report.report_type "att-special"}}Посещаемость{{/equal}}{{#equal report.report_type "events"}}Мероприятия{{/equal}}{{#equal report.report_type "iw"}}Индивидуальная работа{{/equal}} [{{#nequal report.report_type "att-special"}}{{#datenormalise ../report.report_interval_date "D-M-Y"}}{{/datenormalise}}{{else}}{{#datenormalise ../report.report_interval_date "M-Y"}}{{/datenormalise}}{{/nequal}}/{{#datenormalise report.report_cr_date "D-M-Y"}}{{/datenormalise}}]</h2>
+                        </div>
+                        <div class="col-12 py-4 row justify-content-end px-5">
+                            <button class="btn stylise-block download-table">Скачать в формате Excel</button>
                         </div>
                         <div class="overflow-auto col-12 row pb-5 justify-content-start">
                             <table class="col-10" id="report-info-table">

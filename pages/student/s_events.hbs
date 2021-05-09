@@ -63,14 +63,6 @@
                                                 <div class="col-12 row justify-content-center my-1 p-5 border-dark border-top" id="s-event-img-block">
                                                     <img src="{{#base64 ../event_img}}{{/base64}}" alt="EVENTIMG-{{../event_id}}">
                                                 </div>
-                                                {{else}}
-                                                <div class="col-12 border-top border-dark">
-                                                    <form class="col-12 row justify-content-end my-2" id="s-evens-event-img-add-{{../event_id}}">
-                                                        <input type="file" class="form-control-file col-9" id="s-evens-event-img-add-input">
-                                                        <button class="btn col-3 stylise-block" id="s-evens-event-img-add-input-button" disabled>Загрузить</button>    
-                                                    </form>
-                                                </div>
-                                                {{/notnull}}
                                             {{/dateop}}
                                         </article>
                                     {{else}}

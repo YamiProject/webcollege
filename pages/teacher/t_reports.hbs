@@ -33,10 +33,10 @@
                                                 <h2>Отчёт:{{#datenormalise report_cr_date "D-M-Y"}}{{/datenormalise}}</h2>
                                             </div>
                                             <div class="col-12">
-                                                <span>Промeжуток: {{#datenormalise report_interval_date "D-M-Y"}}{{/datenormalise}}/{{#datenormalise report_cr_date "D-M-Y"}}{{/datenormalise}}</span>
+                                                <span>{{#equal report_type "att-special"}}Месяц: {{#datenormalise ../report_interval_date "M-Y"}}{{/datenormalise}} <br> Дата составления: {{#datenormalise ../report_cr_date "D-M-Y"}}{{/datenormalise}}{{else}}Промeжуток: {{#datenormalise ../report_interval_date "D-M-Y"}}{{/datenormalise}}/{{#datenormalise ../report_cr_date "D-M-Y"}}{{/datenormalise}}{{/equal}}</span>
                                             </div>
                                             <div class="col-12">
-                                                <span>Тип: {{#equal report_type "attendance"}}Посещаемость{{/equal}}{{#equal report_type "events"}}Мероприятия{{/equal}}{{#equal report_type "iw"}}Индивид. работа{{/equal}}</span>
+                                                <span>Тип: {{#equal report_type "attendance"}}Посещаемость{{/equal}}{{#equal report_type "events"}}Мероприятия{{/equal}}{{#equal report_type "iw"}}Индивид. работа{{/equal}}{{#equal report_type "att-special"}}Посещаемость (табл.){{/equal}}</span>
                                             </div>
                                             <div class="col-12">
                                                 <span>Данные: {{report_fields}}</span>

@@ -14,12 +14,6 @@
                 <li><a href="/t/mygroup/reports" class="col-12">Отчёты</a></li>
                 <li><a href="/t/mygroup/gallery" class="col-12">Галерея</a></li>
             {{/equal}}
-            <!--Навигационная панель зав. отделением-->
-            {{#equal role 'head'}}
-                {{#each ../group_list}}
-                    <li><a href="/h/group/{{group_id}}" class="col-12">{{spetiality_abbreviated}}</a></li>
-                {{/each}}
-            {{/equal}}
             <!--Навигационная панель студента-->
             {{#equal role 'student'}}
                 <li><a href="/s/announcements">Объявления</a></li>
@@ -34,9 +28,11 @@
                 <li><a href="/s/individualwork">Индив. работа</a></li>
                 <li><a href="/s/groupgallery">Галерея</a></li>
             {{/equal}}
-            <!--Навигационная панель администратора-->
-            {{#equal role 'admin'}}
-                <li><a href="">ffff</a></li>
+            <!--Навигационная панель зав. отделением-->
+            {{#equal role 'head'}}
+                {{#each ../group_list}}
+                    <li><a href="/h/group/{{group_id}}" class="col-12">{{spetiality_abbreviated}}</a></li>
+                {{/each}}
             {{/equal}}
         </ul>    
     </nav>

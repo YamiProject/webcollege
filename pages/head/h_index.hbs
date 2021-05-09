@@ -4,26 +4,58 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
-    <meta name="description" content="Главная страница второго уровня приложения (тьютор)."/>
+    <meta name="description" content="Главная страница интерфейса студента."/>
     <title>Главная страница</title>
     {{>linkscripts}}
+    {{>styles}}
 </head>
 <body>
     <div class="container-fluid h-100">
         <div class="row h-100">
             {{>sidebar}}
-            <div class="row h-100 main">
-                <div class="row justify-content-center col-12 mx-0 px-0">
+            <div class="row h-100 main {{#equal sidebar_d 0}}main-full-screen{{else}}main-n-full-screen{{/equal}}">
+                {{>applogo}}
+                <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
-                    <div class="col-12 justify-content-center align-items-center row mx-0 px-0 app-window mainpage">
-                        <div class="col-xl-3 col-10 my-4 mx-3 h-55vh mainfeed">
-                            <div class="col-12"></div>
+                    <div class="col-12 justify-content-center align-items-start align-content-start row m-0 p-0 app-window mainpage">
+                        <div class="col-12 h-of h-auto">
+                            <h1 class="col-12 text-right">Главная страница</h1>
                         </div>
-                        <div class="col-xl-3 col-10 my-4 mx-3 h-55vh mainmygroup">
-                            <div class="col-12"></div>
-                        </div>
-                        <div class="col-xl-3 col-10 my-4 mx-3 h-55vh mainevents">
-                            <div class="col-12"></div>
+                        <div class="col-12 row justify-content-center align-items-center mt-3 align-content-center s-mainpage-links">
+                            <div class="col-12 row justify-content-center align-items-center align-content-center">
+                                <div class="col-8 stylise-block-static py-5">
+                                    <div class="col-12">
+                                        <h2 class="text-center">Быстрый доступ</h2>
+                                    </div>
+                                    <form class="col-12 m-0 p-0" id="h-main-fast-form">
+                                        <div class="col-12 row">
+                                            <div class="col-6">
+                                                <label>Выберите группу</label>
+                                                <select class="form-control" id="h-main-fast-form-gr">
+                                                    <option value="" selected disabled></option>
+                                                    {{#each group_list}}
+                                                        <option value="{{group_id}}">{{spetiality_abbreviated}}</option>
+                                                    {{/each}}
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <label>Выберите необходимое поле</label>
+                                                <select class="form-control" id="h-main-fast-form-fields">
+                                                    <option value="" selected disabled></option>
+                                                    <option value="0">Страница группы</option>
+                                                    <option value="1">Мероприятия</option>
+                                                    <option value="2">Посещаемость</option>
+                                                    <option value="3">Отчёты</option>
+                                                    <option value="4">Индивидуальная работа</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mt-4">
+                                            <button class="btn stylise-block col-12 py-3" id="h-main-fast-form-button">Перейти</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

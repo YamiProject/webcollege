@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="author" content="Kostin Vladislav"/>
-    <meta name="description" content="Страница содержит информацию о ДО/ДПО студента группы куратора."/>
+    <meta name="description" content="Страница, содеражащая о ДО/ДПО студента."/>
     <title>ДО/ДПО: {{title}}</title>
     {{>linkscripts}}
     {{>styles}}
@@ -17,29 +17,11 @@
                 {{>applogo}}
                 <div class="row justify-content-center col-12 mx-0 px-0 application">
                     {{>header}}
-                    <div class="col-12 justify-content-center align-items-start align-content-start row mx-0 px-0 app-window t-additional-education">
+                    <div class="col-12 justify-content-center align-items-start align-content-start row mx-0 px-0 app-window h-additional-education">
                         <div class="col-12 row justify-content-between h-of pb-5">
                             {{>backbutton}} <h1 class="col-xl-10 col-12 text-right">ДО/ДПО: {{student_name}}</h1>
                         </div>
-                        <div class="col-12 row justify-content-center">
-                            <div class="col-8 p-5 stylise-block-static">
-                                <div class="col-12">
-                                    <h2 class="text-center h-of">Записать студента на курс</h2>
-                                </div>
-                                <div class="col-12 row justify-content-center">
-                                    <form class="col-12 row justify-content-center" id="t-st-ae-form">
-                                    <select id="t-st-ae-form-selection" class="form-control">
-                                        <option value="" disabled selected></option>
-                                        {{#each ae_form_values}}
-                                            <option value="{{ae_id}}">{{ae_name}}///{{user_sur_name}} {{user_name}} {{user_mid_name}}</option>
-                                        {{/each}}
-                                    </select>
-                                    <button class="btn col-10 stylise-block m-3" id="t-st-ae-form-button">Записать</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 row justify-content-center t-additional-education-block">
+                        <div class="col-12 row justify-content-center h-additional-education-block">
                             <div class="col-10 row justify-content-start m-5">
                                 {{#each ae}}
                                     <div class="col-5 stylise-block-static">

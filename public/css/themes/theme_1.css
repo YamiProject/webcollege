@@ -174,11 +174,11 @@ a{
         color: white;
     }
     /*mygroup*/
-    #с-my-group-fast-form{
+    .t-my-group-fast-form-button,#h-group-fast-form-button{
         background-color: rgba(16, 12, 68, 0.514);
         color: white;
     }
-    #с-my-group-fast-form:hover{
+    .t-my-group-fast-form-button:hover,#h-group-fast-form-button:hover{
         background-color: rgba(34, 29, 104, 0.514);
         color: rgba(16, 12, 68, 0.514);
     }

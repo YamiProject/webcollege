@@ -473,29 +473,32 @@ th,td{
         outline: none;
         color: white;
     }
-    /*mygroup*/
-    .t-my-group .t-student-block{
+    /*group*/
+    .t-my-group .t-student-block,.s-my-group .s-student-block,.h-group .h-student-block{
         height: 160px;
     }
-    .t-my-group .t-student-block:hover{
+    .t-my-group .t-student-block:hover,.h-group .h-student-block:hover{
         transform: scale(1.05); 
     }
-    .t-my-group .t-student-block img{
+    .t-my-group .t-student-block img,.s-my-group .s-student-block img,.h-group .h-student-block img{
         border-radius: 150px;
         height: 120px;
         width: 120px;
     }
-    #t-my-group-table{
+    #t-my-group-table,#s-my-group-table,#h-group-table{
         border: 1px solid rgba(0, 0, 0, 0.178);
     }
+    .h-group-menu>div h2{
+        font-size: 20pt !important;
+    }
     /*student*/
-    .t-student-info{
+    .t-student-info,.h-student-info{
         border-radius: 20px;
     }
-    .t-student-sections>div{
+    .t-student-sections>div,.h-student-sections>div{
         min-height: 100px;
     }
-    .t-student-sections h2{
+    .t-student-sections h2,.h-student-sections h2{
         font-weight: 500;
         font-size: 22pt;
     }
@@ -504,11 +507,11 @@ th,td{
         height: 150px;
         margin-top: 10px;
     }
-    .t-student-parent-block{
+    .t-student-parent-block,.h-student-parent-block{
         margin-top: 10px;
         padding-top: 10px;
     }
-    .t-student-parent-block:last-of-type{
+    .t-student-parent-block:last-of-type,.h-student-parent-block:last-of-type{
         margin-bottom: 50px;
     }
     /*student_achievements*/
@@ -583,11 +586,6 @@ th,td{
         width: 100%;
     }
     /*attendance*/
-    .fixed-attendance-block{
-        z-index: 0 !important;
-        position: fixed;
-        height: 600px;
-    }
     #t-my-group-na-link,#t-my-group-re-link{
         height: 200px;
     }
@@ -602,26 +600,26 @@ th,td{
         height: 100px;
     }
     /*absensemes*/
-    .t-abs-student-block{
+    .t-abs-student-block,.h-abs-student-block{
         height: 160px;
     }
-    .t-abs-student-block:hover{
+    .t-abs-student-block:hover,.h-abs-student-block:hover{
         transform: scale(1.05); 
     }
-    .t-abs-student-block img{
+    .t-abs-student-block img,.h-abs-student-block img{
         border-radius: 150px;
         height: 120px;
         width: 120px;
     }
     /*events*/
-    #t-event-form-textarea,#s-event-form-textarea{
+    #t-event-form-textarea{
         height: 350px;
     }
-    .t-event-form-button,.s-event-form-button{
+    .t-event-form-button{
         border-radius: 0 0 10px 10px !important;
         outline: none;
     }
-    #t-event-img-block>img,#s-event-img-block>img{
+    #t-event-img-block>img,#s-event-img-block>img,#h-event-img-block>img{
         max-width: 80%;
         max-height: 300px;
         background-size: contain;
