@@ -7,26 +7,97 @@ $(document).ready(function(){
     var load=true;
     $(window).on('scroll',function(e){
         e.preventDefault();
-        if($(this).scrollTop()>parseInt($("#t-announcement-block")[0].scrollHeight-500)){
-            if(load==true){
-                load=false;
-                if(window.location.href.indexOf("/t/announcements")>0){
-                    $.ajax({
-                        type:"POST",
-                        url:"/announcements_load",
-                        data:{
-                            count:$("#t-announcement-block>article").length
-                        },
-                        success: async function(data){
-                            if(data!==""){
-                                await $("#t-announcement-block").append(data);
-                                load=true;
+        if(window.location.href.indexOf("/t/announcements")>0){
+            if($(this).scrollTop()>parseInt($("#t-announcement-block")[0].scrollHeight-500)){
+                if(load==true){
+                    load=false;
+                    if(window.location.href.indexOf("/t/announcements")>0){
+                        $.ajax({
+                            type:"POST",
+                            url:"/announcements_load",
+                            data:{
+                                count:$("#t-announcement-block>article").length
+                            },
+                            success: async function(data){
+                                if(data!==""){
+                                    await $("#t-announcement-block").append(data);
+                                    load=true;
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
         }
+        if(window.location.href.indexOf("/t/mygroup/events")>0){
+            if($(this).scrollTop()>parseInt($(".t-my-group-events")[0].scrollHeight-500)){
+                if(load==true){
+                    load=false;
+                    if(window.location.href.indexOf("/t/mygroup/events")>0){
+                        $.ajax({
+                            type:"POST",
+                            url:"/event_load",
+                            data:{
+                                count:$("#t-event-article-block>article").length
+                            },
+                            success: async function(data){
+                                if(data!==""){
+                                    await $("#t-event-article-block").append(data);
+                                    load=true;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
+            if($(this).scrollTop()>parseInt($(".t-individual-work")[0].scrollHeight-500)){
+                if(load==true){
+                    load=false;
+                    if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
+                        $.ajax({
+                            type:"POST",
+                            url:"/iw_load",
+                            data:{
+                                count:$("#t-iw-article-block>article").length
+                            },
+                            success: async function(data){
+                                if(data!==""){
+                                    await $("#t-iw-article-block").append(data);
+                                    load=true;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        if(window.location.href.indexOf("/t/mygroup/attendance")>0){
+            if($(this).scrollTop()>parseInt($("#t-announcement-block")[0].scrollHeight-500)){
+                if(load==true){
+                    load=false;
+                    if(window.location.href.indexOf("/t/announcements")>0){
+                        $.ajax({
+                            type:"POST",
+                            url:"/announcements_load",
+                            data:{
+                                count:$("#t-announcement-block>article").length
+                            },
+                            success: async function(data){
+                                if(data!==""){
+                                    await $("#t-announcement-block").append(data);
+                                    load=true;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        if(window.location.href.indexOf("/t/mygroup/reports")>0){
+        
+        }   
     });
     $("#msg-block").on('scroll',function(e){
         e.preventDefault();
@@ -48,29 +119,12 @@ $(document).ready(function(){
                 });
             }
         }
-    })
+    });
+    //Socket
     const socket=io();
-    //main_Page
-    //Ссылки
-    $("#t-mg-link").on('click', function(){
-        window.location.href="/t/mygroup";
-    });
-    $("#t-al-link").on('click', function(){
-        window.location.href="/t/newattendance";
-    });
-    $("#t-ep-link").on('click', function(){
-        window.location.href="/t/mygroup/events";
-    });
-    $("#t-r-link").on('click', function(){
-        window.location.href="/t/newreport";
-    });
-    $("#t-l-link").on('click', function(){
-        window.location.href="/t/announcements";
-    });
-    //announcements
-    //Публикация объявлений (доделать)
     socket.on('addNewAnnounce',(data)=>{
         if(!data.path){
+            $("#t-announcement-block").html("");
             $("#t-announcement-block").prepend(`
             <article class="col-xl-8 col-11 row justify-content-center d-none mt-1 mb-5">
                 <div class="col-xl-11 col-12 row justify-content-center">
@@ -124,7 +178,26 @@ $(document).ready(function(){
             );        
         }
         $("#t-announcement-block .d-none").fadeOut().delay(1111).removeClass("d-none").fadeIn();
-    })
+    });
+    //main_Page
+    //Ссылки
+    $("#t-mg-link").on('click', function(){
+        window.location.href="/t/mygroup";
+    });
+    $("#t-al-link").on('click', function(){
+        window.location.href="/t/newattendance";
+    });
+    $("#t-ep-link").on('click', function(){
+        window.location.href="/t/mygroup/events";
+    });
+    $("#t-r-link").on('click', function(){
+        window.location.href="/t/newreport";
+    });
+    $("#t-l-link").on('click', function(){
+        window.location.href="/t/announcements";
+    });
+    //announcements
+    //Публикация объявлений (доделать)
     $(".t-announcement-form-button").on('click', async function(e){
         e.preventDefault();
         if(functions.filledCheck($(this),[':input:text','textarea','select'])==true){

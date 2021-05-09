@@ -37,8 +37,7 @@ io.on('connection',async(socket)=>{
     let url=socket.handshake.session.current_url.slice(1).split("/");
     switch(url[0]){
         case "t":
-            if(url[1]=="announcements"){
-                
+            if(url[1]=="announcements"){ 
                 socket.join(`Room_AnnouncementsOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
             }
             else if(url[1]=="chat"){
@@ -56,6 +55,24 @@ io.on('connection',async(socket)=>{
             else if(url[2]=="reports"){
                 socket.join(`Room_ReportsOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
             }
+            else if(url[1]=="students"&&url[3]=="documents"){
+                socket.join(`Room_Students$${url[2]}_Docs_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[1]=="students"&&url[3]=="achievements"){
+                socket.join(`Room_Students$${url[2]}_Achi_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[1]=="students"&&url[3]=="additionaleducation"){
+                socket.join(`Room_Students$${url[2]}_AddE_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[1]=="students"&&url[3]=="absenteeismes"){
+                socket.join(`Room_Students$${url[2]}_Abse_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[1]=="students"&&url[3]=="individualwork"){
+                socket.join(`Room_Students$${url[2]}_InWo_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="gallery"){
+                socket.join(`Room_GalleryOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
             break;
         case "s":
             if(url[1]=="announcements"){
@@ -67,9 +84,56 @@ io.on('connection',async(socket)=>{
             else if(url[2]=="events"){
                 socket.join(`Room_EventsOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
             }
+            else if(url[2]=="duty"){
+                socket.join(`Room_DutyOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="achievements"){
+                socket.join(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Achi_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="absenteeismes"){
+                socket.join(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Abse_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="documents"){
+                socket.join(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Docs_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="additionaleducation"){
+                socket.join(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_AddE_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="individualwork"){
+                socket.join(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_InWo_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
+            else if(url[2]=="groupgallery"){
+                socket.join(`Room_GalleryOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`);
+            }
             break;
         case "h":
-            
+            if(url[1]=="group"&&url[3]=="events"){
+                socket.join(`Room_EventsOfGroup$${url[2]}`);
+            }
+            else if(url[1]=="group"&&url[3]=="individualwork"){
+                socket.join(`Room_IWOfGroup$${url[2]}`);
+            }
+            else if(url[1]=="group"&&url[3]=="attendance"){
+                socket.join(`Room_AttendanceOfGroup$${url[2]}`);
+            }
+            else if(url[1]=="group"&&url[3]=="reports"){
+                socket.join(`Room_ReportsOfGroup$${url[2]}`);
+            }
+            else if(url[1]=="group"&&url[3]=="student"&&url[5]=="documents"){
+                socket.join(`Room_Students$${url[6]}_Docs_OfGroup$${url[2]}`);
+            }
+            else if(url[1]=="group"&&url[3]=="student"&&url[5]=="achievements"){
+                socket.join(`Room_Students$${url[6]}_Achi_OfGroup$${url[2]}`);
+            }
+            else if(url[1]=="group"&&url[3]=="student"&&url[5]=="additionaleducation"){
+                socket.join(`Room_Students$${url[6]}_AddE_OfGroup$${url[2]}`);
+            }
+            else if(url[1]=="group"&&url[3]=="student"&&url[5]=="absenteeismes"){
+                socket.join(`Room_Students$${url[6]}_Abse_OfGroup$${url[2]}`);
+            }
+            else if(url[1]=="group"&&url[3]=="student"&&url[5]=="individualwork"){
+                socket.join(`Room_Students$${url[6]}_InWo_OfGroup$${url[2]}`);
+            }
             break;
     }
     socket.on("newAnnounce",async(data)=>{
@@ -91,7 +155,34 @@ io.on('connection',async(socket)=>{
             date:await datenormalise("now","D/M/Y h:m:s"),
             msg:msg
         });
-    })
+    });
+    socket.on('newEvent',async(data)=>{
+
+    });
+    socket.on('newAttendance',async(data)=>{
+
+    });
+    socket.on('newReport',async(data)=>{
+
+    });
+    socket.on('newGalleryPhoto',async(data)=>{
+
+    });
+    socket.on('newStDocument',async(data)=>{
+
+    });
+    socket.on('newStAchievement',async(data)=>{
+
+    });
+    socket.on('newStAdditionalEducation',async(data)=>{
+
+    });
+    socket.on('newStAbsentismes',async(data)=>{
+
+    });
+    socket.on('newStIW',async(data)=>{
+
+    });
 });
 //Модуль Crypto-js
 const crypto=require('crypto');
@@ -392,7 +483,6 @@ async function fileUpload(path,files,f_name,ex_action){
     }
     name_of_file=await encrypt(name_of_file);
     let file_name=name_of_file.replace(/\\|\//g,'')+"."+file_extension;
-    console.log(file_name);
     if(ex_action=='rn'){
         savePath=await fileExist(__dirname+path+"/"+file_name);
     }
@@ -599,9 +689,6 @@ async function isAccsessable(req,res,next){
                     WHERE group_id IN (${await serverUser[req.session.user].getUserGroupsInString()}) AND student_id=${accsessData[4]}`);
                 }
                 else if(accsessData[1]=="group"&&accsessData[3]=="attendance"&&accsessData[4]){
-                    console.log(`SELECT attendance_id
-                    FROM attendance
-                    WHERE group_id IN (${await serverUser[req.session.user].getUserGroupsInString()}) AND attendance_id=${accsessData[4]}`);
                     result=await createSelectQuery(`SELECT attendance_id
                     FROM attendance
                     WHERE group_id IN (${await serverUser[req.session.user].getUserGroupsInString()}) AND attendance_id=${accsessData[4]}`);
@@ -820,7 +907,6 @@ app.route("/profile").get(isAuthenticated,async(req,res)=>{
             let prev=req.session.user;
             req.session.user=`${serverUser[req.session.user].getUserState()[0]}/${serverUser[req.session.user].getUserState()[1]}/${serverUser[req.session.user].getUserState()[2]}/${serverUser[req.session.user].getUserState()[3]}/${fields.user_sur_name}/${fields.user_name}/${fields.user_mid_name}/${savePath.replace(/\//g,"\\")}/${fields.user_sex}`;
             delete serverUser[prev];
-            console.log(req.session.user);
             serverUser[req.session.user]=new ServerUser();
             await identifyUser(serverUser[req.session.user],req.session.user,req.session.user_groups,req.session.user_options);
             res.end(result);
@@ -1297,7 +1383,7 @@ app.route("/t/student/:id/additionaleducation").get(isAuthenticated,interfaceSpl
         res.end("Error");
     }
 });
-//Страница ИР со студентом(+)
+//Страница ИР студента(+)
 app.route("/t/student/:id/individualwork").get(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     let studentIW=await createSelectQuery(`SELECT *
     FROM students a INNER JOIN users b ON a.user_id=b.user_id
@@ -1309,7 +1395,6 @@ app.route("/t/student/:id/individualwork").get(isAuthenticated,interfaceSplitter
     LEFT JOIN students c ON a.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id
     WHERE c.group_id=${serverUser[req.session.user].getUserGroup()} AND c.student_id=${JSON.stringify(req.params.id).replace(/\"/g,'')}
     ORDER BY iw_date DESC LIMIT 15;`);
-    console.log(studentIW[2]);
     res.render("t_student_individual_work",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
@@ -1324,7 +1409,6 @@ app.route("/t/student/:id/individualwork").get(isAuthenticated,interfaceSplitter
     });
 }).post(isAuthenticated,interfaceSplitter,isAccsessable,urlencodedParser,async(req,res)=>{
     try{
-        console.log(req.body);
         let result=await createIUDQuery(`INSERT INTO individual_works
         VALUES(
             null,
@@ -1966,7 +2050,6 @@ app.route("/s/chat").get(isAuthenticated,interfaceSplitter,async(req,res)=>{
     });
 }).post(isAuthenticated,interfaceSplitter,urlencodedParser,async(req,res)=>{
     try{
-        console.log("Aaaaa"); 
         let newMessage=await createIUDQuery(`INSERT INTO group_chat
         VALUES(
             null,
@@ -2402,7 +2485,6 @@ app.get("/h/group/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(req
     else{
         teacher="Отсутствует";
     }
-    console.log(group[1]);
     res.render("h_group",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
@@ -2626,7 +2708,7 @@ app.get("/h/group/:id/student/:id/achievements",isAuthenticated,interfaceSplitte
         achievements:studentAchievments[1]
     });
 });
-//Страница документов студента (-) 
+//Страница документов студента (+) 
 app.get("/h/group/:id/student/:id/documents",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     let list=await serverUser[req.session.user].getHGroupList();
     let studentInfo=await createSelectQuery(`SELECT *
@@ -2686,6 +2768,32 @@ app.get("/h/group/:id/student/:id/additionaleducation",isAuthenticated,interface
         ae_form_values:studentAdditionEducation[2]
     });
 });
+//Страница ИР студента(+)
+app.route("/h/group/:id/student/:id/individualwork").get(isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
+    let list=await serverUser[req.session.user].getHGroupList();
+    let studentIW=await createSelectQuery(`SELECT *
+    FROM students a INNER JOIN users b ON a.user_id=b.user_id
+    WHERE student_id=${JSON.stringify(req.params.id).replace(/\"/g,'')};
+    SELECT * 
+    FROM individual_work_types;
+    SELECT c.student_id,user_sur_name,user_name,user_mid_name,iw_type_name,iw_reasone,iw_date
+    FROM individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id
+    LEFT JOIN students c ON a.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id
+    WHERE c.group_id=${serverUser[req.session.user].getUserGroup()} AND c.student_id=${JSON.stringify(req.params.id).replace(/\"/g,'')}
+    ORDER BY iw_date DESC LIMIT 15;`);
+    res.render("h_student_individual_work",{
+        username:serverUser[req.session.user].getUserFullName(), 
+        role:serverUser[req.session.user].getUserState()[2],
+        options:serverUser[req.session.user].getUserOptions(),
+        user_photo:[serverUser[req.session.user].getUserData()[3],serverUser[req.session.user].getUserData()[4]],
+        sidebar_d:req.cookies.sidebar,
+        title:`${studentIW[0][0].user_sur_name} ${studentIW[0][0].user_name} ${studentIW[0][0].user_mid_name}`,
+        student_name:`${studentIW[0][0].user_sur_name} ${studentIW[0][0].user_name} ${studentIW[0][0].user_mid_name}`,
+        iw:studentIW[2],
+        iw_type:studentIW[1],
+        group_list:list
+    });
+})
 //Дополнительные POST-запросы
 //Подгрузка объявлений (+)
 app.post("/announcements_load",isAuthenticated,urlencodedParser,async(req,res)=>{
@@ -2777,7 +2885,7 @@ app.post("/chat_load",isAuthenticated,urlencodedParser,async(req,res)=>{
     }
 });
 //Подгрузка мероприятий (-)
-app.post("",isAuthenticated,urlencodedParser,async(req,res)=>{
+app.post("/event_load",isAuthenticated,urlencodedParser,async(req,res)=>{
     try{
     }
     catch(err){
@@ -2786,7 +2894,7 @@ app.post("",isAuthenticated,urlencodedParser,async(req,res)=>{
     }
 });
 //Подгрузка индивидуальной работы (-)
-app.post("",isAuthenticated,urlencodedParser,async(req,res)=>{
+app.post("/iw_load",isAuthenticated,urlencodedParser,async(req,res)=>{
     try{
     }
     catch(err){
@@ -2795,7 +2903,7 @@ app.post("",isAuthenticated,urlencodedParser,async(req,res)=>{
     }
 });
 //Подгрузка посещаемости (-)
-app.post("",isAuthenticated,urlencodedParser,async(req,res)=>{
+app.post("/attendance_load",isAuthenticated,urlencodedParser,async(req,res)=>{
     try{
     }
     catch(err){
@@ -2804,7 +2912,7 @@ app.post("",isAuthenticated,urlencodedParser,async(req,res)=>{
     }
 });  
 //Подгрузка отчётов (-)
-app.post("",isAuthenticated,urlencodedParser,async(req,res)=>{
+app.post("/reports_load",isAuthenticated,urlencodedParser,async(req,res)=>{
     try{
     }
     catch(err){
@@ -2813,7 +2921,7 @@ app.post("",isAuthenticated,urlencodedParser,async(req,res)=>{
     }
 });
 //Подгрузка дежурств (-)
-app.post("",isAuthenticated,urlencodedParser,async(req,res)=>{
+app.post("/duty_load",isAuthenticated,urlencodedParser,async(req,res)=>{
     try{
     }
     catch(err){
