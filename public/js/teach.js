@@ -8,7 +8,7 @@ $(document).ready(function(){
     $(window).on('scroll',function(e){
         e.preventDefault();
         if(window.location.href.indexOf("/t/announcements")>0){
-            if($(this).scrollTop()>parseInt($("#t-announcement-block")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/announcements")>0){
@@ -29,8 +29,8 @@ $(document).ready(function(){
                 }
             }
         }
-        if(window.location.href.indexOf("/t/mygroup/events")>0){
-            if($(this).scrollTop()>parseInt($(".t-my-group-events")[0].scrollHeight-500)){
+        if(window.location.href.indexOf("/t/mygroup/events")>0){ 
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/mygroup/events")>0){
@@ -52,7 +52,7 @@ $(document).ready(function(){
             }
         }
         if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
-            if($(this).scrollTop()>parseInt($(".t-individual-work")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
@@ -74,10 +74,10 @@ $(document).ready(function(){
             }
         }
         if(window.location.href.indexOf("/t/mygroup/attendance")>0){
-            if($(this).scrollTop()>parseInt($("#t-attendance")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
-                    if(window.location.href.indexOf("/t/announcements")>0){
+                    if(window.location.href.indexOf("/t/mygroup/attendance")>0){
                         $.ajax({
                             type:"POST",
                             url:"/attendance_load",
@@ -96,7 +96,7 @@ $(document).ready(function(){
             }
         }
         if(window.location.href.indexOf("/t/mygroup/reports")>0){
-            if($(this).scrollTop()>parseInt($("#t-reports")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/mygroup/reports")>0){
@@ -198,6 +198,24 @@ $(document).ready(function(){
         }
         $("#t-announcement-block .d-none").fadeOut().delay(1111).removeClass("d-none").fadeIn();
     });
+    socket.on('addChatMSG',(data)=>{
+        $("#chatmbox").val("");
+        $("#msg-block").append(`<div class="col-11 mx-4 msg">
+                                    <p>${data.user} [${data.date}]</p>
+                                    <p>${data.msg}</p>
+                                </div>`);
+        var chatHistory=document.getElementById("msg-block");
+        chatHistory.scrollTop=chatHistory.scrollHeight;
+    });
+    socket.on('addNewEvent',(data)=>{
+        window.location.reload();
+    });
+    socket.on('addNewAttendance',(data)=>{
+        window.location.reload();
+    });
+    socket.on('addNewReport',(data)=>{
+        window.location.reload();
+    });
     socket.on('stDocReload',()=>{
         window.location.reload();
     });
@@ -211,6 +229,9 @@ $(document).ready(function(){
         window.location.reload();
     });
     socket.on('stIwReload',()=>{
+        window.location.reload();
+    });
+    socket.on('addNewGalPhoto',()=>{
         window.location.reload();
     });
     //main_Page
@@ -231,7 +252,7 @@ $(document).ready(function(){
         window.location.href="/t/announcements";
     });
     //announcements
-    //Публикация объявлений (доделать)
+    //Публикация объявлений
     $(".t-announcement-form-button").on('click', async function(e){
         e.preventDefault();
         if(functions.filledCheck($(this),[':input:text','textarea','select'])==true){
@@ -264,15 +285,6 @@ $(document).ready(function(){
         }
     });
     //chat
-    socket.on('addChatMSG',(data)=>{
-        $("#chatmbox").val("");
-        $("#msg-block").append(`<div class="col-11 mx-4 msg">
-                                    <p>${data.user} [${data.date}]</p>
-                                    <p>${data.msg}</p>
-                                </div>`);
-        var chatHistory=document.getElementById("msg-block");
-        chatHistory.scrollTop=chatHistory.scrollHeight;
-    });
     $(".chatsubmbutton").on('click',async function(e){
         e.preventDefault();
         if(functions.filledCheck($(this),['textarea'])){
@@ -409,7 +421,7 @@ $(document).ready(function(){
                 contentType:false,
                 processData:false,
                 success: function(){
-                    window.location.reload();
+                    socket.emit('newStDocument');
                 }
             });
         }
@@ -437,7 +449,7 @@ $(document).ready(function(){
                 contentType: false,
                 processData: false,
                 success: async function(){
-                    window.location.reload();
+                    socket.emit('newStAchievement');
                 }
             });
         }
@@ -454,7 +466,7 @@ $(document).ready(function(){
                     cource_id:functions.escapeHTML($("#t-st-ae-form-selection").val()) 
                 },
                 success: function(){
-                    window.location.reload();
+                    socket.emit('newStAdditionalEducation');
                 }
             });
         }
@@ -477,7 +489,7 @@ $(document).ready(function(){
                 contentType:false,
                 processData:false,
                 success: function(){
-                    window.location.reload();
+                    socket.emit('newStAbsentismes');
                 }
             })
         }
@@ -495,7 +507,7 @@ $(document).ready(function(){
                     iw_date:functions.escapeHTML($("#t-st-iw-form-date").val())
                 },
                 success: function(){
-                    window.location.reload();
+                    socket.emit('newStIW');
                 }
             });
         }
@@ -507,7 +519,7 @@ $(document).ready(function(){
     $("#t-my-group-re-link").on('click',function(){
         window.location.href="/t/newreport";
     });
-    $("#t-attendance-list>div[id^=att-]").on('click',function(){
+    $("#t-attendance-list article").on('click',function(){
         window.location.href=`/t/mygroup/attendance/${$(this).attr("id").replace("att-",'')}`;
     });
     //attendance-info
@@ -614,7 +626,11 @@ $(document).ready(function(){
                     event_date:functions.escapeHTML($("#t-event-form-date").val())
                 },
                 success: function(){
-                    window.location.reload();
+                    io.emit("newEvent",{
+                        event_type:functions.escapeHTML($("#t-event-form-select").val()),
+                        event_discr:functions.escapeHTML($("#t-event-form-textarea").val()),
+                        event_date:functions.escapeHTML($("#t-event-form-date").val())
+                    });
                 }
             });
         }
@@ -665,7 +681,7 @@ $(document).ready(function(){
         }
     });
     //report
-    $("#t-reports-list div[id^=rep-]").on('click',function(){
+    $("#t-reports-list article").on('click',function(){
         window.location.href=`/t/mygroup/report/${$(this).attr("id").replace(/\D/gi,'')}`;
     });
     $("#t-my-group-reports-link").on('click',function(){

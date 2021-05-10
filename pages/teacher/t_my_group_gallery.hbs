@@ -27,8 +27,8 @@
                                     <img src="{{#base64 ../gallery.[0].gallery_img}}{{/base64}}" alt="IMG" id="t-my-group-gallery-show-img">
                                 {{/undefine}}
                             </div>
-                            <div class="col-12 row justify-content-start m-5">
-                                <div class="col-9 row justify-content-start">
+                            <div class="col-12 row justify-content-start">
+                                <div class="col-9 row justify-content-start m-5">
                                     <div class="col-12 row justify-content-start align-items-start align-content-start t-my-group-gallery-block">
                                         <div class="row m-2">
                                             <button class="btn open-form-button open-form-button-selector col-12">+</button>
@@ -38,9 +38,6 @@
                                                 <img src="{{#base64 gallery_img}}{{/base64}}" alt="IMG_{{gallery_id}}" id="IMG_{{gallery_id}}"/>
                                             </div>
                                         {{else}}
-                                            <div class="row m-0 align-content-center justify-content-center">
-                                                <h2 class="text-center">Галерея пуста</h2>
-                                            </div>
                                         {{/each}}
                                     </div>
                                 </div>

@@ -33,223 +33,219 @@ a{
     background:#2257ca7e;
 }
 /*Computer-version*/
-@media screen and (min-width:768px){
-    /*Common*/
-    .h-of h1{
-        border-bottom: 1px solid rgba(0, 0, 0, 0.075);
-    }
-    /*Header*/
-    header{
-        border-bottom: 5px solid rgb(28, 25, 70);
-        box-shadow: 0px 1px 10px rgb(35, 23, 77);
-    }
-    #navbar a{
-        background-color: white;
-        color:  rgb(28, 25, 70);
-        box-shadow: -10px 0 0 rgb(146, 140, 212);
-    }
-    /*Sidebar*/
-    #sidebar{
-        box-shadow: 2px 0 10px rgb(20, 16, 68);
-    }
-    #sidebar_menu{
-        background-color: rgb(20, 16, 68);
-    }
-    .sidebar-user-block{
-        border-bottom: 1px solid white;
-    }
-    #sidebar_menu .avatar_img{
-        box-shadow: 2px 2px 20px rgb(20, 16, 68);
-    }
-    #sidebar_menu .user-text-name:hover{
-        color: #827bc5 !important;
-    }
-    #sidebar_menu button{
-        color: white;
-        border-top: white;
-        border-bottom: white;
-    }
-    #sidebar_menu button:hover{
-        background-color: rgb(38, 31, 114);
-    }
-    .sidebar-close-button{
-        background-color: rgb(40, 23, 83);
-        border: 1px solid rgb(40, 23, 83);
-        border-left: 2px solid white;
-    }
-    .sidebar-close-button label{
-        color: white !important;
-    }
-    /*Sideform*/
-    #side-form{
-        background-color: rgba(33, 29, 78, 0.836);
-        box-shadow: -2px 0 10px rgb(20, 16, 68);
-    }
-    #side-form h3{
-        color: white;
-        border-bottom: 1px solid white;
-    }
-    .close-sideform{
-        color: white;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.253);
-    }
-    /*main*/
-    .app-window{
-        background-color: #bbbbbb00;
-    }
-    /*options*/
-    .options-page h2{
-        border-bottom: #1109411f 1px solid;
-    }
-    #theme-preview{
-        border: #110941 2px solid;
-        box-shadow: 1px 1px 2px #3e2ca5;
-    }
-    #options-buttons{
-        border-top: #8571f767 1px solid;
-    }
-    #options-buttons button{
-        background-color: #5b4db68f;
-        color: white;
-    }
-    /*error*/
-    #error-page{
-        background-color: #110941;
-    }
-    #error-page h1{
-        color: white;
-    }
-    #error-page p{
-        color: white;
-    }
-    #error-page button{
-        background-color: #3d2d978c;
-        color: white;
-    }
-     /*chat*/
-     #chat-block{
-        background-color: rgba(42, 42, 87, 0.904);
-    }
-    #msg-block{
-        background-color: rgb(217, 216, 252);
-    }
-    #chatform-block{
-        background-color: rgb(216, 216, 252);
-    }
-    .chatsubmbutton{
-        border: 1px solid rgba(16, 12, 68, 0.514);
-    }
-    .chatsubmbutton:hover{
-        background-color: rgba(16, 12, 68, 0.514);
-    }
-    /*announcements*/
-    .open-form-button{
-        border: dashed 3px #4c3d9e62;
-        color: #4c3d9e62;
-    }
-    .open-form-button-selector:hover{
-        border: dashed 3px #4c3d9e !important;
-    }
-    .t-announcement-header,.s-announcement-header{
-        background-color: #ffffff44;
-        box-shadow: 0px 0px 10px #4d3f9b;
-    }
-    .t-announcement-info>div,.t-announcement-text,.s-announcement-info>div,.s-announcement-text{
-        box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
-        background-color: #ffffff44;
-    }
-    .t-announcement-download,.s-announcement-download{
-        box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
-        background-color: #ffffff44;
-    }
-    .t-announcement-download:hover,.s-announcement-download:hover{
-        color: white !important;
-    }
-    .t-announcement-form{
-        background-color: rgba(20, 16, 68, 0.514);
-        box-shadow: #1f157a70 -2px -2px 50px;
-    }
-    .t-announcement-form-button{
-        background-color: rgba(16, 12, 68, 0.514);
-        color: white;
-    }
-    /*mygroup*/
-    .t-my-group-fast-form-button,#h-group-fast-form-button{
-        background-color: rgba(16, 12, 68, 0.514);
-        color: white;
-    }
-    .t-my-group-fast-form-button:hover,#h-group-fast-form-button:hover{
-        background-color: rgba(34, 29, 104, 0.514);
-        color: rgba(16, 12, 68, 0.514);
-    }
-    /*student*/
-    .t-student-info{
-        box-shadow: #110941 2px 2px 10px;
-    }
-    .t-student-parent-block{
-        border-top: 1px solid rgba(0, 0, 0, 0.493);
-    }
-    /*achievements*/
-    #t-achievements-form-img-block,#s-achievements-form-img-block{
-        background-color: #11094170;
-    }
-    #t-achievements-form-file,#s-achievements-form-file{
-        color: white;
-    }
-    .t-achievements-form-button,.s-achievements-form-button{
-        background-color: rgba(16, 12, 68, 0.514);
-        color: white;
-    }
-    /*event*/
-    #t-event-form label{
-        color:white !important;
-    }
-    .t-event-form-button{
-        background-color: rgba(42, 34, 153, 0.514) !important;
-        color: white;
-    }
-    .t-event-form-button{
-        color: white;
-    }
-    /*iw*/
-    #t-iw-form label,#t-st-iw-form label{
-        color:white !important;
-    }
-    .t-iw-form-button,.t-st-iw-form-button{
-        background-color: rgba(144, 138, 226, 0.514);
-        color: white;
-    }
-    .t-iw-form-button:hover,.t-st-iw-form-button:hover{
-        background-color: rgba(16, 12, 68, 0.514);
-        color: white;
-    }
-    /*report_info*/
-    #report-info-table td{
-        border: 1px solid black;
-    }
-    #report-info-table tr:first-of-type th{
-        border: 1px solid black;
-    }
-    /*gallery*/
-    #t-gallery-form-file,#s-gallery-form-file{
-        color: white;
-    }
-    #t-gallery-form-button,#s-gallery-form-button{
-        background-color: rgba(144, 138, 226, 0.514);
-        color: white;
-    }
-    #t-gallery-form-button:hover,#s-gallery-form-button:hover{
-        background-color: rgba(16, 12, 68, 0.514);
-        color: white;
-    }
+/*Common*/
+.h-of h1{
+    border-bottom: 1px solid rgba(0, 0, 0, 0.075);
 }
-@media screen and (max-width:1200px){
-    .t-announcement-info>div{
-        box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
-        background-color: #ffffff44;
-    }
-    .s-announcement-info>div{
-        box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
-        background-color: #ffffff44;
-    }
+/*Header*/
+header{
+    border-bottom: 5px solid rgb(28, 25, 70);
+    box-shadow: 0px 1px 10px rgb(35, 23, 77);
+}
+#navbar a{
+    background-color: white;
+    color:  rgb(28, 25, 70);
+    box-shadow: -10px 0 0 rgb(146, 140, 212);
+}
+/*Sidebar*/
+#sidebar{
+    box-shadow: 2px 0 10px rgb(20, 16, 68);
+}
+#sidebar_menu{
+    background-color: rgb(20, 16, 68);
+}
+.sidebar-user-block{
+    border-bottom: 1px solid white;
+}
+#sidebar_menu .avatar_img{
+    box-shadow: 2px 2px 20px rgb(20, 16, 68);
+}
+#sidebar_menu .user-text-name:hover{
+    color: #827bc5 !important;
+}
+#sidebar_menu button{
+    color: white;
+    border-top: white;
+    border-bottom: white;
+}
+#sidebar_menu button:hover{
+    background-color: rgb(38, 31, 114);
+}
+.sidebar-close-button{
+    background-color: rgb(40, 23, 83);
+    border: 1px solid rgb(40, 23, 83);
+    border-left: 2px solid white;
+}
+.sidebar-close-button label{
+    color: white !important;
+}
+/*Sideform*/
+#side-form{
+    background-color: rgba(33, 29, 78, 0.836);
+    box-shadow: -2px 0 10px rgb(20, 16, 68);
+}
+#side-form h3{
+    color: white;
+    border-bottom: 1px solid white;
+}
+.close-sideform{
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.253);
+}
+/*main*/
+.app-window{
+    background-color: #bbbbbb00;
+}
+/*options*/
+.options-page h2{
+    border-bottom: #1109411f 1px solid;
+}
+#theme-preview{
+    border: #110941 2px solid;
+    box-shadow: 1px 1px 2px #3e2ca5;
+}
+#options-buttons{
+    border-top: #8571f767 1px solid;
+}
+#options-buttons button{
+    background-color: #5b4db68f;
+    color: white;
+}
+/*error*/
+#error-page{
+    background-color: #110941;
+}
+#error-page h1{
+    color: white;
+}
+#error-page p{
+    color: white;
+}
+#error-page button{
+    background-color: #3d2d978c;
+    color: white;
+}
+    /*chat*/
+    #chat-block{
+    background-color: rgba(42, 42, 87, 0.904);
+}
+#msg-block{
+    background-color: rgb(217, 216, 252);
+}
+#chatform-block{
+    background-color: rgb(216, 216, 252);
+}
+.chatsubmbutton{
+    border: 1px solid rgba(16, 12, 68, 0.514);
+}
+.chatsubmbutton:hover{
+    background-color: rgba(16, 12, 68, 0.514);
+}
+/*announcements*/
+.open-form-button{
+    border: dashed 3px #4c3d9e62;
+    color: #4c3d9e62;
+}
+.open-form-button-selector:hover{
+    border: dashed 3px #4c3d9e !important;
+}
+.t-announcement-header,.s-announcement-header{
+    background-color: #ffffff44;
+    box-shadow: 0px 0px 10px #4d3f9b;
+}
+.t-announcement-info>div,.t-announcement-text,.s-announcement-info>div,.s-announcement-text{
+    box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
+    background-color: #ffffff44;
+}
+.t-announcement-download,.s-announcement-download{
+    box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
+    background-color: #ffffff44;
+}
+.t-announcement-download:hover,.s-announcement-download:hover{
+    color: white !important;
+}
+.t-announcement-form{
+    background-color: rgba(20, 16, 68, 0.514);
+    box-shadow: #1f157a70 -2px -2px 50px;
+}
+.t-announcement-form-button{
+    background-color: rgba(16, 12, 68, 0.514);
+    color: white;
+}
+/*mygroup*/
+#t-my-group-fast-form-button,#h-group-fast-form-button{
+    background-color: rgba(16, 12, 68, 0.514);
+    color: white;
+}
+#t-my-group-fast-form-button:hover,#h-group-fast-form-button:hover{
+    background-color: rgba(34, 29, 104, 0.514);
+    color: rgba(16, 12, 68, 0.514);
+}
+/*student*/
+.t-student-info{
+    box-shadow: #110941 2px 2px 10px;
+}
+.t-student-parent-block{
+    border-top: 1px solid rgba(0, 0, 0, 0.493);
+}
+/*achievements*/
+#t-achievements-form-img-block,#s-achievements-form-img-block{
+    background-color: #11094170;
+}
+#t-achievements-form-file,#s-achievements-form-file{
+    color: white;
+}
+.t-achievements-form-button,.s-achievements-form-button{
+    background-color: rgba(16, 12, 68, 0.514);
+    color: white;
+}
+/*event*/
+#t-event-form label{
+    color:white !important;
+}
+.t-event-form-button{
+    background-color: rgba(42, 34, 153, 0.514) !important;
+    color: white;
+}
+.t-event-form-button{
+    color: white;
+}
+/*iw*/
+#t-iw-form label,#t-st-iw-form label{
+    color:white !important;
+}
+.t-iw-form-button,.t-st-iw-form-button{
+    background-color: rgba(144, 138, 226, 0.514);
+    color: white;
+}
+.t-iw-form-button:hover,.t-st-iw-form-button:hover{
+    background-color: rgba(16, 12, 68, 0.514);
+    color: white;
+}
+/*report_info*/
+#report-info-table td{
+    border: 1px solid black;
+}
+#report-info-table tr:first-of-type th{
+    border: 1px solid black;
+}
+/*gallery*/
+#t-gallery-form-file,#s-gallery-form-file{
+    color: white;
+}
+#t-gallery-form-button,#s-gallery-form-button{
+    background-color: rgba(144, 138, 226, 0.514);
+    color: white;
+}
+#t-gallery-form-button:hover,#s-gallery-form-button:hover{
+    background-color: rgba(16, 12, 68, 0.514);
+    color: white;
+}
+.t-announcement-info>div{
+    box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
+    background-color: #ffffff44;
+}
+.s-announcement-info>div{
+    box-shadow: rgba(67, 92, 126, 0.61) 0 0 20px;
+    background-color: #ffffff44;
 }

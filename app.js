@@ -158,32 +158,49 @@ io.on('connection',async(socket)=>{
     });
     socket.on('newEvent',async(data)=>{
         if(serverUser[req.session.user].getUserState()[3]=="h"){
-
+            let userGroups=await serverUser[req.session.user].getUserGroupsInString();
+            if(userGroups.indexOf(data.group)>0){
+                io.to(`Room_EventsOfGroup$${data.group}`).emit("addNewReport",{
+                    event_type:data.event_type,
+                    event_discr:data.event_discr,
+                    event_date:data.event_date
+                });
+            }
         }
         else{
-            
+            io.to(`Room_EventsOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit("addNewReport",{
+                event_type:data.event_type,
+                event_discr:data.event_discr,
+                event_date:data.event_date
+            })
         }
     });
     socket.on('newAttendance',async(data)=>{
         if(serverUser[req.session.user].getUserState()[3]=="h"){
-
+            let userGroups=await serverUser[req.session.user].getUserGroupsInString();
+            if(userGroups.indexOf(data.group)>0){
+                io.to(`Room_AttendanceOfGroup$${url[2]}`).emit(`addNewAttendance`);
+            }
         }
         else{
-            
+            io.to(`Room_AttendanceOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit(`addNewAttendance`);
         }
     });
     socket.on('newReport',async(data)=>{
         if(serverUser[req.session.user].getUserState()[3]=="h"){
-
+            let userGroups=await serverUser[req.session.user].getUserGroupsInString();
+            if(userGroups.indexOf(data.group)>0){
+                io.to(`Room_AttendanceOfGroup$${url[2]}`).emit(`addNewReport`);
+            }
         }
         else{
-            
+            io.to(`Room_AttendanceOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit(`addNewReport`);
         }
     });
-    socket.on('newGalleryPhoto',async(data)=>{
-        
+    socket.on('newGalleryPhoto',async()=>{
+        io.to(`Room_GalleryOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('addNewGalPhoto');
     });
-    socket.on('newStDocument',async(data)=>{
+    socket.on('newStDocument',async()=>{
         if(serverUser[req.session.user].getUserState()[3]=="h"){
             io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Docs_OfGroup$${data.group_id}`).emit('stDocReload');
         }
@@ -191,7 +208,7 @@ io.on('connection',async(socket)=>{
             io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Docs_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('stDocReload');
         }
     });
-    socket.on('newStAchievement',async(data)=>{
+    socket.on('newStAchievement',async(dta)=>{
         if(serverUser[req.session.user].getUserState()[3]=="h"){
             io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Achi_OfGroup$${data.group_id}`).emit('stAchiReload');
         }
@@ -199,7 +216,7 @@ io.on('connection',async(socket)=>{
             io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Achi_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('stAchiReload');
         }
     });
-    socket.on('newStAdditionalEducation',async(data)=>{
+    socket.on('newStAdditionalEducation',async()=>{
         if(serverUser[req.session.user].getUserState()[3]=="h"){
             io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_AddE_OfGroup$${data.group_id}`).emit('stAddEddReload');
         }
@@ -207,7 +224,7 @@ io.on('connection',async(socket)=>{
             io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_AddE_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('stAddEddReload');
         }
     });
-    socket.on('newStAbsentismes',async(data)=>{
+    socket.on('newStAbsentismes',async()=>{
         if(serverUser[req.session.user].getUserState()[3]=="h"){
             io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Abse_OfGroup$${data.group_id}`).emit('stAbsReload');
         }
@@ -215,12 +232,12 @@ io.on('connection',async(socket)=>{
             io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Abse_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('stAbsReload');
         }
     });
-    socket.on('newStIW',async(data)=>{
+    socket.on('newStIW',async()=>{
         if(serverUser[req.session.user].getUserState()[3]=="h"){
-            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_InWo_OfGroup$${data.group_id}`).emit('stDocReload');
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_InWo_OfGroup$${data.group_id}`).emit('stIwReload');
         }
         else{
-            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_InWo_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('stDocReload');
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_InWo_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('stIwReload');
         }
     });
 });
@@ -1491,7 +1508,8 @@ app.route("/t/mygroup/events").get(isAuthenticated,interfaceSplitter,async(req,r
                 ${serverUser[req.session.user].getUserGroup()},
                 ${req.body.event_type},
                 '${req.body.event_discr}',
-                '${req.body.event_date}'
+                '${req.body.event_date}',
+                null
             );`);
             res.end(result);
         }
@@ -1842,17 +1860,19 @@ app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                         days=await daysInMonth(month,date.getFullYear());
                         break;
                 };
+                month=month++<10?"0"+month++:month++;
                 fields+="Студент,";
                 select_query_part+="d.user_sur_name,d.user_name,d.user_mid_name,";
                 groupby_query_part+="d.user_sur_name,d.user_name,d.user_mid_name ORDER BY d.user_sur_name";
                 let day;
                 for (let i=1;i<=days;i++){
                     day=i<10?"0"+i:i;
+                    console.log(day);
                     fields+=`${day}.${month},`;
                     select_query_part+=`(CASE 
-                                            WHEN '${date.getFullYear()}-${month}-${day}'IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type='Н' 
+                                            WHEN '${date.getFullYear()}-${month}-${day}' IN (SELECT attendance_date FROM attendance aq1 INNER JOIN absenteeismes aq2 ON aq1.attendance_id=aq2.attendance_id WHERE aq1.attendance_date LIKE '${date.getFullYear()}-${month}-${day}' AND c.student_id=aq2.student_id) AND b.absenteeismes_type='Н' 
                                                 THEN 'Н' 
-                                            WHEN '${date.getFullYear()}-${month}-${day}' IN (SELECT attendance_date FROM attendance) AND b.absenteeismes_type='З' 
+                                            WHEN '${date.getFullYear()}-${month}-${day}' IN (SELECT attendance_date FROM attendance aq1 INNER JOIN absenteeismes aq2 ON aq1.attendance_id=aq2.attendance_id WHERE aq1.attendance_date LIKE '${date.getFullYear()}-${month}-${day}' AND c.student_id=aq2.student_id) AND b.absenteeismes_type='З' 
                                                 THEN 'З' 
                                             ELSE '' 
                                         END) AS 'DAY${day}',`;
@@ -1866,6 +1886,7 @@ app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                 break;
         }
         let query=select_query_part+from_query_part+where_query_part+groupby_query_part;
+        console.log(query);
         //let check=await createSelectQuery(query);
         let result;
         if(req.body.type!=="att-special"){
@@ -3106,7 +3127,7 @@ app.post("/reports_load",isAuthenticated,urlencodedParser,async(req,res)=>{
                 report_load=await createSelectQuery(`SELECT report_id,report_cr_date,report_interval_date,report_type,report_fields
                 FROM reports
                 WHERE group_id=${req.body.group}
-                ORDER BY report_cr_date,report_id DESC ${req.body.count},6;`);
+                ORDER BY report_cr_date,report_id DESC LIMIT ${req.body.count},6;`);
             }
             else{
                 res.end("Accsess Error");    
@@ -3116,7 +3137,7 @@ app.post("/reports_load",isAuthenticated,urlencodedParser,async(req,res)=>{
             report_load=await createSelectQuery(`SELECT report_id,report_cr_date,report_interval_date,report_type,report_fields
             FROM reports
             WHERE group_id=${serverUser[req.session.user].getUserGroup()}
-            ORDER BY report_cr_date,report_id DESC ${req.body.count},6;`);
+            ORDER BY report_cr_date,report_id DESC LIMIT ${req.body.count},6;`);
         }
         let data="";
         await report_load.forEach(async(el)=>{

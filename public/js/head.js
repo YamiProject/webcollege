@@ -8,7 +8,7 @@ $(document).ready(function(){
     $(window).on('scroll',function(e){
         e.preventDefault();
         if(window.location.href.indexOf("/t/announcements")>0){
-            if($(this).scrollTop()>parseInt($("#t-announcement-block")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/announcements")>0){
@@ -29,8 +29,8 @@ $(document).ready(function(){
                 }
             }
         }
-        if(window.location.href.indexOf("/t/mygroup/events")>0){
-            if($(this).scrollTop()>parseInt($(".t-my-group-events")[0].scrollHeight-500)){
+        if(window.location.href.indexOf("/t/mygroup/events")>0){ 
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/mygroup/events")>0){
@@ -52,7 +52,7 @@ $(document).ready(function(){
             }
         }
         if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
-            if($(this).scrollTop()>parseInt($(".t-individual-work")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
@@ -74,10 +74,10 @@ $(document).ready(function(){
             }
         }
         if(window.location.href.indexOf("/t/mygroup/attendance")>0){
-            if($(this).scrollTop()>parseInt($("#t-attendance")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
-                    if(window.location.href.indexOf("/t/announcements")>0){
+                    if(window.location.href.indexOf("/t/mygroup/attendance")>0){
                         $.ajax({
                             type:"POST",
                             url:"/attendance_load",
@@ -96,7 +96,7 @@ $(document).ready(function(){
             }
         }
         if(window.location.href.indexOf("/t/mygroup/reports")>0){
-            if($(this).scrollTop()>parseInt($("#t-reports")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/mygroup/reports")>0){

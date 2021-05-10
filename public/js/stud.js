@@ -8,7 +8,7 @@ $(document).ready(function(){
     $(window).on('scroll',function(e){
         e.preventDefault();
         if(window.location.href.indexOf("/t/announcements")>0){
-            if($(this).scrollTop()>parseInt($("#t-announcement-block")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/announcements")>0){
@@ -29,8 +29,8 @@ $(document).ready(function(){
                 }
             }
         }
-        if(window.location.href.indexOf("/t/mygroup/events")>0){
-            if($(this).scrollTop()>parseInt($(".t-my-group-events")[0].scrollHeight-500)){
+        if(window.location.href.indexOf("/t/mygroup/events")>0){ 
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/mygroup/events")>0){
@@ -52,7 +52,7 @@ $(document).ready(function(){
             }
         }
         if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
-            if($(this).scrollTop()>parseInt($(".t-individual-work")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
@@ -74,10 +74,10 @@ $(document).ready(function(){
             }
         }
         if(window.location.href.indexOf("/t/mygroup/attendance")>0){
-            if($(this).scrollTop()>parseInt($("#t-attendance")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
-                    if(window.location.href.indexOf("/t/announcements")>0){
+                    if(window.location.href.indexOf("/t/mygroup/attendance")>0){
                         $.ajax({
                             type:"POST",
                             url:"/attendance_load",
@@ -96,7 +96,7 @@ $(document).ready(function(){
             }
         }
         if(window.location.href.indexOf("/t/mygroup/reports")>0){
-            if($(this).scrollTop()>parseInt($("#t-reports")[0].scrollHeight-500)){
+            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/mygroup/reports")>0){
@@ -141,63 +141,6 @@ $(document).ready(function(){
     })
     //Socket
     const socket=io();
-    socket.on('addNewAnnounce',(data)=>{
-        if(!data.path){
-            $("#t-announcement-block").html("");
-            $("#t-announcement-block").prepend(`
-            <article class="col-xl-8 col-11 row justify-content-center d-none mt-1 mb-5">
-                <div class="col-xl-11 col-12 row justify-content-center">
-                    <div class="col-12">
-                        <div class="col-12 t-announcement-header">
-                            <h2 class="col-12 text-center">${data.head}</h2>
-                        </div>
-                    </div>
-                    <div class="col-xl-10 col-4 row t-announcement-info">
-                        <div class="col-xl-4 col-12">
-                            <label class="col-12 text-center">${data.date}</label>
-                        </div>
-                        <div class="col-xl-8 col-12">
-                            <label class="col-12 text-center">${data.type}</label>
-                        </div>
-                    </div>
-                    <div class="col-xl-12 col-8 t-announcement-text">
-                        <p class="col">${data.text}</p>
-                    </div>
-                </div>  
-            </article>`
-            );
-        }
-        else{
-            $("#t-announcement-block").prepend(`
-            <article class="col-xl-8 col-11 row justify-content-center d-none mt-1 mb-5">
-                <div class="col-xl-11 col-12 row justify-content-center">
-                    <div class="col-12">
-                        <div class="col-12 t-announcement-header">
-                            <h2 class="col-12 text-center">${data.head}</h2>
-                        </div>
-                    </div>
-                    <div class="col-xl-10 col-4 row t-announcement-info">
-                        <div class="col-xl-4 col-12">
-                            <label class="col-12 text-center">${data.date}</label>
-                        </div>
-                        <div class="col-xl-8 col-12">
-                            <label class="col-12 text-center">${data.type}</label>
-                        </div>
-                    </div>
-                    <div class="col-xl-12 col-8 t-announcement-text">
-                        <p class="col">${data.text}</p>
-                    </div>
-                    <div class="col-12 row justify-content-end">
-                        <div class="col-4 row justify-content-center">
-                            <a href="${data.path}" class="t-announcement-download col-12 text-center text-black-50" download>Вложение</a>
-                        </div>
-                    </div>
-                </div>  
-            </article>`
-            );        
-        }
-        $("#t-announcement-block .d-none").fadeOut().delay(1111).removeClass("d-none").fadeIn();
-    });
     socket.on('addNewAnnounce',(data)=>{
         if(!data.path){
             $("#t-announcement-block").html("");
