@@ -28,7 +28,7 @@
                                 </div>
                                 <div class="col-12 row">
                                     {{#each reports}}
-                                        <div class="col-xl-5 col-10 row m-4 p-4 stylise-block" id="rep-{{report_id}}">
+                                        <article class="col-xl-5 col-10 row m-4 p-4 stylise-block" id="rep-{{report_id}}">
                                             <div class="col-12">
                                                 <h2>Отчёт:{{#datenormalise report_cr_date "D-M-Y"}}{{/datenormalise}}</h2>
                                             </div>
@@ -41,7 +41,7 @@
                                             <div class="col-12">
                                                 <span>Данные: {{report_fields}}</span>
                                             </div>
-                                        </div>
+                                        </article>
                                     {{else}}
                                         <div class="col-12 stylise-block">
                                             <h3 class="text-center">Отчёты отсутствуют!</h3>

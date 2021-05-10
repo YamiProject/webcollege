@@ -74,19 +74,19 @@ $(document).ready(function(){
             }
         }
         if(window.location.href.indexOf("/t/mygroup/attendance")>0){
-            if($(this).scrollTop()>parseInt($("#t-announcement-block")[0].scrollHeight-500)){
+            if($(this).scrollTop()>parseInt($("#t-attendance")[0].scrollHeight-500)){
                 if(load==true){
                     load=false;
                     if(window.location.href.indexOf("/t/announcements")>0){
                         $.ajax({
                             type:"POST",
-                            url:"/announcements_load",
+                            url:"/attendance_load",
                             data:{
-                                count:$("#t-announcement-block>article").length
+                                count:$("#t-attendance-list>article").length
                             },
                             success: async function(data){
                                 if(data!==""){
-                                    await $("#t-announcement-block").append(data);
+                                    await $("#t-attendance-list").append(data);
                                     load=true;
                                 }
                             }
@@ -96,7 +96,26 @@ $(document).ready(function(){
             }
         }
         if(window.location.href.indexOf("/t/mygroup/reports")>0){
-        
+            if($(this).scrollTop()>parseInt($("#t-reports")[0].scrollHeight-500)){
+                if(load==true){
+                    load=false;
+                    if(window.location.href.indexOf("/t/mygroup/reports")>0){
+                        $.ajax({
+                            type:"POST",
+                            url:"/reports_load",
+                            data:{
+                                count:$("#t-reports-list>article").length
+                            },
+                            success: async function(data){
+                                if(data!==""){
+                                    await $("#t-reports-list").append(data);
+                                    load=true;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
         }   
     });
     $("#msg-block").on('scroll',function(e){
@@ -178,6 +197,21 @@ $(document).ready(function(){
             );        
         }
         $("#t-announcement-block .d-none").fadeOut().delay(1111).removeClass("d-none").fadeIn();
+    });
+    socket.on('stDocReload',()=>{
+        window.location.reload();
+    });
+    socket.on('stAchiReload',()=>{
+        window.location.reload();
+    });
+    socket.on('stAddEddReload',()=>{
+        window.location.reload();
+    });
+    socket.on('stAbsReload',()=>{
+        window.location.reload();
+    });
+    socket.on('stIwReload',()=>{
+        window.location.reload();
     });
     //main_Page
     //Ссылки

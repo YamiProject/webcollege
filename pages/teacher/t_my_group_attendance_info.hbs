@@ -29,14 +29,14 @@
                                 <h3 class="text-center">Присутствующие</h3>
                             </div>
                             {{#each present}}
-                                <div class="col-10 m-3 t-abs-student-block row align-items-center justify-content-start stylise-block" id="{{student_id}}">
+                                <article class="col-10 m-3 t-abs-student-block row align-items-center justify-content-start stylise-block" id="{{student_id}}">
                                     <div class="col-5">
                                         <img src="{{#base64 (imgnotnull user_photo user_sex)}}{{/base64}}" alt="">
                                     </div>
                                     <div class="col-7">
                                         <p>{{user_sur_name}} {{user_name}} {{user_mid_name}}</p>
                                     </div>
-                                </div>
+                                </article>
                                 {{else}}
                                 <div class="col-12">
                                     <h4>Отсутствуют</h4>

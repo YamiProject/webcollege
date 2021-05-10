@@ -7,9 +7,133 @@ $(document).ready(function(){
     var load=true;
     $(window).on('scroll',function(e){
         e.preventDefault();
-        
+        if(window.location.href.indexOf("/t/announcements")>0){
+            if($(this).scrollTop()>parseInt($("#t-announcement-block")[0].scrollHeight-500)){
+                if(load==true){
+                    load=false;
+                    if(window.location.href.indexOf("/t/announcements")>0){
+                        $.ajax({
+                            type:"POST",
+                            url:"/announcements_load",
+                            data:{
+                                count:$("#t-announcement-block>article").length
+                            },
+                            success: async function(data){
+                                if(data!==""){
+                                    await $("#t-announcement-block").append(data);
+                                    load=true;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        if(window.location.href.indexOf("/t/mygroup/events")>0){
+            if($(this).scrollTop()>parseInt($(".t-my-group-events")[0].scrollHeight-500)){
+                if(load==true){
+                    load=false;
+                    if(window.location.href.indexOf("/t/mygroup/events")>0){
+                        $.ajax({
+                            type:"POST",
+                            url:"/event_load",
+                            data:{
+                                count:$("#t-event-article-block>article").length
+                            },
+                            success: async function(data){
+                                if(data!==""){
+                                    await $("#t-event-article-block").append(data);
+                                    load=true;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
+            if($(this).scrollTop()>parseInt($(".t-individual-work")[0].scrollHeight-500)){
+                if(load==true){
+                    load=false;
+                    if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
+                        $.ajax({
+                            type:"POST",
+                            url:"/iw_load",
+                            data:{
+                                count:$("#t-iw-article-block>article").length
+                            },
+                            success: async function(data){
+                                if(data!==""){
+                                    await $("#t-iw-article-block").append(data);
+                                    load=true;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        if(window.location.href.indexOf("/t/mygroup/attendance")>0){
+            if($(this).scrollTop()>parseInt($("#t-attendance")[0].scrollHeight-500)){
+                if(load==true){
+                    load=false;
+                    if(window.location.href.indexOf("/t/announcements")>0){
+                        $.ajax({
+                            type:"POST",
+                            url:"/attendance_load",
+                            data:{
+                                count:$("#t-attendance-list>article").length
+                            },
+                            success: async function(data){
+                                if(data!==""){
+                                    await $("#t-attendance-list").append(data);
+                                    load=true;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        if(window.location.href.indexOf("/t/mygroup/reports")>0){
+            if($(this).scrollTop()>parseInt($("#t-reports")[0].scrollHeight-500)){
+                if(load==true){
+                    load=false;
+                    if(window.location.href.indexOf("/t/mygroup/reports")>0){
+                        $.ajax({
+                            type:"POST",
+                            url:"/reports_load",
+                            data:{
+                                count:$("#t-reports-list>article").length
+                            },
+                            success: async function(data){
+                                if(data!==""){
+                                    await $("#t-reports-list").append(data);
+                                    load=true;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }   
     });
     const socket=io();
+    socket.on('stDocReload',()=>{
+        window.location.reload();
+    });
+    socket.on('stAchiReload',()=>{
+        window.location.reload();
+    });
+    socket.on('stAddEddReload',()=>{
+        window.location.reload();
+    });
+    socket.on('stAbsReload',()=>{
+        window.location.reload();
+    });
+    socket.on('stIwReload',()=>{
+        window.location.reload();
+    });
     //mainpage
     $("#h-main-fast-form-button").on('click',function(e){
         e.preventDefault();

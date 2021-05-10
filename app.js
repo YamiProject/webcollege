@@ -157,31 +157,71 @@ io.on('connection',async(socket)=>{
         });
     });
     socket.on('newEvent',async(data)=>{
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
 
+        }
+        else{
+            
+        }
     });
     socket.on('newAttendance',async(data)=>{
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
 
+        }
+        else{
+            
+        }
     });
     socket.on('newReport',async(data)=>{
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
 
+        }
+        else{
+            
+        }
     });
     socket.on('newGalleryPhoto',async(data)=>{
-
+        
     });
     socket.on('newStDocument',async(data)=>{
-
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Docs_OfGroup$${data.group_id}`).emit('stDocReload');
+        }
+        else{
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Docs_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('stDocReload');
+        }
     });
     socket.on('newStAchievement',async(data)=>{
-
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Achi_OfGroup$${data.group_id}`).emit('stAchiReload');
+        }
+        else{
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Achi_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('stAchiReload');
+        }
     });
     socket.on('newStAdditionalEducation',async(data)=>{
-
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_AddE_OfGroup$${data.group_id}`).emit('stAddEddReload');
+        }
+        else{
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_AddE_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('stAddEddReload');
+        }
     });
     socket.on('newStAbsentismes',async(data)=>{
-
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Abse_OfGroup$${data.group_id}`).emit('stAbsReload');
+        }
+        else{
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_Abse_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('stAbsReload');
+        }
     });
     socket.on('newStIW',async(data)=>{
-
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_InWo_OfGroup$${data.group_id}`).emit('stDocReload');
+        }
+        else{
+            io.to(`Room_Students$${await serverUser[socket.handshake.session.user].getUserState()[0]}_InWo_OfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit('stDocReload');
+        }
     });
 });
 //Модуль Crypto-js
@@ -2070,7 +2110,7 @@ app.get("/s/events",isAuthenticated,interfaceSplitter,async(req,res)=>{
     let events=await createSelectQuery(`SELECT *
     FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id
     WHERE a.group_id=${serverUser[req.session.user].getUserGroup()}
-    ORDER BY event_id DESC LIMIT 8;`)
+    ORDER BY event_id DESC LIMIT 8;`);
     res.render("s_events",{
         username:serverUser[req.session.user].getUserFullName(), 
         role:serverUser[req.session.user].getUserState()[2],
@@ -2453,7 +2493,7 @@ app.route("/s/groupgallery").get(isAuthenticated,interfaceSplitter,async(req,res
         res.end("Error");
     }
 });
-//Страницы заведующей отделением (-)
+//Страницы заведующей отделением (+)
 //Страница группы (+)
 app.get("/h/group/:id",isAuthenticated,interfaceSplitter,isAccsessable,async(req,res)=>{
     let list=await serverUser[req.session.user].getHGroupList();
@@ -2505,7 +2545,7 @@ app.get("/h/group/:id/attendance",isAuthenticated,interfaceSplitter,isAccsessabl
     let attendanceInfo=await createSelectQuery(`SELECT * 
     FROM attendance
     WHERE group_id=${JSON.stringify(req.params.id).replace(/\"/g,'')}
-    ORDER BY attendance_id DESC;
+    ORDER BY attendance_id DESC LIMIT 12;
     SELECT *
     FROM spetialities a INNER JOIN groups b ON a.spetiality_id=b.spetiality_id
     INNER JOIN spetiality_professions c ON a.spetiality_profession_id=c.spetiality_profession_id
@@ -2605,7 +2645,7 @@ app.get("/h/group/:id/report/:id",isAuthenticated,interfaceSplitter,isAccsessabl
     let list=await serverUser[req.session.user].getHGroupList();
     let report=await createSelectQuery(`SELECT * 
     FROM reports
-    WHERE report_id=${JSON.stringify(req.params.id).replace(/\"/g,'')}`);
+    WHERE report_id=${JSON.stringify(req.params.id).replace(/\"/g,'')} LIMIT 12`);
     let report_data=await createSelectQuery(report[0].report_query);
     let fields=report[0].report_fields.split(',');
     res.render("h_report_info",{
@@ -2847,7 +2887,7 @@ app.post("/announcements_load",isAuthenticated,urlencodedParser,async(req,res)=>
                             </div>
                             <div class="col-12 row justify-content-end">
                                 <div class="col-4 row justify-content-center">
-                                    <a href="${el.announcement_file}" class="t-announcement-download col-12 text-center text-black-50" download>Вложение</a>
+                                    <a href="${await base64(el.announcement_file)}" class="t-announcement-download col-12 text-center text-black-50" download>Вложение</a>
                                 </div>
                             </div>
                         </div>  
@@ -2884,45 +2924,276 @@ app.post("/chat_load",isAuthenticated,urlencodedParser,async(req,res)=>{
         res.end();
     }
 });
-//Подгрузка мероприятий (-)
+//Подгрузка мероприятий (+)
 app.post("/event_load",isAuthenticated,urlencodedParser,async(req,res)=>{
     try{
+        let eventLoad;
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
+            let userGroups=await serverUser[req.session.user].getUserGroupsInString();
+            if(userGroups.indexOf(req.body.group)>0){
+                eventLoad=await createSelectQuery(`SELECT *
+                FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id
+                WHERE a.group_id=${req.body.group}
+                ORDER BY event_id DESC LIMIT ${req.body.count},20;`);
+            }
+            else{
+                res.end("Accsess Errror");
+            }
+        }
+        else{
+            eventLoad=await createSelectQuery(`SELECT *
+            FROM events a INNER JOIN event_types b ON a.event_type_id=b.event_type_id
+            WHERE a.group_id=${serverUser[req.session.user].getUserGroup()}
+            ORDER BY event_id DESC LIMIT ${req.body.count},20;`);
+        }
+        data="";
+        await eventLoad.forEach(async(el)=>{
+            let date=await datenormalise(el.event_date,"D/M/Y");
+            let ev_type;
+            switch(el.event_type_id){
+                case "1":
+                    ev_type=serverUser[req.session.user].getUserState()[3]+`-event-type-oe`;
+                    break;
+                case "2":
+                    ev_type=serverUser[req.session.user].getUserState()[3]+`-event-type-pr`;
+                    break;
+                case "3":
+                    ev_type=serverUser[req.session.user].getUserState()[3]+`-event-type-sut`;
+                    break;
+            }
+            data+=`<article class="col-8 mb-4 row justify-content-center align-content-center align-items-center stylise-block-static ${ev_type}">
+                        <div class="col-6">
+                            <h3>${date}</h3>
+                        </div>
+                        <div class="col-6">
+                            <label>${el.event_type_name}</label>
+                        </div>
+                        <div class="col-12 border-top border-dark">
+                            <p>{{event_description}}</p>
+                        </div>
+                \n`;
+            if(el.event_date<new Date.now()){
+                if(el.event_img!==null&&el.event_img!=='null'){
+                    data+=`<div class="col-12 row justify-content-center my-1 p-5 border-dark border-top" id="${serverUser[req.session.user].getUserState()[3]}-event-img-block">
+                                <img src="${await base64(el.event_img)}" alt="EVENTIMG-${el.event_id}">
+                            </div>`;
+                }
+                else if(serverUser[req.session.user].getUserState()[3]=="t"){
+                    data+=`
+                        <div class="col-12 border-top border-dark">
+                            <form class="col-12 row justify-content-end my-2" id="t-event-event-img-add-{{../event_id}}">
+                                <input type="file" class="form-control-file col-9" id="t-event-event-img-add-input">
+                                <button class="btn col-3 stylise-block" id="t-event-event-img-add-input-button" disabled>Загрузить</button>    
+                            </form>
+                        </div>
+                    </article>`;
+                }
+                else{
+                    data+=`</article>`;
+                }
+                
+            }
+            else{
+                data+=`</article>`;
+            }
+        });
+        res.end(data);
+        
     }
     catch(err){
         console.log(err);
         res.end();
     }
 });
-//Подгрузка индивидуальной работы (-)
+//Подгрузка индивидуальной работы (+)
 app.post("/iw_load",isAuthenticated,urlencodedParser,async(req,res)=>{
     try{
+        let iw_load;
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
+            let userGroups=await serverUser[req.session.user].getUserGroupsInString();
+            if(userGroups.indexOf(req.body.group)>0){
+                iw_load=await createSelectQuery(`SELECT c.student_id,user_sur_name,user_name,user_mid_name,iw_type_name,iw_reasone,iw_date
+                FROM individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id
+                LEFT JOIN students c ON a.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id
+                WHERE c.group_id=${req.body.group}
+                ORDER BY iw_date DESC LIMIT ${req.body.count},10;`);
+            }
+            else{
+                res.end("Accsess Error");
+            }
+        }
+        else{
+            iw_load=await createSelectQuery(`SELECT c.student_id,user_sur_name,user_name,user_mid_name,iw_type_name,iw_reasone,iw_date
+            FROM individual_works a INNER JOIN individual_work_types b ON a.iw_type_id=b.iw_type_id
+            LEFT JOIN students c ON a.student_id=c.student_id INNER JOIN users d ON c.user_id=d.user_id
+            WHERE c.group_id=${serverUser[req.session.user].getUserGroup()}
+            ORDER BY iw_date DESC LIMIT ${req.body.count},10;`);
+        }
+        data="";
+        await iw_load.forEach(async(el)=>{
+            let iw_date=await datenormalise(el.iw_date,"D-M-Y");
+            data+=`<article class="col-8 mb-4 row justify-content-center align-content-center align-items-center stylise-block-static">
+                        <div class="col-6">
+                            <h3>${iw_date}</h3>
+                        </div>
+                        <div class="col-6">
+                            <span>Студент: ${el.user_sur_name} ${el.user_name} ${el.user_mid_name}</span>
+                        </div>
+                        <div class="col-12 border-top border-dark">
+                            <span>Тип работы: ${el.iw_type_name}</span>
+                        </div>
+                        <div class="col-12 border-top border-dark">
+                            <p>${el.iw_reasone}</p>
+                        </div>
+                    </article>`;
+        });
+        res.end(data);
     }
     catch(err){
         console.log(err);
         res.end();
     }
 });
-//Подгрузка посещаемости (-)
+//Подгрузка посещаемости (+)
 app.post("/attendance_load",isAuthenticated,urlencodedParser,async(req,res)=>{
     try{
+        let attendnce_load;
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
+            let userGroups=await serverUser[req.session.user].getUserGroupsInString();
+            if(userGroups.indexOf(req.body.group)>0){
+                attendnce_load=await createSelectQuery(`SELECT * 
+                FROM attendance
+                WHERE group_id=${serverUser[req.session.user].getUserGroup()}
+                ORDER BY attendance_id DESC LIMIT ${req.body.count},10;`)
+            }
+            else{
+                res.end("Accsess Error");
+            }
+        }
+        else{
+            attendnce_load=await createSelectQuery(`SELECT * 
+            FROM attendance
+            WHERE group_id=${serverUser[req.session.user].getUserGroup()}
+            ORDER BY attendance_id DESC LIMIT ${req.body.count},10;`);
+        }
+        let data="";
+        await attendnce_load.forEach(async(el)=>{
+            let date=await datenormalise(el.attendance_date,"D-M-Y")
+            data+=`<article class="col-xl-4 col-10 row m-2 p-4 stylise-block" id="att-${el.attendance_id}">
+                    <div class="col-12">
+                        <h2>Дата: ${date}</h2>
+                    </div>
+                    <div class="col-12">
+                        <span>Присутствующих: ${el.attendance_present}</span>
+                    </div>
+                </article>
+            `;
+        });
+        res.end(data);
     }
     catch(err){
         console.log(err);
         res.end();
     }
 });  
-//Подгрузка отчётов (-)
+//Подгрузка отчётов (+)
 app.post("/reports_load",isAuthenticated,urlencodedParser,async(req,res)=>{
     try{
+        let report_load;
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
+            let userGroups=await serverUser[req.session.user].getUserGroupsInString();
+            if(userGroups.indexOf(req.body.group)>0){
+                report_load=await createSelectQuery(`SELECT report_id,report_cr_date,report_interval_date,report_type,report_fields
+                FROM reports
+                WHERE group_id=${req.body.group}
+                ORDER BY report_cr_date,report_id DESC ${req.body.count},6;`);
+            }
+            else{
+                res.end("Accsess Error");    
+            }
+        }
+        else{
+            report_load=await createSelectQuery(`SELECT report_id,report_cr_date,report_interval_date,report_type,report_fields
+            FROM reports
+            WHERE group_id=${serverUser[req.session.user].getUserGroup()}
+            ORDER BY report_cr_date,report_id DESC ${req.body.count},6;`);
+        }
+        let data="";
+        await report_load.forEach(async(el)=>{
+            let type;
+            let date=await datenormalise(el.report_cr_date,"D-M-Y");
+            switch(el.report_type){
+                case "att-special":
+                    type="Посещаемость (табл.)";
+                    break;
+                case "events":
+                    type="Мероприятия";
+                    break;
+                case "attendance":
+                    type="Посещаемость";
+                    break;
+                case "iw":
+                    type="Индивид. работа";
+                    break;
+            }
+            data+=`<article class="col-xl-5 col-10 row m-4 p-4 stylise-block" id="rep-${el.report_id}">
+            <div class="col-12">
+                <h2>Отчёт:${date}</h2>
+            </div>`;
+            
+            if(el.report_type=="att-special"){
+                let date_interval=await datenormalise(el.report_interval_date,"M-Y");
+                data+=`<div class="col-12">
+                            <span>Месяц: ${date_interval} <br> Дата составления: ${date}</span>
+                        </div>`
+            }
+            else{
+                data+=`<div class="col-12">
+                    <span>Промeжуток: ${date_interval}/${date}</span>
+                </div>`;
+            }
+            data+=`
+                <div class="col-12">
+                    <span>Тип: ${type}</span>
+                </div>
+                <div class="col-12">
+                    <span>Данные: ${el.report_fields}</span>
+                </div>
+            </article>`
+        });
+        res.end(data);
     }
     catch(err){
         console.log(err);
         res.end();
     }
 });
-//Подгрузка дежурств (-)
+//Подгрузка дежурств (+)
 app.post("/duty_load",isAuthenticated,urlencodedParser,async(req,res)=>{
     try{
+        let duty_load=await createSelectQuery(`SELECT a.ds_date, c.user_sur_name 'f_st_sn',c.user_name 'f_st_n',c.user_mid_name 'f_st_mn',e.user_sur_name 's_st_sn',e.user_name 's_st_n',e.user_mid_name 's_st_mn'
+        FROM duty_schedule a INNER JOIN students b ON a.first_student_id=b.student_id
+        INNER JOIN users c ON b.user_id=c.user_id
+        INNER JOIN students d ON a.second_student_id=d.student_id
+        INNER JOIN users e ON e.user_id=d.user_id
+        WHERE a.group_id=${serverUser[req.session.user].getUserGroup()}
+        ORDER BY a.ds_date DESC LIMIT ${req.body.count},10;`);
+        let data="";
+        await duty_load.forEach(async(el)=>{
+            let date= await datenormalise(el.ds_date,"D-M-Y");
+            data+=`<article class="col-8 mb-4 row justify-content-center align-content-center align-items-center stylise-block-static">
+                    <div class="col-12">
+                        <h3 class="text-center">${date}</h3>
+                    </div>
+                    <div class="col-6 border-top border-dark">
+                        <p>${el.f_st_sn} ${el.f_st_n} ${el.f_st_mn}</p>
+                    </div>
+                    <div class="col-6 border-top border-dark">
+                        <p class="text-right">${el.s_st_sn} ${el.s_st_n} ${el.s_st_mn}</p>
+                    </div>
+                </article>`;
+        });
+        res.end(data);
     }
     catch(err){
         console.log(err);
@@ -2966,11 +3237,11 @@ app.use(async(req, res)=>{
     });
 });
 //Ошибка 500 - произошла непредвиенная ошибка в работе приложения
-/*app.use(async(error, req, res, next)=>{
+app.use(async(error, req, res, next)=>{
     res.status(500).render("error",{
         title:"Ошибка 500",
         status:500,
     });
-});*/
+});
 //Прослушивание порта
 server.listen(3000);
