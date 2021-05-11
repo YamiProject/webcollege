@@ -2978,7 +2978,7 @@ app.post("/event_load",isAuthenticated,urlencodedParser,async(req,res)=>{
             ORDER BY event_id DESC LIMIT ${req.body.count},20;`);
         }
         data="";
-        await eventLoad.forEach(async(el)=>{
+        await eventLoad.forEach(async(el,i,array)=>{
             let date=await datenormalise(el.event_date,"D/M/Y");
             let ev_type;
             switch(el.event_type_id){
@@ -3061,7 +3061,7 @@ app.post("/iw_load",isAuthenticated,urlencodedParser,async(req,res)=>{
             ORDER BY iw_date DESC LIMIT ${req.body.count},10;`);
         }
         data="";
-        await iw_load.forEach(async(el)=>{
+        await iw_load.forEach(async(el,i,array)=>{
             let iw_date=await datenormalise(el.iw_date,"D-M-Y");
             data+=`<article class="col-8 mb-4 row justify-content-center align-content-center align-items-center stylise-block-static">
                         <div class="col-6">
@@ -3108,7 +3108,7 @@ app.post("/attendance_load",isAuthenticated,urlencodedParser,async(req,res)=>{
             ORDER BY attendance_id DESC LIMIT ${req.body.count},10;`);
         }
         let data="";
-        await attendnce_load.forEach(async(el)=>{
+        await attendnce_load.forEach(async(el,i,array)=>{
             let date=await datenormalise(el.attendance_date,"D-M-Y")
             data+=`<article class="col-xl-4 col-10 row m-2 p-4 stylise-block" id="att-${el.attendance_id}">
                     <div class="col-12">
@@ -3150,9 +3150,10 @@ app.post("/reports_load",isAuthenticated,urlencodedParser,async(req,res)=>{
             ORDER BY report_cr_date,report_id DESC LIMIT ${req.body.count},6;`);
         }
         let data="";
-        await report_load.forEach(async(el)=>{
+        await report_load.forEach(async(el,i,array)=>{
             let type;
             let date=await datenormalise(el.report_cr_date,"D-M-Y");
+            let date_interval=await datenormalise(el.report_interval_date,"M-Y");
             switch(el.report_type){
                 case "att-special":
                     type="Посещаемость (табл.)";
@@ -3170,10 +3171,8 @@ app.post("/reports_load",isAuthenticated,urlencodedParser,async(req,res)=>{
             data+=`<article class="col-xl-5 col-10 row m-4 p-4 stylise-block" id="rep-${el.report_id}">
             <div class="col-12">
                 <h2>Отчёт:${date}</h2>
-            </div>`;
-            
+            </div>`;   
             if(el.report_type=="att-special"){
-                let date_interval=await datenormalise(el.report_interval_date,"M-Y");
                 data+=`<div class="col-12">
                             <span>Месяц: ${date_interval} <br> Дата составления: ${date}</span>
                         </div>`
@@ -3191,8 +3190,10 @@ app.post("/reports_load",isAuthenticated,urlencodedParser,async(req,res)=>{
                     <span>Данные: ${el.report_fields}</span>
                 </div>
             </article>`
+            if(i==array.length-1){
+                res.end(data);
+            }
         });
-        res.end(data);
     }
     catch(err){
         console.log(err);
@@ -3210,7 +3211,7 @@ app.post("/duty_load",isAuthenticated,urlencodedParser,async(req,res)=>{
         WHERE a.group_id=${serverUser[req.session.user].getUserGroup()}
         ORDER BY a.ds_date DESC LIMIT ${req.body.count},10;`);
         let data="";
-        await duty_load.forEach(async(el)=>{
+        await duty_load.forEach(async(el,i,array)=>{
             let date= await datenormalise(el.ds_date,"D-M-Y");
             data+=`<article class="col-8 mb-4 row justify-content-center align-content-center align-items-center stylise-block-static">
                     <div class="col-12">
