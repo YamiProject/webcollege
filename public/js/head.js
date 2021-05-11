@@ -7,42 +7,20 @@ $(document).ready(function(){
     var load=true;
     $(window).on('scroll',function(e){
         e.preventDefault();
-        if(window.location.href.indexOf("/t/announcements")>0){
+        if(window.location.href.indexOf(/\/h\/group\/\d\/events/)>0){ 
             if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
-                    if(window.location.href.indexOf("/t/announcements")>0){
-                        $.ajax({
-                            type:"POST",
-                            url:"/announcements_load",
-                            data:{
-                                count:$("#t-announcement-block>article").length
-                            },
-                            success: async function(data){
-                                if(data!==""){
-                                    await $("#t-announcement-block").append(data);
-                                    load=true;
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        }
-        if(window.location.href.indexOf("/t/mygroup/events")>0){ 
-            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
-                if(load==true){
-                    load=false;
-                    if(window.location.href.indexOf("/t/mygroup/events")>0){
+                    if(window.location.href.indexOf(/\/h\/group\/\d\/events/)>0){
                         $.ajax({
                             type:"POST",
                             url:"/event_load",
                             data:{
-                                count:$("#t-event-article-block>article").length
+                                count:$("#h-event-article-block>article").length
                             },
                             success: async function(data){
                                 if(data!==""){
-                                    await $("#t-event-article-block").append(data);
+                                    await $("#h-event-article-block").append(data);
                                     load=true;
                                 }
                             }
@@ -51,20 +29,20 @@ $(document).ready(function(){
                 }
             }
         }
-        if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
+        if(window.location.href.indexOf(/\/h\/group\/\d\/individualwork/)>0){
             if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
-                    if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
+                    if(window.location.href.indexOf(/\/h\/group\/\d\/individualwork/)>0){
                         $.ajax({
                             type:"POST",
                             url:"/iw_load",
                             data:{
-                                count:$("#t-iw-article-block>article").length
+                                count:$("#h-iw-article-block>article").length
                             },
                             success: async function(data){
                                 if(data!==""){
-                                    await $("#t-iw-article-block").append(data);
+                                    await $("#h-iw-article-block").append(data);
                                     load=true;
                                 }
                             }
@@ -73,20 +51,20 @@ $(document).ready(function(){
                 }
             }
         }
-        if(window.location.href.indexOf("/t/mygroup/attendance")>0){
+        if(window.location.href.indexOf(/\/h\/group\/\d\/attendance/)>0){
             if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
-                    if(window.location.href.indexOf("/t/mygroup/attendance")>0){
+                    if(window.location.href.indexOf(/\/h\/group\/\d\/attendance/)>0){
                         $.ajax({
                             type:"POST",
                             url:"/attendance_load",
                             data:{
-                                count:$("#t-attendance-list>article").length
+                                count:$("#h-attendance-list>article").length
                             },
                             success: async function(data){
                                 if(data!==""){
-                                    await $("#t-attendance-list").append(data);
+                                    await $("#h-attendance-list").append(data);
                                     load=true;
                                 }
                             }
@@ -95,11 +73,11 @@ $(document).ready(function(){
                 }
             }
         }
-        if(window.location.href.indexOf("/t/mygroup/reports")>0){
+        if(window.location.href.indexOf(/\/h\/group\/\d\/reports/)>0){
             if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
-                    if(window.location.href.indexOf("/t/mygroup/reports")>0){
+                    if(window.location.href.indexOf(/\/h\/group\/\d\/reports/)>0){
                         $.ajax({
                             type:"POST",
                             url:"/reports_load",
@@ -119,6 +97,15 @@ $(document).ready(function(){
         }   
     });
     const socket=io();
+    socket.on('addNewEvent',()=>{
+        window.location.reload();
+    });
+    socket.on('addNewAttendance',()=>{
+        window.location.reload();
+    });
+    socket.on('addNewReport',()=>{
+        window.location.reload();
+    });
     socket.on('stDocReload',()=>{
         window.location.reload();
     });

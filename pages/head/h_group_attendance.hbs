@@ -27,7 +27,7 @@
                                     <h2 class="text-center h-section">Отчёты</h2>
                                 </div>
                                 {{#each at_list}}
-                                    <div class="col-xl-4 col-10 row m-2 p-4 stylise-block" id="att-{{attendance_id}}">
+                                    <article class="col-xl-4 col-10 row m-2 p-4 stylise-block" id="att-{{attendance_id}}">
                                         <div class="col-12">
                                             <h2>Дата: {{#datenormalise attendance_date "D-M-Y"}}{{/datenormalise}}</h2>
                                         </div>
@@ -38,7 +38,7 @@
                                 {{else}}
                                     <div class="col-12">
                                         <h2 class="text-center">Отчёты отсутствуют</h2>
-                                    </div>
+                                    </article>
                                 {{/each}}
                             </div>
                         </div>

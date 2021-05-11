@@ -216,6 +216,9 @@ $(document).ready(function(){
     socket.on('addNewReport',(data)=>{
         window.location.reload();
     });
+    socket.on('addNewiw',(data)=>{
+        window.location.reload();
+    });
     socket.on('stDocReload',()=>{
         window.location.reload();
     });
@@ -568,6 +571,7 @@ $(document).ready(function(){
                 contentType:false,
                 processData:false,
                 success: function(){
+                    io.emit("newAttendance");
                     window.location.href="/t/mygroup/attendance";
                 }
             });
@@ -675,7 +679,7 @@ $(document).ready(function(){
                     iw_date:functions.escapeHTML($("#t-iw-form-date").val())
                 },
                 success: function(){
-                    window.location.reload();
+                    io.emit("newIW");
                 }
             });
         }
@@ -834,7 +838,7 @@ $(document).ready(function(){
                 contentType:false,
                 processData:false,
                 success:function(){
-                    window.location.reload();
+                    io.emit("newGalleryPhoto");
                 }
             });
         }

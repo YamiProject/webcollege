@@ -186,6 +186,17 @@ io.on('connection',async(socket)=>{
             io.to(`Room_AttendanceOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit(`addNewAttendance`);
         }
     });
+    socket.on('newIW',async(data)=>{
+        if(serverUser[req.session.user].getUserState()[3]=="h"){
+            let userGroups=await serverUser[req.session.user].getUserGroupsInString();
+            if(userGroups.indexOf(data.group)>0){
+                io.to(`Room_IWOfGroup$${url[2]}`).emit(`addNewIW`);
+            }
+        }
+        else{
+            io.to(`Room_IWOfGroup$${await serverUser[socket.handshake.session.user].getUserGroup()}`).emit(`addNewIW`);
+        }
+    });
     socket.on('newReport',async(data)=>{
         if(serverUser[req.session.user].getUserState()[3]=="h"){
             let userGroups=await serverUser[req.session.user].getUserGroupsInString();
@@ -262,24 +273,24 @@ const cookieParser=require('cookie-parser');
 app.use(cookieParser());
 //Модуль для работы с базой данных MySql2/Promise
 const mysql=require("mysql2");
-function connect_db(){
-    return mysql.createConnection({
-        host:'localhost',
-        user:'root',
-        password:'',
-        database:'webcollege_database',
-        multipleStatements:true
-    })
+    function connect_db(){
+        return mysql.createConnection({
+            host:'localhost',
+            user:'root',
+            password:'',
+            database:'webcollege_database',
+            multipleStatements:true
+    });
 }
 const mysql_promise=require('mysql2/promise');
-function connect_db_promise(){
-    return mysql_promise.createConnection({
-        host:'localhost',
-        user:'root',
-        password:'',
-        database:'webcollege_database',
-        multipleStatements:true
-    })
+    function connect_db_promise(){
+        return mysql_promise.createConnection({
+            host:'localhost',
+            user:'root',
+            password:'',
+            database:'webcollege_database',
+            multipleStatements:true
+    });
 }
 //Шаблонизатор Handlebars
 const hbs=require('hbs');
@@ -1886,7 +1897,6 @@ app.route("/t/newreport").get(isAuthenticated,interfaceSplitter,async(req,res)=>
                 break;
         }
         let query=select_query_part+from_query_part+where_query_part+groupby_query_part;
-        console.log(query);
         //let check=await createSelectQuery(query);
         let result;
         if(req.body.type!=="att-special"){

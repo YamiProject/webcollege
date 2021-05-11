@@ -7,20 +7,20 @@ $(document).ready(function(){
     var load=true;
     $(window).on('scroll',function(e){
         e.preventDefault();
-        if(window.location.href.indexOf("/t/announcements")>0){
+        if(window.location.href.indexOf("/s/announcements")>0){
             if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
-                    if(window.location.href.indexOf("/t/announcements")>0){
+                    if(window.location.href.indexOf("/s/announcements")>0){
                         $.ajax({
                             type:"POST",
                             url:"/announcements_load",
                             data:{
-                                count:$("#t-announcement-block>article").length
+                                count:$("#s-announcement-block>article").length
                             },
                             success: async function(data){
                                 if(data!==""){
-                                    await $("#t-announcement-block").append(data);
+                                    await $("#s-announcement-block").append(data);
                                     load=true;
                                 }
                             }
@@ -29,20 +29,20 @@ $(document).ready(function(){
                 }
             }
         }
-        if(window.location.href.indexOf("/t/mygroup/events")>0){ 
+        if(window.location.href.indexOf("/s/events")>0){ 
             if($(window).scrollTop()+$(window).height()>$(document).height()-100){
                 if(load==true){
                     load=false;
-                    if(window.location.href.indexOf("/t/mygroup/events")>0){
+                    if(window.location.href.indexOf("/s/events")>0){
                         $.ajax({
                             type:"POST",
                             url:"/event_load",
                             data:{
-                                count:$("#t-event-article-block>article").length
+                                count:$("#s-event-article-block>article").length
                             },
                             success: async function(data){
                                 if(data!==""){
-                                    await $("#t-event-article-block").append(data);
+                                    await $("#s-event-article-block").append(data);
                                     load=true;
                                 }
                             }
@@ -51,72 +51,6 @@ $(document).ready(function(){
                 }
             }
         }
-        if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
-            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
-                if(load==true){
-                    load=false;
-                    if(window.location.href.indexOf("/t/mygroup/individualwork")>0){
-                        $.ajax({
-                            type:"POST",
-                            url:"/iw_load",
-                            data:{
-                                count:$("#t-iw-article-block>article").length
-                            },
-                            success: async function(data){
-                                if(data!==""){
-                                    await $("#t-iw-article-block").append(data);
-                                    load=true;
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        }
-        if(window.location.href.indexOf("/t/mygroup/attendance")>0){
-            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
-                if(load==true){
-                    load=false;
-                    if(window.location.href.indexOf("/t/mygroup/attendance")>0){
-                        $.ajax({
-                            type:"POST",
-                            url:"/attendance_load",
-                            data:{
-                                count:$("#t-attendance-list>article").length
-                            },
-                            success: async function(data){
-                                if(data!==""){
-                                    await $("#t-attendance-list").append(data);
-                                    load=true;
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        }
-        if(window.location.href.indexOf("/t/mygroup/reports")>0){
-            if($(window).scrollTop()+$(window).height()>$(document).height()-100){
-                if(load==true){
-                    load=false;
-                    if(window.location.href.indexOf("/t/mygroup/reports")>0){
-                        $.ajax({
-                            type:"POST",
-                            url:"/reports_load",
-                            data:{
-                                count:$("#t-reports-list>article").length
-                            },
-                            success: async function(data){
-                                if(data!==""){
-                                    await $("#t-reports-list").append(data);
-                                    load=true;
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        }   
     });
     $("#msg-block").on('scroll',function(e){
         e.preventDefault();
@@ -198,6 +132,15 @@ $(document).ready(function(){
         }
         $("#t-announcement-block .d-none").fadeOut().delay(1111).removeClass("d-none").fadeIn();
     });
+    socket.on('addNewEvent',()=>{
+        window.location.reload();
+    });
+    socket.on('addNewAttendance',()=>{
+        window.location.reload();
+    });
+    socket.on('addNewReport',()=>{
+        window.location.reload();
+    });
     socket.on('stDocReload',()=>{
         window.location.reload();
     });
@@ -211,6 +154,9 @@ $(document).ready(function(){
         window.location.reload();
     });
     socket.on('stIwReload',()=>{
+        window.location.reload();
+    });
+    socket.on('addNewGalPhoto',()=>{
         window.location.reload();
     });
     //main_Page
@@ -315,7 +261,7 @@ $(document).ready(function(){
                 contentType: false,
                 processData: false,
                 success: async function(){
-                    window.location.reload();
+                    io.emit("newStAchievement");
                 }
             });
         }
@@ -336,7 +282,7 @@ $(document).ready(function(){
                 contentType:false,
                 processData:false,
                 success: function(){
-                    window.location.reload();
+                    io.emit("newStAbsentismes");
                 }
             })
         }
@@ -422,7 +368,7 @@ $(document).ready(function(){
                 contentType:false,
                 processData:false,
                 success: function(){
-                    window.location.reload();
+                    io.emit("newStDocument");
                 }
             });
         }
@@ -463,7 +409,7 @@ $(document).ready(function(){
                 contentType:false,
                 processData:false,
                 success:function(){
-                    window.location.reload();
+                    io.emit("newGalleryPhoto");
                 }
             });
         }
