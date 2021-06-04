@@ -277,8 +277,8 @@ const mysql=require("mysql2");
         return mysql.createConnection({
             host:'localhost',
             user:'root',
-            password:'',
-            database:'webcollege_database',
+            password:'root',
+            database:'wc_db',
             multipleStatements:true
     });
 }
